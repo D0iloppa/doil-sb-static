@@ -395,9 +395,16 @@ app.use((req, res) => {
       availableEndpoints: ['/api/health', '/api/info', '/api/projects', '/api/config']
     });
   } else {
+   // 모든 필요한 변수들을 명시적으로 전달
     res.status(404).render('404', {
       title: '404 - Page Not Found',
-      message: '요청하신 페이지를 찾을 수 없습니다.'
+      subtitle: 'Page Not Found',
+      message: '요청하신 페이지를 찾을 수 없습니다.',
+      rootContext: req.rootContext || '',
+      currentYear: new Date().getFullYear(),
+      appName: 'doil-sb',
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development'
     });
   }
 });
