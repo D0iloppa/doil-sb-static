@@ -96,11 +96,23 @@ apiRouter.get('/info', (req, res) => {
 apiRouter.get('/projects', (req, res) => {
   res.json({
     experiments: [
-      { 
-        name: 'Canvas Drawing', 
-        status: 'active', 
-        path: 'canvas',
-        description: 'HTML5 Canvas experiments and drawing tools'
+      {
+        name: 'The Shining',
+        status: 'active',
+        path: 'tsh',
+        description: 'Experimental web components and custom HTML elements.'
+      },
+      {
+        name: 'Flocking Algorithm',
+        status: 'active',
+        path: 'fa',
+        description: 'A simulation of flocking behavior using HTML5 Canvas.'
+      },
+      {
+        name: 'The ASCII',
+        status: 'active',
+        path: 'tas',
+        description: 'Convert media content into ASCII art representation.'
       }
     ],
     study: [
@@ -200,6 +212,20 @@ pagesRouter.get('/experiments', (req, res) => {
       description: 'Custom HTML elements and components',
       status: 'Active',
       path: 'tsh'
+    },
+    {
+      name: 'Flocking Algorithm',
+      category: 'Frontend',
+      description: 'flocking simulation using HTML5 Canvas',
+      status: 'Active',
+      path: 'fa'
+    },
+    {
+      name: 'The ASCII',
+      category: 'Frontend',
+      description: 'Media display to ASCII art',
+      status: 'Active',
+      path: 'tas'
     }
   ];
 
@@ -225,7 +251,19 @@ pagesRouter.get('/experiments/:subpage', (req, res) => {
       subtitle: 'Custom HTML elements and components',
       icon: '⚙️',
       description: 'Experimental web components and custom HTML elements.'
-    }
+    },
+    'fa': {
+      title: 'Flocking Algorithm',
+      subtitle: 'Flocking simulation using HTML5 Canvas',
+      icon: '🐦',
+      description: 'A simulation of flocking behavior using HTML5 Canvas.'
+    },
+    'tas': {
+      title: 'The ASCII',
+      subtitle: 'Media display to ASCII art',
+      icon: '🖼️',
+      description: 'Convert media content into ASCII art representation.'
+    },
   };
 
   const pageData = experimentPages[subpage];
