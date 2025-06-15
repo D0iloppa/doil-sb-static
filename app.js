@@ -1,110 +1,425 @@
 const express = require('express');
+const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const BASE_PATH = process.env.BASE_PATH || '';
 
-// 정적 파일 서빙 (public 폴더)
-app.use(express.static(path.join(__dirname, 'public')));
+// =========================
+// View Engine 설정
+// =========================
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// JSON 파싱 미들웨어
+
+// Layout 설정 추가
+app.use(expressLayouts);
+app.set('layout', 'layout');  // layout.ejs 사용
+
+// =========================
+// 기본 미들웨어
+// =========================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// 동적 base path 미들웨어
-app.use((req, res, next) => {
-  const forwardedPrefix = req.headers['x-forwarded-prefix'] || BASE_PATH;
-  res.locals.basePath = forwardedPrefix;
-  req.basePath = forwardedPrefix;
+// =========================
+// Context 체크 미들웨어
+// =========================
+function requireContext(req, res, next) {
+  const forwardedPrefix = req.headers['x-forwarded-prefix'];
+  
+  if (!forwardedPrefix && process.env.NODE_ENV !== 'development') {
+    return res.status(403).json({
+      error: 'Direct access not allowed',
+      message: 'This resource must be accessed through the proper context'
+    });
+  }
+  
+  req.rootContext = forwardedPrefix || '';
   next();
-});
+}
 
-// API 라우트들만 Express에서 처리
-// 헬스체크 API
-app.get('/api/health', (req, res) => {
+// =========================
+// 공통 데이터 미들웨어
+// =========================
+function addCommonData(req, res, next) {
+  res.locals.rootContext = req.rootContext || '';
+  res.locals.currentYear = new Date().getFullYear();
+  res.locals.appName = 'doil-sb';
+  res.locals.version = '1.0.0';
+  res.locals.environment = process.env.NODE_ENV || 'development';
+  next();
+}
+
+// =========================
+// 정적 파일 서빙 (Context 체크 포함)
+// =========================
+app.use('/css', requireContext, express.static(path.join(__dirname, 'public', 'css')));
+app.use('/js', requireContext, express.static(path.join(__dirname, 'public', 'js')));
+app.use('/images', requireContext, express.static(path.join(__dirname, 'public', 'images')));
+
+// =========================
+// API Router
+// =========================
+const apiRouter = express.Router();
+
+// API 헬스체크
+apiRouter.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development',
-    basePath: req.basePath,
+    rootContext: req.rootContext,
     version: '1.0.0',
-    memory: process.memoryUsage()
+    memory: process.memoryUsage(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// 기본 정보 API
-app.get('/api/info', (req, res) => {
+// API 정보
+apiRouter.get('/info', (req, res) => {
   res.json({
     name: 'doil-sb-static',
     version: '1.0.0',
-    basePath: req.basePath,
+    rootContext: req.rootContext,
     message: 'Welcome to doil-sb API!',
     endpoints: [
       '/api/health',
-      '/api/info',
-      '/api/projects'
+      '/api/info', 
+      '/api/projects',
+      '/api/config'
     ]
   });
 });
 
 // 프로젝트 목록 API
-app.get('/api/projects', (req, res) => {
+apiRouter.get('/projects', (req, res) => {
   res.json({
-    portfolio: [
-      { name: 'Project 1', status: 'completed' },
-      { name: 'Project 2', status: 'in-progress' }
+    experiments: [
+      { 
+        name: 'Canvas Drawing', 
+        status: 'active', 
+        path: 'canvas',
+        description: 'HTML5 Canvas experiments and drawing tools'
+      },
+      { 
+        name: 'Web Components', 
+        status: 'active', 
+        path: 'web-components',
+        description: 'Custom HTML elements and components'
+      },
+      { 
+        name: 'API Testing', 
+        status: 'active', 
+        path: 'apis',
+        description: 'API integration testing tools'
+      },
+      { 
+        name: 'Prototypes', 
+        status: 'planned', 
+        path: 'prototypes',
+        description: 'Quick prototypes and proof of concepts'
+      }
     ],
     study: [
       { name: 'JavaScript Deep Dive', status: 'completed' },
-      { name: 'React Learning', status: 'in-progress' }
+      { name: 'React Learning', status: 'in-progress' },
+      { name: 'Node.js Development', status: 'active' }
     ],
-    experiments: [
-      { name: 'WebGL Experiment', status: 'experimental' }
+    portfolio: [
+      { name: 'doil-sb Project', status: 'active' }
     ]
   });
 });
 
-// 설정 정보 API (개발용)
-app.get('/api/config', (req, res) => {
+// 개발용 설정 API
+apiRouter.get('/config', (req, res) => {
   if (process.env.NODE_ENV !== 'production') {
     res.json({
-      basePath: req.basePath,
+      rootContext: req.rootContext,
       headers: req.headers,
-      environment: process.env,
-      publicPath: path.join(__dirname, 'public')
+      environment: process.env.NODE_ENV || 'development',
+      viewsPath: path.join(__dirname, 'views'),
+      publicPath: path.join(__dirname, 'public'),
+      timestamp: new Date().toISOString()
     });
   } else {
     res.status(403).json({ error: 'Forbidden in production' });
   }
 });
 
-// 정적 파일이 없는 경우 404 (Express가 마지막에 처리)
-app.use((req, res) => {
-  // API 요청인 경우
-  if (req.path.startsWith('/api/')) {
-    res.status(404).json({ 
-      error: 'API endpoint not found',
-      path: req.path 
-    });
-  } else {
-    // 정적 파일 요청인 경우 (public/404.html이 있다면 서빙)
-    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'), (err) => {
-      if (err) {
-        res.status(404).send(`
-          <h1>404 - Page Not Found</h1>
-          <p>요청하신 페이지를 찾을 수 없습니다.</p>
-          <a href="${req.basePath || '/'}">← Back to Home</a>
-        `);
+// =========================
+// Pages Router (View 렌더링)
+// =========================
+const pagesRouter = express.Router();
+
+// 모든 페이지에 Context 체크 및 공통 데이터 적용
+pagesRouter.use(requireContext);
+pagesRouter.use(addCommonData);
+
+// 메인 페이지
+pagesRouter.get('/', (req, res) => {
+  try {
+    const systemInfo = {
+      uptime: Math.floor(process.uptime()),
+      environment: process.env.NODE_ENV || 'development',
+      nodeVersion: process.version,
+      status: 'Running'
+    };
+
+    const services = [
+      {
+        name: 'API Health Check',
+        description: 'System status and monitoring',
+        status: 'Online',
+        action: 'Check',
+        link: `${req.rootContext}/api/health`,
+        className: 'api'
+      },
+      {
+        name: 'Experiments',
+        description: 'Experimental projects and prototypes', 
+        status: 'Available',
+        action: 'Browse',
+        link: `${req.rootContext}/experiments/`,
+        className: ''
+      },
+      {
+        name: 'API Documentation',
+        description: 'Available API endpoints',
+        status: 'Available', 
+        action: 'View',
+        link: `${req.rootContext}/api/info`,
+        className: ''
       }
+    ];
+
+    res.render('index', {
+      title: 'doil-sb Sandbox',
+      subtitle: `Literally, It's a sandbox.`,
+      systemInfo: systemInfo,
+      services: services
+    });
+  } catch (error) {
+    console.error('Index page error:', error);
+    res.status(500).render('error', { 
+      title: 'Server Error',
+      error: error.message 
     });
   }
 });
 
+// Experiments 메인 페이지
+pagesRouter.get('/experiments', (req, res) => {
+  const experiments = [
+    {
+      name: 'Web Components',
+      category: 'Frontend',
+      description: 'Custom HTML elements and components',
+      status: 'Active',
+      path: 'web-components'
+    },
+    {
+      name: 'Canvas Playground',
+      category: 'Graphics', 
+      description: 'HTML5 Canvas experiments',
+      status: 'Active',
+      path: 'canvas'
+    },
+    {
+      name: 'API Testing',
+      category: 'Backend',
+      description: 'Various API integrations and tests',
+      status: 'Active',
+      path: 'apis'
+    },
+    {
+      name: 'Prototypes',
+      category: 'Mixed',
+      description: 'Quick prototypes and proof of concepts',
+      status: 'Active',
+      path: 'prototypes'
+    }
+  ];
+
+  res.render('experiments/index', {
+    title: 'Experiments',
+    subtitle: 'Experimental projects and prototypes',
+    experiments: experiments
+  });
+});
+
+// Experiments 하위 페이지들 (trailing slash 포함)
+pagesRouter.get('/experiments/', (req, res) => {
+  res.redirect(`${req.rootContext}/experiments`);
+});
+
+// Experiments 하위 페이지들
+pagesRouter.get('/experiments/:subpage', (req, res) => {
+  const subpage = req.params.subpage;
+  
+  const experimentPages = {
+    'web-components': {
+      title: 'Web Components',
+      subtitle: 'Custom HTML elements and components',
+      icon: '⚙️',
+      description: 'Experimental web components and custom HTML elements.'
+    },
+    'canvas': {
+      title: 'Canvas Playground',
+      subtitle: 'HTML5 Canvas experiments', 
+      icon: '🎨',
+      description: 'Interactive canvas drawing and graphics experiments.'
+    },
+    'apis': {
+      title: 'API Testing',
+      subtitle: 'API integrations and testing',
+      icon: '🔌', 
+      description: 'Tools for testing and integrating various APIs.'
+    },
+    'prototypes': {
+      title: 'Prototypes',
+      subtitle: 'Quick prototypes and proof of concepts',
+      icon: '🚧',
+      description: 'Collection of prototypes and experimental features.'
+    }
+  };
+
+  const pageData = experimentPages[subpage];
+  
+  if (pageData) {
+    try {
+      res.render(`experiments/${subpage}`, {
+        title: pageData.title,
+        subtitle: pageData.subtitle,
+        icon: pageData.icon,
+        description: pageData.description,
+        subpage: subpage
+      });
+    } catch (error) {
+      console.error(`Error rendering experiments/${subpage}:`, error);
+      res.status(404).render('404', {
+        title: '404 - Template Not Found',
+        message: `The template for ${subpage} experiment is not available yet.`
+      });
+    }
+  } else {
+    res.status(404).render('404', {
+      title: '404 - Experiment Not Found', 
+      message: 'The requested experiment page does not exist.'
+    });
+  }
+});
+
+// Portfolio 페이지
+pagesRouter.get('/portfolio', (req, res) => {
+  const portfolioProjects = [
+    {
+      name: 'doil-sb Sandbox',
+      description: 'This project - Express-based development sandbox',
+      status: 'Active',
+      technologies: ['Node.js', 'Express', 'EJS', 'Docker']
+    }
+  ];
+
+  res.render('portfolio/index', {
+    title: 'Portfolio',
+    subtitle: 'Personal projects and works',
+    projects: portfolioProjects
+  });
+});
+
+// Study 페이지
+pagesRouter.get('/study', (req, res) => {
+  const studyProjects = [
+    {
+      name: 'JavaScript Deep Dive',
+      description: 'Advanced JavaScript concepts and patterns',
+      status: 'Completed',
+      progress: 100
+    },
+    {
+      name: 'React Learning Path',
+      description: 'Modern React development practices',
+      status: 'In Progress',
+      progress: 75
+    },
+    {
+      name: 'Node.js Backend Development',
+      description: 'Server-side development with Node.js',
+      status: 'Active',
+      progress: 60
+    }
+  ];
+
+  res.render('study/index', {
+    title: 'Study Projects',
+    subtitle: 'Learning and practice projects',
+    studies: studyProjects
+  });
+});
+
+// =========================
+// Router 마운트
+// =========================
+app.use('/api', apiRouter);      // API는 context 체크 없음
+app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
+
+// =========================
+// 에러 핸들링 미들웨어
+// =========================
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  
+  if (req.path.startsWith('/api/')) {
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    });
+  } else {
+    res.status(500).render('error', {
+      title: '500 - Server Error',
+      error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    });
+  }
+});
+
+// =========================
+// 404 Handler
+// =========================
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ 
+      error: 'API endpoint not found',
+      path: req.path,
+      availableEndpoints: ['/api/health', '/api/info', '/api/projects', '/api/config']
+    });
+  } else {
+    res.status(404).render('404', {
+      title: '404 - Page Not Found',
+      message: '요청하신 페이지를 찾을 수 없습니다.'
+    });
+  }
+});
+
+// =========================
+// 서버 시작
+// =========================
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🏖️ doil-sb running on port ${PORT}`);
-  console.log(`📁 Static files served from: ${path.join(__dirname, 'public')}`);
-  console.log(`🔗 Base path: ${BASE_PATH || '(dynamic from headers)'}`);
+  console.log(`🚀 doil-sb running on port ${PORT}`);
+  console.log(`📁 Views directory: ${path.join(__dirname, 'views')}`);
+  console.log(`🎨 View engine: EJS`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Context checking: ${process.env.NODE_ENV !== 'development' ? 'Enabled' : 'Disabled (dev mode)'}`);
+  console.log(`📊 Available routes:`);
+  console.log(`   GET / - Main page`);
+  console.log(`   GET /experiments - Experiments index`);
+  console.log(`   GET /experiments/:subpage - Individual experiments`);
+  console.log(`   GET /portfolio - Portfolio page`);
+  console.log(`   GET /study - Study projects`);
+  console.log(`   GET /api/health - Health check`);
+  console.log(`   GET /api/info - API information`);
+  console.log(`   GET /api/projects - Projects data`);
 });
 
 module.exports = app;

@@ -1,0 +1,72 @@
+<div class="main-content">
+    <!-- 네비게이션 테이블 -->
+    <table class="nav-table">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="font-weight: bold; color: red;"> * Experiments</td>
+                <td>Experimental projects and prototypes</td>
+                <td><span class="status-ok">Available</span></td>
+                <td><a href="<%= rootContext %>/experiments/" class="nav-link">Browse</a></td>
+            </tr>
+            <tr>
+                <td>API Health Check</td>
+                <td>System status and monitoring</td>
+                <td><span class="status-ok">Online</span></td>
+                <td><a href="<%= rootContext %>/api/health" class="nav-link api">Check</a></td>
+            </tr>
+            <tr>
+                <td>API Documentation</td>
+                <td>Available API endpoints</td>
+                <td><span class="status-ok">Available</span></td>
+                <td><a href="<%= rootContext %>/api/info" class="nav-link">View</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 환경 정보 박스 -->
+    <div class="info-box">
+        <h3>🚀 System Information</h3>
+        <table>
+            <tr>
+                <td class="label">Base Path:</td>
+                <td class="value"><%= rootContext || '/' %></td>
+            </tr>
+            <tr>
+                <td class="label">Status:</td>
+                <td class="value status-ok">Running</td>
+            </tr>
+            <tr>
+                <td class="label">Uptime:</td>
+                <td class="value"><%= systemInfo.uptime %>s</td>
+            </tr>
+            <tr>
+                <td class="label">Environment:</td>
+                <td class="value"><%= systemInfo.environment %></td>
+            </tr>
+            <tr>
+                <td class="label">Node.js:</td>
+                <td class="value"><%= systemInfo.nodeVersion %></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 기술 스택 -->
+    <div class="info-box">
+        <h3>📊 Technology Stack</h3>
+        <p>
+            <span class="button">Express.js</span>
+            <span class="button">Node.js</span>
+            <span class="button">Docker</span>
+            <span class="button">EJS</span>
+            <span class="button">nginx</span>
+        </p>
+    </div>
+</div>

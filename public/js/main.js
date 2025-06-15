@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateEnvironmentInfo(healthData);
     }
 
-    // 네비게이션 링크 업데이트
-    updateNavigationLinks();
 });
 
 // 환경 정보 업데이트
@@ -43,13 +41,4 @@ function updateEnvironmentInfo(data) {
             <p><strong>Uptime:</strong> ${Math.floor(data.uptime || 0)}s</p>
         `;
     }
-}
-
-// 네비게이션 링크 업데이트
-function updateNavigationLinks() {
-    const links = document.querySelectorAll('.nav-link[data-path]');
-    links.forEach(link => {
-        const path = link.getAttribute('data-path');
-        link.href = `${basePath}${path}`;
-    });
 }

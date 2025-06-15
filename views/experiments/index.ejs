@@ -1,0 +1,40 @@
+<div class="main-content">
+    <!-- 실험 프로젝트 목록 -->
+    <table class="nav-table">
+        <thead>
+            <tr>
+                <th>Project</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Demo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% experiments.forEach(experiment => { %>
+            <tr>
+                <td><%= experiment.name %></td>
+                <td><%= experiment.category %></td>
+                <td><%= experiment.description %></td>
+                <td><span class="status-ok"><%= experiment.status %></span></td>
+                <td><a href="<%= rootContext %>/experiments/<%= experiment.path %>/" class="nav-link">View</a></td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <!-- 정보 박스 -->
+    <div class="info-box">
+        <h3>📋 About Experiments</h3>
+        <p>This section contains experimental projects, prototypes, and testing grounds for new technologies and ideas. 
+        Most projects here are work-in-progress and may be unstable.</p>
+    </div>
+
+    <!-- 네비게이션 -->
+    <div class="info-box">
+        <p>
+            <a href="<%= rootContext %>/" class="button">← Back to Home</a>
+            <a href="<%= rootContext %>/api/projects" class="button">API Info</a>
+        </p>
+    </div>
+</div>
