@@ -108,11 +108,14 @@
     <div id="controls">
         <button id="start-btn">카메라 시작</button>
         <button id="stop-btn" disabled>카메라 정지</button>
-        
+        <button id="photo-btn" disabled>📷 사진찍기</button>
+        <!--
+        <button id="record-btn" disabled>🎥 동영상 촬영</button>
+        -->
         <div class="slider-container">
             <label>해상도:</label>
-            <input type="range" id="resolution" min="20" max="100" value="60">
-            <span id="resolution-value">60</span>
+            <input type="range" id="resolution" min="20" max="100" value="100">
+            <span id="resolution-value">100</span>
         </div>
     </div>
     
@@ -127,15 +130,20 @@
         const asciiOutput = document.getElementById('ascii-output');
         const startBtn = document.getElementById('start-btn');
         const stopBtn = document.getElementById('stop-btn');
+        const photoBtn = document.getElementById('photo-btn');
+        const recordBtn = document.getElementById('record-btn');
         const resolutionSlider = document.getElementById('resolution');
         const resolutionValue = document.getElementById('resolution-value');
         const status = document.getElementById('status');
         
         let stream = null;
         let animationId = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
         
-        // ASCII 문자들 (어두운 것부터 밝은 것 순서)
-        const asciiChars = " .:-=+*#%@";
+        // ASCII 문자들 (어두운 것부터 밝은 것 순서) - 적절한 세밀함을 위해 30개
+        const asciiChars = " .'`,:;Il!i><~+-?1)(|\\/tfjrxn#MW&8%B@$";
         
         // 해상도 슬라이더 업데이트
         resolutionSlider.addEventListener('input', (e) => {
@@ -167,6 +175,8 @@
                 
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
+                photoBtn.disabled = false;
+                recordBtn.disabled = false;
                 status.textContent = "카메라 실행중 - ASCII 변환중...";
                 
             } catch (error) {
@@ -191,10 +201,116 @@
                 animationId = null;
             }
             
+            if (isRecording) {
+                stopRecording();
+            }
+            
             startBtn.disabled = false;
             stopBtn.disabled = true;
+            photoBtn.disabled = true;
+            recordBtn.disabled = true;
             status.textContent = "카메라가 정지되었습니다.";
             asciiOutput.textContent = "";
+        }
+        
+        // 사진 촬영 기능
+        photoBtn.addEventListener('click', () => {
+            takePhoto();
+        });
+        
+        // 동영상 촬영 기능
+        recordBtn.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+        
+        function takePhoto() {
+            // ASCII 출력 화면을 캔버스로 변환해서 이미지로 저장
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // ASCII 텍스트를 이미지로 변환
+            const asciiText = asciiOutput.textContent;
+            const lines = asciiText.split('\n');
+            const fontSize = 8;
+            const lineHeight = 6;
+            
+            tempCanvas.width = lines[0] ? lines[0].length * (fontSize * 0.6) : 800;
+            tempCanvas.height = lines.length * lineHeight;
+            
+            // 배경을 검은색으로
+            tempCtx.fillStyle = '#000000';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // ASCII 텍스트를 녹색으로 그리기
+            tempCtx.fillStyle = '#00ff00';
+            tempCtx.font = `${fontSize}px 'Courier New', monospace`;
+            tempCtx.textBaseline = 'top';
+            
+            lines.forEach((line, index) => {
+                tempCtx.fillText(line, 0, index * lineHeight);
+            });
+            
+            // 이미지로 다운로드
+            const link = document.createElement('a');
+            link.download = `ascii-art-${new Date().getTime()}.png`;
+            link.href = tempCanvas.toDataURL();
+            link.click();
+            
+            status.textContent = "사진이 저장되었습니다!";
+            setTimeout(() => {
+                status.textContent = "카메라 실행중 - ASCII 변환중...";
+            }, 2000);
+        }
+        
+        function startRecording() {
+            if (!stream) return;
+            
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+            
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+            
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, {
+                    type: 'video/webm'
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `ascii-video-${new Date().getTime()}.webm`;
+                link.click();
+                URL.revokeObjectURL(url);
+                
+                status.textContent = "동영상이 저장되었습니다!";
+                setTimeout(() => {
+                    status.textContent = "카메라 실행중 - ASCII 변환중...";
+                }, 2000);
+            };
+            
+            mediaRecorder.start();
+            isRecording = true;
+            recordBtn.textContent = "⏹️ 촬영 중지";
+            recordBtn.style.background = "#ff0000";
+            status.textContent = "🔴 동영상 촬영 중...";
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordBtn.textContent = "🎥 동영상 촬영";
+                recordBtn.style.background = "#0f0";
+            }
         }
         
         function startAsciiConversion() {
