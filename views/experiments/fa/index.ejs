@@ -101,13 +101,22 @@
             border-radius: 10px;
             overflow: hidden;
             margin: 0 auto;
-            background: #ffffff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         canvas {
             display: block;
-            background: #ffffff;
+            background: 
+                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
+                linear-gradient(to bottom, #87CEEB 0%, #4682B4 50%, #191970 100%);
+            
+            animation: waves 4s ease-in-out infinite;
+        }
+
+        @keyframes waves {
+            0%, 100% { background-position: 0 0, 0 0, 0 0; }
+            50% { background-position: 15px 15px, -15px -15px, 0 0; }
         }
         
         .stats {
@@ -132,7 +141,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="ss" style="margin-bottom:10px">
         <h1>🐦 Flocking Algorithm (FA) Experiment</h1>
         <p>Craig Reynolds의 Boids 알고리즘을 사용한 집단 행동 시뮬레이션</p>
     </div>
@@ -171,7 +180,7 @@
             </div>
             <div class="control-item">
                 <label>Max Speed:</label>
-                <input type="range" id="max-speed" min="1" max="10" step="0.5" value="4">
+                <input type="range" id="max-speed" min="1" max="5" step="0.5" value="2">
                 <span class="value-display" id="max-speed-value">4</span>
             </div>
         </div>
@@ -208,12 +217,12 @@
             constructor(x, y) {
                 this.position = { x: x, y: y };
                 this.velocity = {
-                    x: (Math.random() - 0.5) * 2,
-                    y: (Math.random() - 0.5) * 2
+                    x: (Math.random() - 0.5) * 0.5,
+                    y: (Math.random() - 0.5) * 0.5
                 };
                 this.acceleration = { x: 0, y: 0 };
-                this.maxSpeed = 4;
-                this.maxForce = 0.1;
+                this.maxSpeed = 2;
+                this.maxForce = 0.05;
                 this.size = 18;
             }
             
@@ -238,10 +247,31 @@
                 this.acceleration.y = 0;
                 
                 // 화면 경계 처리 (랩어라운드)
+                /*
                 if (this.position.x < 0) this.position.x = canvas.width;
                 if (this.position.x > canvas.width) this.position.x = 0;
                 if (this.position.y < 0) this.position.y = canvas.height;
                 if (this.position.y > canvas.height) this.position.y = 0;
+                */
+
+                // 화면 경계 처리 (반사)
+                if (this.position.x < 0) {
+                    this.position.x = 0;
+                    this.velocity.x *= -1;
+                }
+                if (this.position.x > canvas.width) {
+                    this.position.x = canvas.width;
+                    this.velocity.x *= -1;
+                }
+                if (this.position.y < 0) {
+                    this.position.y = 0;
+                    this.velocity.y *= -1;
+                }
+                if (this.position.y > canvas.height) {
+                    this.position.y = canvas.height;
+                    this.velocity.y *= -1;
+                }
+
             }
             
             applyForce(force) {
