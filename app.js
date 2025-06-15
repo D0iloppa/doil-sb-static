@@ -101,24 +101,6 @@ apiRouter.get('/projects', (req, res) => {
         status: 'active', 
         path: 'canvas',
         description: 'HTML5 Canvas experiments and drawing tools'
-      },
-      { 
-        name: 'Web Components', 
-        status: 'active', 
-        path: 'web-components',
-        description: 'Custom HTML elements and components'
-      },
-      { 
-        name: 'API Testing', 
-        status: 'active', 
-        path: 'apis',
-        description: 'API integration testing tools'
-      },
-      { 
-        name: 'Prototypes', 
-        status: 'planned', 
-        path: 'prototypes',
-        description: 'Quick prototypes and proof of concepts'
       }
     ],
     study: [
@@ -213,32 +195,11 @@ pagesRouter.get('/', (req, res) => {
 pagesRouter.get('/experiments', (req, res) => {
   const experiments = [
     {
-      name: 'Web Components',
+      name: 'The Shining',
       category: 'Frontend',
       description: 'Custom HTML elements and components',
       status: 'Active',
-      path: 'web-components'
-    },
-    {
-      name: 'Canvas Playground',
-      category: 'Graphics', 
-      description: 'HTML5 Canvas experiments',
-      status: 'Active',
-      path: 'canvas'
-    },
-    {
-      name: 'API Testing',
-      category: 'Backend',
-      description: 'Various API integrations and tests',
-      status: 'Active',
-      path: 'apis'
-    },
-    {
-      name: 'Prototypes',
-      category: 'Mixed',
-      description: 'Quick prototypes and proof of concepts',
-      status: 'Active',
-      path: 'prototypes'
+      path: 'tsh'
     }
   ];
 
@@ -259,29 +220,11 @@ pagesRouter.get('/experiments/:subpage', (req, res) => {
   const subpage = req.params.subpage;
   
   const experimentPages = {
-    'web-components': {
-      title: 'Web Components',
+    'tsh': {
+      title: 'The Shining',
       subtitle: 'Custom HTML elements and components',
       icon: '⚙️',
       description: 'Experimental web components and custom HTML elements.'
-    },
-    'canvas': {
-      title: 'Canvas Playground',
-      subtitle: 'HTML5 Canvas experiments', 
-      icon: '🎨',
-      description: 'Interactive canvas drawing and graphics experiments.'
-    },
-    'apis': {
-      title: 'API Testing',
-      subtitle: 'API integrations and testing',
-      icon: '🔌', 
-      description: 'Tools for testing and integrating various APIs.'
-    },
-    'prototypes': {
-      title: 'Prototypes',
-      subtitle: 'Quick prototypes and proof of concepts',
-      icon: '🚧',
-      description: 'Collection of prototypes and experimental features.'
     }
   };
 

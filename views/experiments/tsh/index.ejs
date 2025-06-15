@@ -1,0 +1,370 @@
+<link rel="stylesheet" href="<%= rootContext %>/css/the-shining.css">
+<style>
+
+.main-content {
+    width: 100%;
+    height: 100%;
+}
+
+.container-card {
+    width: 220px;
+    height: 310px;
+    transition: all 0.1s;
+}
+.overlay {
+    position: absolute;
+    width: 220px;
+    height: 310px;
+    background: linear-gradient(105deg,
+        transparent 40%,
+        rgba(255, 219, 112, 0.8) 45%,
+        rgba(132, 50, 255, 0.6) 50%,
+        transparent 54%);
+    filter: brightness(1.2) opacity(0.8);
+    mix-blend-mode: color-dodge;
+    background-size: 150% 150%;
+    background-position: 100%;
+    transition: all 0.1s;
+}
+
+/* 홀로그래픽 스티커 스타일 */
+.container-sticker {
+    position: relative;
+    width: 280px;
+    height: 80px;
+    /* 실버 메탈릭 베이스 */
+    background: linear-gradient(135deg, 
+        #e8e8e8 0%, 
+        #f5f5f5 25%, 
+        #d3d3d3 50%, 
+        #c0c0c0 75%, 
+        #e8e8e8 100%);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    transform-style: preserve-3d;
+    margin: 20px auto;
+    
+    /* 메탈릭 스티커 그림자 */
+    box-shadow: 
+        0 4px 15px rgba(0,0,0,0.15),
+        0 1px 3px rgba(0,0,0,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.8),
+        inset 0 -1px 0 rgba(0,0,0,0.1);
+    
+    /* 실버 테두리 */
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* 홀로그래픽 반사 효과 */
+/* 홀로그래픽 반사 효과 */
+.container-sticker::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 40px;
+    /* 매우 은은하고 부드러운 가시광선 반사 */
+    background: linear-gradient(
+        var(--shine-angle, 105deg),
+        transparent 30%,
+        rgba(255, 0, 128, 0.15) 38%,
+        rgba(255, 100, 200, 0.2) 42%,
+        rgba(100, 255, 255, 0.25) 45%,
+        rgba(200, 255, 100, 0.3) 47%,
+        rgba(255, 255, 150, 0.35) 49%,
+        rgba(255, 200, 100, 0.35) 51%,
+        rgba(255, 150, 255, 0.3) 53%,
+        rgba(200, 100, 255, 0.25) 55%,
+        rgba(255, 100, 200, 0.2) 58%,
+        rgba(255, 0, 128, 0.15) 62%,
+        transparent 70%
+    );
+    background-size: 200% 200%;
+    background-position: var(--shine-x, -50%) var(--shine-y, -50%);
+    opacity: var(--shine-opacity, 0);
+    mix-blend-mode: color-dodge;
+    transition: opacity 0.1s ease;
+    pointer-events: none;
+}
+
+/* 무지개 반사광 - 제거하거나 매우 은은하게 */
+.container-sticker::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 41px;
+    background: conic-gradient(
+        from var(--rainbow-angle, 0deg),
+        transparent 0deg,
+        rgba(255, 255, 255, 0.1) 180deg,
+        transparent 360deg
+    );
+    opacity: var(--rainbow-opacity, 0);
+    z-index: -1;
+    filter: blur(3px);
+    transition: opacity 0.1s ease;
+}
+
+/* 모바일용 권한 요청 버튼 */
+.permission-btn {
+    display: none;
+    padding: 15px 30px;
+    margin-bottom: 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.permission-btn.show {
+    display: block;
+}
+</style>
+
+<button class="permission-btn" id="requestPermission">
+    기기 기울기 권한 허용
+</button>
+
+<div class="main-content">
+
+    <h1>The Shining - sticker</h1>
+
+    <div class="container-sticker">
+        HELLO, WORLD!
+    </div>
+
+    <br>
+    <h1>The Shining - CARD</h1>
+    <br>
+    <div class="container-card">
+        <div class="overlay"></div>
+        <div class="card"></div>
+    </div>
+</div>
+
+
+<script src="<%= rootContext %>/js/the-shining.js"></script>
+
+<script>
+    var containerCard = document.querySelector('.container-card');
+    var containerSticker = document.querySelector('.container-sticker');
+    var overlay = document.querySelector('.overlay');
+    var permissionBtn = document.getElementById('requestPermission');
+    
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var isInteracting = false;
+
+    // 데스크톱: 마우스 이벤트
+    if (!isMobile) {
+        // 카드 마우스 이벤트
+        containerCard.addEventListener('mousemove', function(e) {
+            var x = e.offsetX;
+            var y = e.offsetY;
+            
+            var rotateY = -1/5 * x + 20;
+            var rotateX = 4/30 * y - 20;
+
+            overlay.style = `background-position: ${x/5 + y/5}%`;
+            containerCard.style = `transform : perspective(350px)
+                rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        containerCard.addEventListener('mouseout', function() {
+            overlay.style = `filter : opacity(0)`;
+            containerCard.style = `transform : perspective(350px) rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // 스티커 마우스 이벤트
+        containerSticker.addEventListener('mouseenter', function() {
+            isInteracting = true;
+        });
+
+        containerSticker.addEventListener('mousemove', function(e) {
+            if (!isInteracting) return;
+            
+            var rect = containerSticker.getBoundingClientRect();
+            var x = ((e.clientX - rect.left) / rect.width) * 100;
+            var y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            // 카드와 비슷한 각도 계산
+            var angle = 105 + ((x - 50) * 0.5) + ((y - 50) * 0.3);
+            
+            updateStickerEffect(x, y, angle);
+        });
+
+        containerSticker.addEventListener('mouseleave', function() {
+            isInteracting = false;
+            resetStickerEffect();
+        });
+    } else {
+        // 모바일: 기울기 이벤트
+        initMobileEvents();
+    }
+
+    function initMobileEvents() {
+        // iOS 13+ 에서 권한 요청이 필요한 경우
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+            permissionBtn.classList.add('show');
+            
+            permissionBtn.addEventListener('click', function() {
+                DeviceOrientationEvent.requestPermission()
+                    .then(response => {
+                        if (response == 'granted') {
+                            permissionBtn.classList.remove('show');
+                            startOrientationTracking();
+                        } else {
+                            alert('기기 방향 권한이 거부되었습니다.');
+                        }
+                    })
+                    .catch(console.error);
+            });
+        } else {
+            // 권한 요청이 필요 없는 경우 (Android, 구버전 iOS)
+            startOrientationTracking();
+        }
+
+        // 터치 시작/종료 이벤트 추가
+        containerCard.addEventListener('touchstart', function() {
+            isInteracting = true;
+        });
+
+        containerCard.addEventListener('touchend', function() {
+            isInteracting = false;
+            // 터치 종료시 원래 상태로 복원
+            setTimeout(() => {
+                if (!isInteracting) {
+                    overlay.style = `filter : opacity(0)`;
+                    containerCard.style = `transform : perspective(350px) rotateX(0deg) rotateY(0deg)`;
+                }
+            }, 100);
+        });
+
+        // 스티커 터치 이벤트
+        containerSticker.addEventListener('touchstart', function() {
+            isInteracting = true;
+        });
+
+        containerSticker.addEventListener('touchend', function() {
+            isInteracting = false;
+            setTimeout(() => {
+                if (!isInteracting) {
+                    resetStickerEffect();
+                }
+            }, 100);
+        });
+    }
+
+    function startOrientationTracking() {
+        window.addEventListener('deviceorientation', function(e) {
+            // 터치 중이거나 페이지가 활성 상태일 때만 효과 적용
+            if (!isInteracting && document.hidden) return;
+
+            // gamma: 좌우 기울기 (-90 ~ 90)
+            // beta: 앞뒤 기울기 (-180 ~ 180)
+            var gamma = e.gamma || 0; // 좌우 기울기
+            var beta = e.beta || 0;   // 앞뒤 기울기
+
+            // 카드 효과
+            var rotateY = Math.max(-30, Math.min(30, gamma * 0.5)); // 좌우 회전 (-30 ~ 30도)
+            var rotateX = Math.max(-20, Math.min(20, (beta - 90) * 0.3)); // 앞뒤 회전 (-20 ~ 20도)
+
+            // 기울기 강도에 따른 오버레이 위치 계산
+            var overlayX = 50 + (gamma * 1.5); // 50% 기준으로 좌우 이동
+            var overlayY = 50 + ((beta - 90) * 1); // 50% 기준으로 상하 이동
+
+            // 기울기가 있을 때만 오버레이 표시
+            var intensity = Math.abs(gamma) + Math.abs(beta - 90);
+            var opacity = Math.min(intensity / 20, 0.8); // 기울기 강도에 따른 투명도
+
+            overlay.style = `
+                background-position: ${overlayX}% ${overlayY}%; 
+                filter: brightness(1.2) opacity(${opacity});
+            `;
+            
+            containerCard.style = `
+                transform: perspective(350px) 
+                rotateX(${rotateX}deg) 
+                rotateY(${rotateY}deg);
+            `;
+
+            // 스티커 효과 - 카드와 동일한 방식
+            var stickerX = Math.max(0, Math.min(100, 50 + (gamma * 1.5)));
+            var stickerY = Math.max(0, Math.min(100, 50 + ((beta - 90) * 1.2)));
+            var stickerAngle = Math.atan2(gamma, beta - 90) * (180 / Math.PI) + 105; // 기본 각도 105도 추가
+
+            updateStickerEffect(stickerX, stickerY, stickerAngle);
+        });
+
+        // 페이지가 보이지 않을 때 효과 중지
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                overlay.style = `filter : opacity(0)`;
+                containerCard.style = `transform : perspective(350px) rotateX(0deg) rotateY(0deg)`;
+                resetStickerEffect();
+            }
+        });
+    }
+
+    // 스티커 효과 업데이트 함수
+    function updateStickerEffect(x, y, angle) {
+        // 효과 강도 계산
+        var centerX = 50;
+        var centerY = 50;
+        var distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        var maxDistance = Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
+        var intensity = Math.min(distance / maxDistance, 1);
+
+        // 카드처럼 좁은 띠 형태의 무지개 반사
+        containerSticker.style.setProperty('--shine-x', `${x}%`);
+        containerSticker.style.setProperty('--shine-y', `${y}%`);
+        containerSticker.style.setProperty('--shine-angle', `${angle}deg`);
+        containerSticker.style.setProperty('--shine-opacity', Math.min(intensity * 1.2, 0.9));
+        
+        // 매우 은은한 테두리 글로우
+        containerSticker.style.setProperty('--rainbow-angle', `${angle + 180}deg`);
+        containerSticker.style.setProperty('--rainbow-opacity', Math.min(intensity * 0.1, 0.05));
+        
+        // 3D 회전 효과
+        var rotateX = (y - 50) * 0.15;
+        var rotateY = (x - 50) * -0.15;
+        containerSticker.style.transform = `
+            translateY(-1px) 
+            rotateX(${rotateX}deg) 
+            rotateY(${rotateY}deg) 
+            scale(${1 + intensity * 0.03})
+        `;
+    }
+
+    // 스티커 효과 리셋 함수
+    function resetStickerEffect() {
+        containerSticker.style.setProperty('--shine-opacity', '0');
+        containerSticker.style.setProperty('--rainbow-opacity', '0');
+        containerSticker.style.transform = 'translateY(0) rotateX(0deg) rotateY(0deg) scale(1)';
+    }
+
+    // 디바이스 방향 변경 감지
+    window.addEventListener('orientationchange', function() {
+        // 방향 변경 후 잠시 효과 중지
+        setTimeout(() => {
+            overlay.style = `filter : opacity(0)`;
+            containerCard.style = `transform : perspective(350px) rotateX(0deg) rotateY(0deg)`;
+            resetStickerEffect();
+        }, 100);
+    });
+</script>
