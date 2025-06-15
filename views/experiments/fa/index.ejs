@@ -1,3 +1,564 @@
-<div>
-    Flocking Algorithm (FA) Experiment
-</div>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flocking Algorithm Experiment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+        
+        .controls {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            border: 2px solid #2196F3;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            color: #666;
+            min-width: 120px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            background: #e0e0e0;
+        }
+        
+        input[type="checkbox"] {
+            transform: scale(1.2);
+        }
+        
+        .value-display {
+            color: #2196F3;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .simulation-area {
+            position: relative;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        canvas {
+            display: block;
+            background: #ffffff;
+        }
+        
+        .stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #2196F3;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .info {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐦 Flocking Algorithm (FA) Experiment</h1>
+        <p>Craig Reynolds의 Boids 알고리즘을 사용한 집단 행동 시뮬레이션</p>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <h3>📏 Force Parameters</h3>
+            <div class="control-item">
+                <label>Separation:</label>
+                <input type="range" id="separation" min="0" max="5" step="0.1" value="1.5">
+                <span class="value-display" id="separation-value">1.5</span>
+            </div>
+            <div class="control-item">
+                <label>Alignment:</label>
+                <input type="range" id="alignment" min="0" max="3" step="0.1" value="1.0">
+                <span class="value-display" id="alignment-value">1.0</span>
+            </div>
+            <div class="control-item">
+                <label>Cohesion:</label>
+                <input type="range" id="cohesion" min="0" max="3" step="0.1" value="1.0">
+                <span class="value-display" id="cohesion-value">1.0</span>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <h3>👁️ Detection Range</h3>
+            <div class="control-item">
+                <label>Separation Range:</label>
+                <input type="range" id="sep-range" min="10" max="100" step="5" value="25">
+                <span class="value-display" id="sep-range-value">25</span>
+            </div>
+            <div class="control-item">
+                <label>Neighbor Range:</label>
+                <input type="range" id="neighbor-range" min="20" max="150" step="5" value="50">
+                <span class="value-display" id="neighbor-range-value">50</span>
+            </div>
+            <div class="control-item">
+                <label>Max Speed:</label>
+                <input type="range" id="max-speed" min="1" max="10" step="0.5" value="4">
+                <span class="value-display" id="max-speed-value">4</span>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <h3>🎛️ Controls</h3>
+            <div class="control-item">
+                <label>Debug Mode:</label>
+                <input type="checkbox" id="debug-mode">
+                <span>방향 화살표 표시</span>
+            </div>
+            <div class="buttons">
+                <button id="add-boid">➕ Add Object</button>
+                <button id="remove-boid">➖ Remove Object</button>
+                <button id="reset">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="simulation-area">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <div class="stats">
+            <div>Objects: <span id="object-count">10</span></div>
+            <div>FPS: <span id="fps">60</span></div>
+        </div>
+    </div>
+    
+    <div class="info">
+        💡 Tip: 파라미터를 조정해서 다양한 집단 행동 패턴을 관찰해보세요!
+    </div>
+
+    <script>
+        class Boid {
+            constructor(x, y) {
+                this.position = { x: x, y: y };
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 2,
+                    y: (Math.random() - 0.5) * 2
+                };
+                this.acceleration = { x: 0, y: 0 };
+                this.maxSpeed = 4;
+                this.maxForce = 0.1;
+                this.size = 18;
+            }
+            
+            update() {
+                // 속도 업데이트
+                this.velocity.x += this.acceleration.x;
+                this.velocity.y += this.acceleration.y;
+                
+                // 최대 속도 제한
+                const speed = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
+                if (speed > this.maxSpeed) {
+                    this.velocity.x = (this.velocity.x / speed) * this.maxSpeed;
+                    this.velocity.y = (this.velocity.y / speed) * this.maxSpeed;
+                }
+                
+                // 위치 업데이트
+                this.position.x += this.velocity.x;
+                this.position.y += this.velocity.y;
+                
+                // 가속도 초기화
+                this.acceleration.x = 0;
+                this.acceleration.y = 0;
+                
+                // 화면 경계 처리 (랩어라운드)
+                if (this.position.x < 0) this.position.x = canvas.width;
+                if (this.position.x > canvas.width) this.position.x = 0;
+                if (this.position.y < 0) this.position.y = canvas.height;
+                if (this.position.y > canvas.height) this.position.y = 0;
+            }
+            
+            applyForce(force) {
+                this.acceleration.x += force.x;
+                this.acceleration.y += force.y;
+            }
+            
+            flock(boids) {
+                const sep = this.separate(boids);
+                const ali = this.align(boids);
+                const coh = this.cohesion(boids);
+                
+                // 힘의 가중치 적용
+                sep.x *= parseFloat(document.getElementById('separation').value);
+                sep.y *= parseFloat(document.getElementById('separation').value);
+                ali.x *= parseFloat(document.getElementById('alignment').value);
+                ali.y *= parseFloat(document.getElementById('alignment').value);
+                coh.x *= parseFloat(document.getElementById('cohesion').value);
+                coh.y *= parseFloat(document.getElementById('cohesion').value);
+                
+                this.applyForce(sep);
+                this.applyForce(ali);
+                this.applyForce(coh);
+            }
+            
+            separate(boids) {
+                const desiredSeparation = parseFloat(document.getElementById('sep-range').value);
+                const steer = { x: 0, y: 0 };
+                let count = 0;
+                
+                boids.forEach(other => {
+                    const d = this.distance(other);
+                    if (d > 0 && d < desiredSeparation) {
+                        const diff = {
+                            x: this.position.x - other.position.x,
+                            y: this.position.y - other.position.y
+                        };
+                        const length = Math.sqrt(diff.x ** 2 + diff.y ** 2);
+                        if (length > 0) {
+                            diff.x /= length;
+                            diff.y /= length;
+                            diff.x /= d; // 거리에 반비례
+                            diff.y /= d;
+                            steer.x += diff.x;
+                            steer.y += diff.y;
+                            count++;
+                        }
+                    }
+                });
+                
+                if (count > 0) {
+                    steer.x /= count;
+                    steer.y /= count;
+                    const length = Math.sqrt(steer.x ** 2 + steer.y ** 2);
+                    if (length > 0) {
+                        steer.x = (steer.x / length) * this.maxSpeed;
+                        steer.y = (steer.y / length) * this.maxSpeed;
+                        steer.x -= this.velocity.x;
+                        steer.y -= this.velocity.y;
+                        this.limitForce(steer);
+                    }
+                }
+                
+                return steer;
+            }
+            
+            align(boids) {
+                const neighborDist = parseFloat(document.getElementById('neighbor-range').value);
+                const sum = { x: 0, y: 0 };
+                let count = 0;
+                
+                boids.forEach(other => {
+                    const d = this.distance(other);
+                    if (d > 0 && d < neighborDist) {
+                        sum.x += other.velocity.x;
+                        sum.y += other.velocity.y;
+                        count++;
+                    }
+                });
+                
+                if (count > 0) {
+                    sum.x /= count;
+                    sum.y /= count;
+                    const length = Math.sqrt(sum.x ** 2 + sum.y ** 2);
+                    if (length > 0) {
+                        sum.x = (sum.x / length) * this.maxSpeed;
+                        sum.y = (sum.y / length) * this.maxSpeed;
+                        const steer = {
+                            x: sum.x - this.velocity.x,
+                            y: sum.y - this.velocity.y
+                        };
+                        this.limitForce(steer);
+                        return steer;
+                    }
+                }
+                
+                return { x: 0, y: 0 };
+            }
+            
+            cohesion(boids) {
+                const neighborDist = parseFloat(document.getElementById('neighbor-range').value);
+                const sum = { x: 0, y: 0 };
+                let count = 0;
+                
+                boids.forEach(other => {
+                    const d = this.distance(other);
+                    if (d > 0 && d < neighborDist) {
+                        sum.x += other.position.x;
+                        sum.y += other.position.y;
+                        count++;
+                    }
+                });
+                
+                if (count > 0) {
+                    sum.x /= count;
+                    sum.y /= count;
+                    return this.seek(sum);
+                }
+                
+                return { x: 0, y: 0 };
+            }
+            
+            seek(target) {
+                const desired = {
+                    x: target.x - this.position.x,
+                    y: target.y - this.position.y
+                };
+                const length = Math.sqrt(desired.x ** 2 + desired.y ** 2);
+                if (length > 0) {
+                    desired.x = (desired.x / length) * this.maxSpeed;
+                    desired.y = (desired.y / length) * this.maxSpeed;
+                    const steer = {
+                        x: desired.x - this.velocity.x,
+                        y: desired.y - this.velocity.y
+                    };
+                    this.limitForce(steer);
+                    return steer;
+                }
+                return { x: 0, y: 0 };
+            }
+            
+            limitForce(force) {
+                const length = Math.sqrt(force.x ** 2 + force.y ** 2);
+                if (length > this.maxForce) {
+                    force.x = (force.x / length) * this.maxForce;
+                    force.y = (force.y / length) * this.maxForce;
+                }
+            }
+            
+            distance(other) {
+                return Math.sqrt((this.position.x - other.position.x) ** 2 + 
+                               (this.position.y - other.position.y) ** 2);
+            }
+            
+            draw(ctx, debugMode) {
+                const angle = Math.atan2(this.velocity.y, this.velocity.x);
+                
+                ctx.save();
+                ctx.translate(this.position.x, this.position.y);
+                ctx.rotate(angle);
+                
+                // 물고기 모양 그리기
+                ctx.fillStyle = '#2196F3';
+                ctx.strokeStyle = '#1976D2';
+                ctx.lineWidth = 1;
+                
+                // 몸통 (타원형)
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size * 1.2, this.size * 0.7, 0, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // 꼬리 지느러미
+                ctx.fillStyle = '#42A5F5';
+                ctx.beginPath();
+                ctx.moveTo(-this.size * 1.2, 0);
+                ctx.lineTo(-this.size * 2, -this.size * 0.8);
+                ctx.lineTo(-this.size * 2.2, 0);
+                ctx.lineTo(-this.size * 2, this.size * 0.8);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                // 등 지느러미
+                ctx.beginPath();
+                ctx.moveTo(this.size * 0.2, -this.size * 0.7);
+                ctx.lineTo(this.size * 0.1, -this.size * 1.3);
+                ctx.lineTo(-this.size * 0.3, -this.size * 0.7);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                // 배 지느러미
+                ctx.beginPath();
+                ctx.moveTo(this.size * 0.2, this.size * 0.7);
+                ctx.lineTo(this.size * 0.1, this.size * 1.1);
+                ctx.lineTo(-this.size * 0.3, this.size * 0.7);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                // 눈
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(this.size * 0.3, -this.size * 0.2, this.size * 0.15, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // 눈 하이라이트
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(this.size * 0.35, -this.size * 0.25, this.size * 0.05, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // 디버그 모드: 방향 화살표 (길이 12배)
+                if (debugMode) {
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(this.size * 12, 0); // 길이 12배로 증가
+                    ctx.stroke();
+                    
+                    // 화살표 머리
+                    ctx.beginPath();
+                    ctx.moveTo(this.size * 12, 0);
+                    ctx.lineTo(this.size * 11, -this.size / 2);
+                    ctx.moveTo(this.size * 12, 0);
+                    ctx.lineTo(this.size * 11, this.size / 2);
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // 전역 변수
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let boids = [];
+        let lastTime = 0;
+        let frameCount = 0;
+        
+        // 초기 Boid 생성
+        function initBoids() {
+            boids = [];
+            for (let i = 0; i < 10; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                boids.push(new Boid(x, y));
+            }
+        }
+        
+        // 애니메이션 루프
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            
+            // FPS 계산
+            frameCount++;
+            if (currentTime - lastTime >= 1000) {
+                document.getElementById('fps').textContent = frameCount;
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            // 캔버스 지우기 (흰색 배경)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 최대 속도 업데이트
+            const maxSpeed = parseFloat(document.getElementById('max-speed').value);
+            boids.forEach(boid => {
+                boid.maxSpeed = maxSpeed;
+            });
+            
+            // Boid 업데이트 및 그리기
+            const debugMode = document.getElementById('debug-mode').checked;
+            
+            boids.forEach(boid => {
+                boid.flock(boids);
+                boid.update();
+                boid.draw(ctx, debugMode);
+            });
+            
+            // 오브젝트 수 업데이트
+            document.getElementById('object-count').textContent = boids.length;
+        }
+        
+        // 이벤트 리스너
+        document.getElementById('add-boid').addEventListener('click', () => {
+            const x = canvas.width / 2;
+            const y = canvas.height / 2;
+            boids.push(new Boid(x, y));
+        });
+        
+        document.getElementById('remove-boid').addEventListener('click', () => {
+            if (boids.length > 0) {
+                boids.pop();
+            }
+        });
+        
+        document.getElementById('reset').addEventListener('click', () => {
+            initBoids();
+        });
+        
+        // 슬라이더 값 표시 업데이트
+        const sliders = ['separation', 'alignment', 'cohesion', 'sep-range', 'neighbor-range', 'max-speed'];
+        sliders.forEach(id => {
+            const slider = document.getElementById(id);
+            const valueDisplay = document.getElementById(id + '-value');
+            slider.addEventListener('input', () => {
+                valueDisplay.textContent = slider.value;
+            });
+        });
+        
+        // 초기화 및 시작
+        initBoids();
+        animate(0);
+    </script>
+</body>
+</html>
