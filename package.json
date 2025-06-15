@@ -1,12 +1,48 @@
 {
-  "name": "doil-sb",
+  "name": "doil-sb-static",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "express",
+    "static-hosting",
+    "portfolio",
+    "sandbox",
+    "web-development",
+    "docker",
+    "nodejs"
+  ],
+  "author": {
+    "name": "Doil",
+    "url": "https://doil.chickenkiller.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/D0iloppa/doil-sb-static.git"
+  },
   "license": "ISC",
-  "description": ""
+  "description": "Express-based sandbox project for hosting static web pages, portfolios, and learning projects",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "app.js",
+      "routes/",
+      "public/"
+    ],
+    "ext": "js,json,html,css",
+    "ignore": [
+      "node_modules/",
+      "logs/"
+    ]
+  },
+  "directories": {
+    "public": "./public"
+  }
 }
