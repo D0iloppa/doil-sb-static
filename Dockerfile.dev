@@ -1,0 +1,16 @@
+FROM node:20-alpine
+
+# Git과 개발 도구 설치
+RUN apk add --no-cache git bash curl vim
+
+# 작업 디렉토리
+WORKDIR /app
+
+# 개발용 nodemon 설치
+RUN npm install -g nodemon
+
+# 포트 노출
+EXPOSE 3000
+
+# 컨테이너가 계속 살아있도록
+CMD ["tail", "-f", "/dev/null"]
