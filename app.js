@@ -1,6 +1,9 @@
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 const path = require('path');
+const http = require('http');
+const { Server } = require('socket.io');
+const { registerGameSocket } = require('./game/socket');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -343,7 +346,9 @@ pagesRouter.get('/study', (req, res) => {
 // =========================
 // Router 마운트
 // =========================
-app.use('/api', apiRouter);      // API는 context 체크 없음
+const devRouter = require('./routes/dev');
+app.use('/api/dev', devRouter);  // Plane → dev_context proxy
+app.use('/api', apiRouter);      // 기존 내부 API
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 
 // =========================
@@ -391,10 +396,20 @@ app.use((req, res) => {
 });
 
 // =========================
-// 서버 시작
+// 서버 시작 (HTTP + Socket.IO)
 // =========================
-app.listen(PORT, '0.0.0.0', () => {
+const server = http.createServer(app);
+
+// nginx가 /sb/socket.io 로 업그레이드 요청을 프록시한다.
+const io = new Server(server, {
+  path: '/sb/socket.io',
+  cors: { origin: true },
+});
+registerGameSocket(io);
+
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 doil-sb running on port ${PORT}`);
+  console.log(`🎮 Game socket namespace: /games (path /sb/socket.io)`);
   console.log(`📁 Views directory: ${path.join(__dirname, 'views')}`);
   console.log(`🎨 View engine: EJS`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);

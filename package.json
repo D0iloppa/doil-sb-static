@@ -30,7 +30,9 @@
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-ejs-layouts": "^2.5.1",
-    "nodemon": "^3.1.10"
+    "js-yaml": "^4.1.0",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.3"
   },
   "nodemonConfig": {
     "watch": [

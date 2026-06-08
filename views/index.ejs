@@ -11,6 +11,12 @@
         </thead>
         <tbody>
             <tr>
+                <td>APP</td>
+                <td>실험용 app.</td>
+                <td><span class="status-ok">Online</span></td>
+                <td><a href="<%= rootContext %>/app" class="nav-link api">Browse</a></td>
+            </tr>
+            <tr>
                 <td style="font-weight: bold; color: red;"> * Experiments</td>
                 <td>Experimental projects and prototypes</td>
                 <td><span class="status-ok">Available</span></td>
@@ -37,7 +43,9 @@
         <table>
             <tr>
                 <td class="label">Base Path:</td>
-                <td class="value"><%= rootContext || '/' %></td>
+                <td class="value">
+                    <%= rootContext || '/' %>
+                </td>
             </tr>
             <tr>
                 <td class="label">Status:</td>
@@ -45,15 +53,21 @@
             </tr>
             <tr>
                 <td class="label">Uptime:</td>
-                <td class="value"><%= systemInfo.uptime %>s</td>
+                <td class="value">
+                    <%= systemInfo.uptime %>s
+                </td>
             </tr>
             <tr>
                 <td class="label">Environment:</td>
-                <td class="value"><%= systemInfo.environment %></td>
+                <td class="value">
+                    <%= systemInfo.environment %>
+                </td>
             </tr>
             <tr>
                 <td class="label">Node.js:</td>
-                <td class="value"><%= systemInfo.nodeVersion %></td>
+                <td class="value">
+                    <%= systemInfo.nodeVersion %>
+                </td>
             </tr>
         </table>
     </div>

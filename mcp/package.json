@@ -1,0 +1,13 @@
+{
+  "name": "doil-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for doil.me services (Plane, Mattermost)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "js-yaml": "^4.1.0"
+  }
+}

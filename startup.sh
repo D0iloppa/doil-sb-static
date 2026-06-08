@@ -12,7 +12,7 @@ mkdir -p "$SCRIPT_DIR/logs"
 # 이미 실행 중인지 확인
 if [ -f "$PID_FILE" ]; then
     PID=$(cat "$PID_FILE")
-    if ps -p $PID > /dev/null 2>&1; then
+    if kill -0 $PID 2>/dev/null; then
         echo "❌ Development server is already running (PID: $PID)"
         echo "   Use './shutdown.sh' to stop it first."
         exit 1
@@ -45,7 +45,7 @@ echo $SERVER_PID > "$PID_FILE"
 # 잠시 대기 후 서버 상태 확인
 sleep 3
 
-if ps -p $SERVER_PID > /dev/null 2>&1; then
+if kill -0 $SERVER_PID 2>/dev/null; then
     echo "✅ Development server started successfully!"
     echo "   PID: $SERVER_PID"
     echo "   Log: $LOG_FILE"

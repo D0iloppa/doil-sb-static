@@ -1,0 +1,17 @@
+# MCP 설정 예시 — 복사해서 config.yml로 만들고 실제 값을 채운다.
+# config.yml은 .gitignore 처리되어 커밋되지 않는다 (API 키 등 시크릿 보호).
+plane:
+  url: https://plane.doil.me
+  api_key: "YOUR_PLANE_API_KEY"   # 또는 환경변수 PLANE_API_KEY 사용
+  workspace: doil
+  # dev_context project key → Plane project ID 매핑
+  projects:
+    saigon_rider: ""
+    oh_no: ""
+
+mattermost:
+  url: https://doil.me/mm
+  token: ""
+
+google_drive:
+  folder_id: ""

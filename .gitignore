@@ -3,8 +3,8 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 yarn.lock
+# package-lock.json은 npm ci 재현성을 위해 커밋한다 (gitignore에서 제외)
 
 # Runtime data
 pids
@@ -132,3 +132,6 @@ public/assets/dist/
 
 # Local development
 .local/
+
+# MCP 실제 설정(시크릿 포함) — config.example.yml만 커밋한다
+mcp/config.yml
