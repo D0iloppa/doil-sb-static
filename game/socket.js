@@ -65,15 +65,15 @@ function registerGameSocket(io) {
       broadcast(r);
     });
 
-    socket.on('start', () => {
+    socket.on('start', async () => {
       if (!room || !pid) return;
-      try { room.game.start(pid); broadcast(room); }
+      try { await room.game.start(pid); broadcast(room); }
       catch (e) { socket.emit('errorMsg', e.message); }
     });
 
-    socket.on('action', (action) => {
+    socket.on('action', async (action) => {
       if (!room || !pid || !action) return;
-      try { room.game.onAction(pid, action); broadcast(room); }
+      try { await room.game.onAction(pid, action); broadcast(room); }
       catch (e) { socket.emit('errorMsg', e.message); }
     });
 

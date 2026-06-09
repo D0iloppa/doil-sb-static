@@ -60,6 +60,29 @@ const tools = [
     },
   },
   {
+    name: 'plane_create_project',
+    description: 'Create a new project in a workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        workspace: { type: 'string', description: 'Workspace slug' },
+        name: { type: 'string', description: 'Project name' },
+        identifier: { type: 'string', description: 'Short uppercase project identifier (e.g. DSB)' },
+        description: { type: 'string', description: 'Project description' },
+      },
+      required: ['name', 'identifier'],
+    },
+    handler: async ({ workspace, name, identifier, description }) => {
+      const body = { name, identifier: identifier.toUpperCase() };
+      if (description) body.description = description;
+      const data = await planeFetch(`/workspaces/${workspace || DEFAULT_WORKSPACE}/projects/`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      return JSON.stringify({ id: data.id, name: data.name, identifier: data.identifier }, null, 2);
+    },
+  },
+  {
     name: 'plane_list_issues',
     description: 'List issues in a project',
     inputSchema: {

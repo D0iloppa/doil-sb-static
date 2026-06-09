@@ -2,8 +2,9 @@
 const { MafiaGame } = require('./engines/MafiaGame');
 const { LiarGame } = require('./engines/LiarGame');
 const { WordleGame } = require('./engines/WordleGame');
+const { QuizGame } = require('./engines/QuizGame');
 
-const ENGINES = [MafiaGame, LiarGame, WordleGame];
+const ENGINES = [MafiaGame, LiarGame, WordleGame, QuizGame];
 
 const registry = {};
 for (const Engine of ENGINES) registry[Engine.meta.type] = Engine;
