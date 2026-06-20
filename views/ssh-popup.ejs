@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>SSH · doil.me</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css"/>
+<style>
+  :root { --grn: #4dff8f; --dim: rgba(77,255,143,.45); --bg: #03150c; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; background:var(--bg); color:var(--grn); font-family:"MesloLGS NF","DejaVu Sans Mono",monospace; font-size:13px; overflow:hidden; }
+  @font-face { font-family:"MesloLGS NF"; font-weight:normal; src:url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Regular.ttf"); }
+  @font-face { font-family:"MesloLGS NF"; font-weight:bold;   src:url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Bold.ttf"); }
+  body { display:flex; flex-direction:column; }
+  #bar { display:flex; align-items:center; gap:8px; padding:5px 10px; border-bottom:1px solid rgba(77,255,143,.2); flex-shrink:0; flex-wrap:wrap; }
+  #bar label { color:var(--dim); font-size:11px; }
+  #bar input { background:transparent; border:1px solid var(--dim); color:var(--grn); padding:2px 6px; font-family:inherit; font-size:12px; width:120px; outline:none; }
+  #bar input:focus { border-color:var(--grn); }
+  .cmd { cursor:pointer; border:1px solid rgba(77,255,143,.35); padding:2px 9px; font-size:11px; user-select:none; }
+  .cmd:hover { background:rgba(77,255,143,.1); border-color:var(--grn); }
+  #status { color:#ffe08a; font-size:11px; margin-left:4px; }
+  #authBadge { font-size:10px; color:var(--dim); margin-left:auto; }
+  #authBadge.ok { color:#9fffce; }
+  #sshDLBar { display:none; align-items:center; gap:6px; }
+  #sshDLBar.active { display:flex; }
+  #dl_path { width:180px; background:transparent; border:1px solid var(--dim); color:var(--grn); padding:2px 6px; font-family:inherit; font-size:12px; outline:none; }
+  #dl_path:focus { border-color:var(--grn); }
+  /* 터미널 메인 영역 + 우측 사이드바 */
+  #termMain { display:flex; flex-direction:row; flex:1 1 auto; min-height:0; }
+  #termWrap { flex:1 1 auto; position:relative; overflow:hidden; min-height:0; display:flex; flex-direction:column; }
+  #sshSidebar { width:0; overflow:hidden; flex-shrink:0; transition:width .18s ease; display:flex; flex-direction:column; border-left:1px solid transparent; background:#020e07; }
+  #sshSidebar.open { width:150px; border-left-color:rgba(77,255,143,.35); }
+  .sb-head { flex:0 0 auto; padding:5px 8px; border-bottom:1px solid rgba(77,255,143,.25); font-size:10px; color:var(--dim); letter-spacing:.1em; }
+  .sb-list { flex:1 1 auto; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(77,255,143,.3) transparent; }
+  .sb-item { display:flex; align-items:center; gap:5px; padding:6px 8px; cursor:pointer; font-size:11px; color:rgba(77,255,143,.45); border-bottom:1px dashed rgba(77,255,143,.1); user-select:none; white-space:nowrap; }
+  .sb-item:hover { background:rgba(77,255,143,.07); color:var(--grn); }
+  .sb-item.active { background:rgba(77,255,143,.12); color:var(--grn); border-left:2px solid var(--grn); padding-left:6px; }
+  .sb-item .sb-dot { font-size:7px; opacity:.3; flex-shrink:0; }
+  .sb-item.live .sb-dot { color:#9fffce; opacity:1; }
+  .sb-item .sb-name { flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; }
+  .sb-item .sb-x { opacity:.3; font-size:10px; flex-shrink:0; }
+  .sb-item:hover .sb-x { opacity:.6; }
+  .sb-item .sb-x:hover { opacity:1; color:#ff9aa6; }
+  .sb-foot { flex:0 0 auto; padding:6px 8px; border-top:1px solid rgba(77,255,143,.25); }
+  .term-pane { display:none; flex:1 1 auto; min-height:0; overflow:hidden; }
+  .term-pane.active { display:flex; flex-direction:column; }
+  #dropZone { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:rgba(3,21,12,.9); border:2px dashed rgba(77,255,143,.8); color:var(--grn);
+    font-size:14px; letter-spacing:.12em; pointer-events:none; z-index:5; }
+  #dropZone.hidden { display:none; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <form autocomplete="off" onsubmit="return false" style="display:contents">
+    <label>USER</label><input id="u" autocomplete="new-password"/>
+    <label>PASS</label><input id="p" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')connect()"/>
+  </form>
+  <span class="cmd" onclick="connect()">[ CONNECT ]</span>
+  <span class="cmd" onclick="disconnect()">[ DISCONNECT ]</span>
+  <span id="status">idle</span>
+  <span id="sshDLBar">
+    <label>PATH</label><input id="dl_path" placeholder="~/file.txt" onkeydown="if(event.key==='Enter')doDownload()"/>
+    <span class="cmd" onclick="doDownload()">[ ↓ DL ]</span>
+  </span>
+  <span class="cmd" onclick="toggleSshSidebar()" title="터미널 목록 패널 토글" style="margin-left:auto">[ ≡ ]</span>
+  <span id="authBadge">⏳ 인증 대기</span>
+</div>
+<div id="termMain">
+  <div id="termWrap">
+    <div id="dropZone" class="hidden">⬇ &nbsp; 파일을 놓으면 서버 홈 디렉토리로 업로드</div>
+  </div>
+  <div id="sshSidebar">
+    <div class="sb-head">TERMINALS</div>
+    <div id="sbList" class="sb-list"></div>
+    <div class="sb-foot"><span class="cmd" onclick="addSshTab()">[ + NEW ]</span></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-unicode11@0.6.0/lib/xterm-addon-unicode11.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/zmodem.js@0.1.10/dist/zmodem.dnd.js"></script>
+<script src="/sb/socket.io/socket.io.js"></script>
+<script>
+  let wsshSecret = sessionStorage.getItem('wssh_popup_secret') || '';
+  let tabs = [], activeTabId = null, tabSeq = 0;
+  function ct() { return tabs.find(t => t.id === activeTabId) || null; }
+
+  function applySecret(s) {
+    wsshSecret = s || '';
+    const badge = document.getElementById('authBadge');
+    if (wsshSecret) {
+      sessionStorage.setItem('wssh_popup_secret', wsshSecret);
+      badge.textContent = '🔒 인증 준비됨'; badge.className = 'ok';
+    } else {
+      badge.textContent = '⚠ 시크릿 없음'; badge.className = '';
+    }
+  }
+  if (wsshSecret) { document.getElementById('authBadge').textContent = '🔒 인증 준비됨'; document.getElementById('authBadge').className = 'ok'; }
+  window.addEventListener('message', (e) => {
+    if (e.origin !== location.origin) return;
+    if (e.data && e.data.wsshSecret !== undefined) applySecret(e.data.wsshSecret);
+  });
+  if (window.opener && !wsshSecret) window.opener.postMessage({ type: 'ssh-popup-ready' }, location.origin);
+
+  function setStatus(s) { document.getElementById('status').textContent = s; }
+
+  function toggleSshSidebar() {
+    document.getElementById('sshSidebar').classList.toggle('open');
+    const t = ct(); if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch {} });
+  }
+  function renderSidebar() {
+    const list = document.getElementById('sbList'); if (!list) return;
+    list.innerHTML = '';
+    tabs.forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'sb-item' + (t.id === activeTabId ? ' active' : '') + (t.sshOn ? ' live' : '');
+      item.onclick = () => switchSshTab(t.id);
+      const dot = document.createElement('span'); dot.className = 'sb-dot'; dot.textContent = '●';
+      const name = document.createElement('span'); name.className = 'sb-name'; name.textContent = 'SSH ' + t.id;
+      const x = document.createElement('span'); x.className = 'sb-x'; x.textContent = '×';
+      x.onclick = (e) => { e.stopPropagation(); closeSshTab(t.id); };
+      item.append(dot, name, x); list.appendChild(item);
+    });
+  }
+
+  let _dragInit = false;
+  function _initDragHandlers() {
+    if (_dragInit) return; _dragInit = true;
+    const wrap = document.getElementById('termWrap'), dz = document.getElementById('dropZone');
+    wrap.addEventListener('dragenter', (e) => { e.preventDefault(); const t = ct(); if (t && t.sshOn) dz.classList.remove('hidden'); });
+    wrap.addEventListener('dragover',  (e) => { e.preventDefault(); const t = ct(); if (t && t.sshOn) dz.classList.remove('hidden'); });
+    wrap.addEventListener('dragleave', (e) => { if (!wrap.contains(e.relatedTarget)) dz.classList.add('hidden'); });
+    wrap.addEventListener('drop', async (e) => {
+      e.preventDefault(); dz.classList.add('hidden');
+      const t = ct(); if (!t || !t.sshOn || !t.sock) return;
+      for (const file of Array.from(e.dataTransfer.files)) {
+        t.term.write(`\r\n\x1b[36m▶ 업로드: ${file.name} (${(file.size/1024).toFixed(1)} KB)…\x1b[0m`);
+        try { t.sock.emit('ssh:upload', { name:file.name, data:new Uint8Array(await file.arrayBuffer()) }); }
+        catch (err) { t.term.write(`\r\n\x1b[31m✗ 읽기 실패: ${err.message}\x1b[0m\r\n`); }
+      }
+    });
+  }
+
+  function addSshTab() {
+    const id = ++tabSeq;
+    const pane = document.createElement('div');
+    pane.className = 'term-pane'; pane.id = 'tp-' + id;
+    document.getElementById('termWrap').insertBefore(pane, document.getElementById('dropZone'));
+    tabs.push({ id, term: null, fit: null, sock: null, sentry: null, sshOn: false, el: pane });
+    _initDragHandlers();
+    switchSshTab(id);
+  }
+  function switchSshTab(id) {
+    activeTabId = id;
+    tabs.forEach(t => t.el.classList.toggle('active', t.id === id));
+    renderSidebar();
+    const t = ct();
+    if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch {} });
+    if (t) {
+      setStatus(t.sshOn ? 'connected' : (t.sock ? 'connecting…' : 'idle'));
+      document.getElementById('sshDLBar').classList.toggle('active', !!t.sshOn);
+    } else {
+      setStatus('idle'); document.getElementById('sshDLBar').classList.remove('active');
+    }
+  }
+  function closeSshTab(id) {
+    const t = tabs.find(t => t.id === id); if (!t) return;
+    if (t.sock) { try { t.sock.emit('ssh:end'); t.sock.disconnect(); } catch {} }
+    if (t.term) { try { t.term.dispose(); } catch {} }
+    t.el.remove();
+    tabs = tabs.filter(t => t.id !== id);
+    if (!tabs.length) { addSshTab(); return; }
+    if (activeTabId === id) switchSshTab(tabs[tabs.length - 1].id);
+    else renderSidebar();
+  }
+
+  async function connect() {
+    const t = ct(); if (!t) return;
+    const username = document.getElementById('u').value.trim();
+    const password = document.getElementById('p').value;
+    if (!username || !password) { setStatus('user/pass 필요'); return; }
+
+    if (!t.term) {
+      try { await Promise.all([document.fonts.load('13px "MesloLGS NF"'), document.fonts.load('700 13px "MesloLGS NF"')]); } catch {}
+      t.term = new Terminal({ fontFamily:'"MesloLGS NF","DejaVu Sans Mono",monospace', fontSize:13, cursorBlink:true,
+        allowProposedApi:true, theme:{ background:'#03150c', foreground:'#4dff8f', cursor:'#4dff8f' } });
+      t.fit = new FitAddon.FitAddon(); t.term.loadAddon(t.fit);
+      try { const u = new Unicode11Addon.Unicode11Addon(); t.term.loadAddon(u); t.term.unicode.activeVersion = '11'; } catch {}
+      t.term.open(t.el); t.fit.fit();
+      t.term.onData((d) => { if (t.sock) t.sock.emit('ssh:data', d); });
+      t.term.onSelectionChange(() => { const s = t.term.getSelection(); if (s) navigator.clipboard.writeText(s).catch(() => {}); });
+      t.el.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        navigator.clipboard.readText().then((text) => { if (t.sock && text) t.sock.emit('ssh:data', text); }).catch(() => {});
+      });
+      new ResizeObserver(() => { try { t.fit.fit(); if (t.sshOn) t.sock && t.sock.emit('ssh:resize', { cols:t.term.cols, rows:t.term.rows }); } catch {} })
+        .observe(t.el);
+      t.sentry = new Zmodem.Sentry({
+        to_terminal: (octets) => t.term.write(new Uint8Array(octets)),
+        sender:      (octets) => { if (t.sock) t.sock.emit('ssh:data', new Uint8Array(octets)); },
+        on_retract:  () => {},
+        on_detect:   async (detection) => {
+          const session = detection.confirm();
+          if (session.type === 'receive') {
+            const input = document.createElement('input');
+            input.type = 'file'; input.multiple = true; input.style.display = 'none';
+            document.body.appendChild(input);
+            input.onchange = async () => {
+              for (const file of Array.from(input.files)) {
+                t.term.write(`\r\n\x1b[36m▶ rz: ${file.name} (${(file.size/1024).toFixed(1)}KB)…\x1b[0m`);
+                try {
+                  const xfer = await session.send_offer({ name: file.name, size: file.size, mtime: Math.floor(file.lastModified/1000) });
+                  if (xfer) { await xfer.send(new Uint8Array(await file.arrayBuffer())); await xfer.end(); }
+                  t.term.write(`\r\n\x1b[32m✓ rz: ${file.name} 완료\x1b[0m\r\n`);
+                } catch(e) { t.term.write(`\r\n\x1b[31m✗ rz: ${e.message}\x1b[0m\r\n`); }
+              }
+              await session.close(); document.body.removeChild(input);
+            };
+            input.click();
+          } else {
+            session.on('offer', async (offer) => {
+              const { name } = offer.get_details();
+              t.term.write(`\r\n\x1b[36m▶ sz: ${name}…\x1b[0m`);
+              try {
+                const chunks = [];
+                offer.on('input', (payload) => chunks.push(new Uint8Array(payload)));
+                await offer.accept();
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob(chunks)); a.download = name; a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                t.term.write(`\r\n\x1b[32m✓ sz: ${name} 저장됨\x1b[0m\r\n`);
+              } catch(e) { t.term.write(`\r\n\x1b[31m✗ sz: ${e.message}\x1b[0m\r\n`); }
+            });
+            await session.start();
+          }
+        }
+      });
+    }
+
+    t.sock = io('/ssh', { path:'/wssh/socket.io', auth:{ secret: wsshSecret }, forceNew: true });
+    t.sock.on('connect_error', (e) => { if (t === ct()) setStatus('ERR: ' + e.message); });
+    t.sock.on('ssh:status', (s) => {
+      t.sshOn = (s === 'connected');
+      renderSidebar();
+      if (t === ct()) { setStatus(s); document.getElementById('sshDLBar').classList.toggle('active', t.sshOn); }
+      if (t.sshOn) { t.fit.fit(); t.sock.emit('ssh:resize', { cols:t.term.cols, rows:t.term.rows }); }
+    });
+    t.sock.on('ssh:data', (d) => {
+      if (!t.sentry) { t.term.write(typeof d === 'string' ? d : new Uint8Array(d)); return; }
+      try { t.sentry.consume(Array.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d)); }
+      catch(e) { t.term.write(typeof d === 'string' ? d : new Uint8Array(d)); }
+    });
+    t.sock.on('ssh:error', (m) => { if (t === ct()) setStatus('ERR: ' + m); t.term.write('\r\n*** ' + m + ' ***\r\n'); });
+    t.sock.on('ssh:xfer', ({ op, name, ok, dest, data, error }) => {
+      if (op === 'up') {
+        t.term.write(ok ? `\r\n\x1b[32m✓ 업로드 완료: ${dest}\x1b[0m\r\n` : `\r\n\x1b[31m✗ 업로드 실패 (${name}): ${error}\x1b[0m\r\n`);
+      } else {
+        if (ok) {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([data])); a.download = name; a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+          t.term.write(`\r\n\x1b[32m✓ 다운로드: ${name}\x1b[0m\r\n`);
+        } else { t.term.write(`\r\n\x1b[31m✗ 다운로드 실패: ${error}\x1b[0m\r\n`); }
+      }
+    });
+    t.sock.emit('ssh:start', { username, password, cols:t.term.cols, rows:t.term.rows });
+    document.getElementById('p').value = '';
+    setStatus('connecting…');
+  }
+
+  function disconnect() {
+    const t = ct(); if (!t) return;
+    if (t.sock) { t.sock.emit('ssh:end'); t.sock.disconnect(); t.sock = null; }
+    t.sshOn = false;
+    renderSidebar();
+    setStatus('disconnected');
+    document.getElementById('sshDLBar').classList.remove('active');
+  }
+
+  function doDownload() {
+    const t = ct(); if (!t || !t.sock || !t.sshOn) return;
+    const p = document.getElementById('dl_path').value.trim(); if (!p) return;
+    t.term.write(`\r\n\x1b[36m▶ 다운로드 요청: ${p}…\x1b[0m`);
+    t.sock.emit('ssh:download', { path:p });
+    document.getElementById('dl_path').value = '';
+  }
+
+  window.addEventListener('resize', () => { const t = ct(); if (t && t.fit) try { t.fit.fit(); } catch {} });
+  window.addEventListener('beforeunload', () => {
+    tabs.forEach(t => { if (t.sock) { try { t.sock.emit('ssh:end'); t.sock.disconnect(); } catch {} } });
+  });
+
+  addSshTab();
+</script>
+</body>
+</html>

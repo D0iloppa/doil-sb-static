@@ -4,6 +4,7 @@ const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
 const { registerGameSocket } = require('./game/socket');
+// sshBridge는 doil-webssh 컨테이너로 이전 — 더 이상 doil-sb에서 등록하지 않음
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -343,11 +344,32 @@ pagesRouter.get('/study', (req, res) => {
   });
 });
 
+// 관리자 콘솔 (서비스 일람 CRUD) — /sb/admin. 인증은 페이지 내 토큰 로그인.
+pagesRouter.get('/admin', (req, res) => {
+  res.set('Cache-Control', 'no-store');   // 인라인 CSS/JS 갱신 즉시 반영(브라우저 캐시로 옛 버전 고착 방지)
+  res.render('admin', { layout: false });
+});
+
+// SSH 팝업 창 — 인증은 postMessage 로 wsshSecret 수신
+pagesRouter.get('/admin-ssh', (req, res) => {
+  res.render('ssh-popup', { layout: false });
+});
+
 // =========================
 // Router 마운트
 // =========================
 const devRouter = require('./routes/dev');
-app.use('/api/dev', devRouter);  // Plane → dev_context proxy
+const authRouter = require('./auth').router;
+const geoChatRouter = require('./routes/api/geoChat');
+const servicesRouter = require('./routes/api/services');
+const settingsRouter = require('./routes/api/settings');
+const { statusRouter: dobisStatusRouter } = require('./dobisBridge');
+app.use('/api/dev', devRouter);        // Plane → dev_context proxy
+app.use('/api/auth', authRouter);      // 공유 로그인(CHATBOT_ID/PW → 토큰)
+app.use('/api/geo/chat', geoChatRouter); // geo 챗봇(인증 + 작업 큐)
+app.use('/api/services', servicesRouter); // 홈페이지 서비스 일람(공개 읽기 + 관리자 CRUD)
+app.use('/api/settings', settingsRouter); // 관리자 콘솔 설정(배경 등)
+app.use('/api/dobis', dobisStatusRouter); // DOBIS 워커 상태(host waker 폴링)
 app.use('/api', apiRouter);      // 기존 내부 API
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 
@@ -404,8 +426,32 @@ const server = http.createServer(app);
 const io = new Server(server, {
   path: '/sb/socket.io',
   cors: { origin: true },
+  maxHttpBufferSize: 50 * 1024 * 1024,  // 파일 전송용 50MB
 });
 registerGameSocket(io);
+// SSH 터미널은 doil-webssh 컨테이너가 처리 (/wssh/socket.io)
+require('./dobisBridge').registerDobis(io);  // DOBIS 챗봇 (/dobis ↔ /dobis-worker 중계)
+
+// geo 챗봇 작업 큐 테이블 보장(실패해도 서버는 뜬다 — 해당 API 만 502)
+require('./db/geoChat').ensureSchema()
+  .then(() => console.log('🗺  geo_chat_jobs schema ready'))
+  .catch((e) => console.error('[geo-chat] ensureSchema failed:', e.message));
+
+// 서비스 일람 테이블 보장
+require('./db/siteServices').ensureSchema()
+  .then(() => console.log('🗂  site_services schema ready'))
+  .catch((e) => console.error('[services] ensureSchema failed:', e.message));
+
+// 관리자 설정 테이블 보장
+require('./db/appSettings').ensureSchema()
+  .then(() => console.log('⚙  app_settings schema ready'))
+  .catch((e) => console.error('[settings] ensureSchema failed:', e.message));
+
+// 관리자 계정 테이블 보장 + (비어있으면) env 에서 초기 시드
+require('./db/adminUsers').ensureSchema()
+  .then(() => { console.log('👤 admin_users schema ready'); return require('./auth').seedFromEnv(); })
+  .then(() => require('./db/adminUsers').ensureRoot())
+  .catch((e) => console.error('[admin] ensureSchema/seed failed:', e.message));
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 doil-sb running on port ${PORT}`);
