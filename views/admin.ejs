@@ -244,8 +244,11 @@
     .dobis-bubble::before { content: ""; position: absolute; right: -11px; top: 46%; z-index: 1;
       border: 12px solid transparent; border-left-color: var(--scr); }
     .dobis-head { flex: 0 0 auto; color: #b6ffd6; margin-bottom: 6px; }
-    .dobis-bar { flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px; }
+    .dobis-bar { position: relative; flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px; }
     .dobis-bar #chatName { margin-left: auto; }
+    /* 햄버거 드롭다운 — 항시 노출하던 툴바 버튼들을 ☰ 안으로 접음 */
+    .dobis-menu { position: absolute; top: calc(100% + 4px); left: 0; background: #0d1a0d; border: 1px solid rgba(77,255,143,.5); border-radius: 6px; padding: 4px 0; min-width: 150px; z-index: 25; box-shadow: 0 0 14px rgba(77,255,143,.2); }
+    .dobis-menu.hidden { display: none; }
     .chatlist { flex: 0 0 auto; max-height: 38%; overflow: auto; border: 1px solid var(--dim); border-radius: 6px;
       padding: 6px 8px; margin-bottom: 6px; }
     .chatlist .row { padding: 4px 2px; cursor: pointer; }
@@ -265,7 +268,11 @@
     .dobis-msg.bot { color: var(--grn); }
     .dobis-img { display: block; max-width: 100%; max-height: 320px; margin: 6px 0; border: 1px solid rgba(77,255,143,.3); border-radius: 4px; cursor: pointer; }
     .dobis-img:hover { border-color: var(--grn); }
-    .imggen-placeholder { display: block; width: 260px; height: 180px; margin: 8px 0; border-radius: 4px; }
+    /* 스피너는 이미지 들어갈 자리(~200px 정사각)만.
+       ⚠️ '.monitor svg { position:absolute; inset:0; width:100%; height:100% }'(CRT 프레임용)이
+       .monitor 안의 모든 svg에 걸려 스피너를 거대 오버레이로 만든다. 더 구체적인 셀렉터(.dobis-log .imggen-placeholder,
+       specificity 0,2,0 > .monitor svg 0,1,1)로 이기고 position/inset 을 리셋해 인라인 200px 로 고정. */
+    .dobis-log .imggen-placeholder { position: static; inset: auto; display: block; width: 200px; height: 200px; max-width: 100%; margin: 6px 0; border-radius: 4px; }
     @keyframes imggen-scan { 0%,100%{opacity:.18} 50%{opacity:.55} }
     @keyframes imggen-bar { 0%{width:4%} 60%{width:82%} 100%{width:4%} }
     .dobis-img-preview { display: flex; align-items: center; gap: 6px; margin: 4px 0; padding: 4px 8px; background: rgba(77,255,143,.07); border: 1px solid rgba(77,255,143,.25); border-radius: 4px; font-size: .78em; color: var(--dim); }
@@ -716,11 +723,15 @@
                   <span class="modelchips"><span class="chip think-chip" id="thinkChip" title="확장 사고 — 느리지만 더 깊게 추론 (기본 OFF)" onclick="dobisToggleThink()">🧠 thinking</span></span>
                 </div>
                 <div class="dobis-bar">
-                  <span class="cmd" onclick="dobisNewChat()">[ 새 채팅 ]</span>
-                  <span class="cmd" title="이 대화를 .md 로 저장(이미 저장된 채팅은 덮어쓰기)" onclick="dobisSaveChat()">[ 💾 저장 ]</span>
-                  <span class="cmd" onclick="dobisListChats()">[ 📂 불러오기 ]</span>
-                  <span class="cmd" onclick="openFs()" title="workspace 파일 탐색·편집·업로드">[ 🗂 탐색기 ]</span>
-                  <span class="cmd hud-toggle" onclick="toggleStatusPanel()" title="상태 패널 보기/숨기기">[ 📊 상태 ]</span>
+                  <span class="cmd" id="dobisMenuBtn" title="메뉴" onclick="toggleDobisMenu()">[ ☰ ]</span>
+                  <div id="dobisMenu" class="dobis-menu hidden">
+                    <div class="dim-item" onclick="dobisNewChat(); toggleDobisMenu(true)">＋ 새 채팅</div>
+                    <div class="dim-item" onclick="dobisSaveChat(); toggleDobisMenu(true)">💾 저장</div>
+                    <div class="dim-item" onclick="dobisListChats(); toggleDobisMenu(true)">📂 불러오기</div>
+                    <div class="dim-item" onclick="openFs(); toggleDobisMenu(true)">🗂 탐색기</div>
+                    <div class="dim-item" onclick="window.open('https://www.notion.so/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','_blank','noopener'); toggleDobisMenu(true)">📚 Notion 지식베이스</div>
+                    <div class="dim-item" onclick="toggleStatusPanel(); toggleDobisMenu(true)">📊 상태 패널</div>
+                  </div>
                   <span id="chatName" class="muted"></span>
                   <span id="dobisQueueBadge" class="muted" style="font-size:.75em;display:none"></span>
                 </div>
@@ -1532,38 +1543,31 @@
     function _makeImggenPlaceholder() {
       const ns = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(ns, 'svg');
-      svg.setAttribute('viewBox', '0 0 260 180');
+      svg.setAttribute('viewBox', '0 0 240 240');
+      svg.setAttribute('width', '200');     // 인라인 SVG 본질 크기 고정(CSS 누락/오버라이드 대비)
+      svg.setAttribute('height', '200');
       svg.setAttribute('xmlns', ns);
       svg.classList.add('imggen-placeholder');
       svg.innerHTML = `
-        <rect width="260" height="180" rx="4" fill="#0a140a" stroke="#4dff8f" stroke-width="1" stroke-opacity=".35"/>
-        <rect x="1" y="1" width="258" height="178" rx="3" fill="none" stroke="#4dff8f" stroke-width=".5" stroke-opacity=".15"/>
+        <rect width="240" height="240" rx="4" fill="#0a140a" stroke="#4dff8f" stroke-width="1" stroke-opacity=".35"/>
+        <rect x="1" y="1" width="238" height="238" rx="3" fill="none" stroke="#4dff8f" stroke-width=".5" stroke-opacity=".15"/>
         <!-- 스캔라인 -->
-        <rect width="260" height="180" fill="url(#scan)" opacity=".07"/>
+        <rect width="240" height="240" fill="url(#scan)" opacity=".06"/>
         <defs>
-          <pattern id="scan" width="260" height="4" patternUnits="userSpaceOnUse">
-            <rect width="260" height="2" fill="#4dff8f"/>
+          <pattern id="scan" width="240" height="4" patternUnits="userSpaceOnUse">
+            <rect width="240" height="2" fill="#4dff8f"/>
           </pattern>
         </defs>
-        <!-- 중앙 아이콘 -->
-        <g transform="translate(130,72)">
-          <rect x="-22" y="-16" width="44" height="32" rx="3" fill="none" stroke="#4dff8f" stroke-width="1.5" stroke-opacity=".7"/>
-          <circle cx="0" cy="0" r="8" fill="none" stroke="#4dff8f" stroke-width="1.5" stroke-opacity=".7"/>
-          <circle cx="0" cy="0" r="3" fill="#4dff8f" fill-opacity=".6"/>
-          <rect x="13" y="-16" width="9" height="6" rx="1" fill="#4dff8f" fill-opacity=".5"/>
-          <animateTransform attributeName="transform" type="translate" values="130,72;130,72" dur="1s" repeatCount="indefinite"/>
+        <!-- 회전 스피너 링 -->
+        <g transform="translate(120,104)">
+          <circle r="26" fill="none" stroke="#4dff8f" stroke-width="4" stroke-opacity=".15"/>
+          <circle r="26" fill="none" stroke="#4dff8f" stroke-width="4" stroke-linecap="round" stroke-dasharray="40 123" stroke-opacity=".85">
+            <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="0.9s" repeatCount="indefinite"/>
+          </circle>
         </g>
-        <!-- 프로그레스 바 -->
-        <rect x="30" y="118" width="200" height="6" rx="3" fill="#4dff8f" fill-opacity=".1" stroke="#4dff8f" stroke-width=".5" stroke-opacity=".3"/>
-        <rect x="30" y="118" height="6" rx="3" fill="#4dff8f" fill-opacity=".55">
-          <animate attributeName="width" values="8;164;8" dur="2.4s" repeatCount="indefinite" calcMode="ease-in-out"/>
-        </rect>
         <!-- 텍스트 -->
-        <text x="130" y="145" text-anchor="middle" font-family="'Cascadia Mono',ui-monospace,monospace" font-size="10" fill="#4dff8f" fill-opacity=".55" letter-spacing="1">
-          IMG GENERATING
-          <animate attributeName="fill-opacity" values=".35;.7;.35" dur="1.6s" repeatCount="indefinite"/>
-        </text>
-        <text x="130" y="160" text-anchor="middle" font-family="'Cascadia Mono',ui-monospace,monospace" font-size="8" fill="#4dff8f" fill-opacity=".3" letter-spacing=".5">nanobanana · gemini</text>
+        <text x="120" y="172" text-anchor="middle" font-family="'Cascadia Mono',ui-monospace,monospace" font-size="11" fill="#4dff8f" fill-opacity=".55" letter-spacing="1">IMG GENERATING<animate attributeName="fill-opacity" values=".35;.7;.35" dur="1.6s" repeatCount="indefinite"/></text>
+        <text x="120" y="190" text-anchor="middle" font-family="'Cascadia Mono',ui-monospace,monospace" font-size="8" fill="#4dff8f" fill-opacity=".3" letter-spacing=".5">antigravity · agy</text>
       `;
       return svg;
     }
@@ -1802,7 +1806,14 @@
     }
     function _streamFeed(text) {
       _streamTarget = text;
-      if (_streamShown > _streamTarget.length) _streamShown = _streamTarget.length;
+      // 교체 텍스트가 이미 표시한 길이보다 짧으면(예: [imggen:긴 프롬프트] → "🎨 이미지 생성 중…")
+      // _streamTick 이 'shown >= target' 이라 재렌더를 건너뛰어 새 내용(스피너 마커)이 반영 안 된다.
+      // 이 경우 즉시 강제 렌더해서 스피너가 뜨도록 한다.
+      if (_streamShown >= _streamTarget.length) {
+        _streamShown = _streamTarget.length;
+        if (streamBubble) setBotBubble(streamBubble, _streamTarget, true);
+        return;
+      }
       if (!_streamRAF) _streamRAF = requestAnimationFrame(_streamTick);
     }
     // 전송 중 입력 잠금(연달아 보내 워커 큐가 막히는 것 방지) + STATUS 라인 갱신/워치독
@@ -2428,6 +2439,17 @@
     document.addEventListener('click', (e) => {
       if (_inputMenuOpen && !e.target.closest('#dobisMoreBtn') && !e.target.closest('#dobisInputMenu')) {
         toggleInputMenu(true);
+      }
+    });
+    // 햄버거 드롭다운(상단 툴바 접기)
+    let _dobisMenuOpen = false;
+    function toggleDobisMenu(forceClose) {
+      _dobisMenuOpen = forceClose ? false : !_dobisMenuOpen;
+      document.getElementById('dobisMenu').classList.toggle('hidden', !_dobisMenuOpen);
+    }
+    document.addEventListener('click', (e) => {
+      if (_dobisMenuOpen && !e.target.closest('#dobisMenuBtn') && !e.target.closest('#dobisMenu')) {
+        toggleDobisMenu(true);
       }
     });
 
