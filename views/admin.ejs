@@ -1004,6 +1004,16 @@
       };
       setLbl();
       card.appendChild(btn);
+      // [Copy for AI Reading] — orrery 텍스트(있을 때만)를 클립보드로 복사
+      if (c.text) {
+        const cp = document.createElement('span'); cp.className = 'dl-btn add'; cp.textContent = '📋 Copy for AI Reading';
+        cp.onclick = async () => {
+          try { await navigator.clipboard.writeText(c.text); }
+          catch { const ta = document.createElement('textarea'); ta.value = c.text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+          const o = cp.textContent; cp.textContent = '✓ 복사됨'; setTimeout(() => { cp.textContent = o; }, 1500);
+        };
+        card.appendChild(cp);
+      }
       bubble.appendChild(card); bubble.appendChild(img);
     }
 
@@ -1877,15 +1887,26 @@
       const el = document.getElementById('imggenGauge'); if (!el) return;
       if (!d) { el.classList.add('hidden'); return; }
       const used = d.usedTokens || 0, lim = d.limitTokens || 100000;
-      if (used === 0) { el.classList.add('hidden'); return; }
-      const pct = Math.round(used / lim * 100);
-      const n = 10, f = Math.max(0, Math.min(n, Math.round(pct / 100 * n)));
-      const usedK = (used / 1000).toFixed(1), limK = Math.round(lim / 1000);
-      const usd = (used / 1e6 * 60).toFixed(2);   // 출력 단가 $60/1M 기준 추정 비용
-      el.textContent = '🎨 imggen ' + usedK + 'k/' + limK + 'k ' + '▓'.repeat(f) + '░'.repeat(n - f) + ' ' + pct + '% · ~$' + usd;
-      el.title = '오늘 이미지 생성 토큰 ' + used.toLocaleString() + ' / 한도 ' + lim.toLocaleString() + ' · 추정 비용 ~$' + usd + ' (한도 풀가동 시 ~$' + (lim / 1e6 * 60).toFixed(1) + '/일). $60/1M 토큰 기준.';
-      el.classList.toggle('warn', pct >= 70 && pct < 100);
-      el.classList.toggle('over', pct >= 100);
+      const a5 = d.agy5h || 0, aw = d.agyWeek || 0;
+      const p5 = d.agy5hPct || 0, pw = d.agyWeekPct || 0;
+      if (used === 0 && aw === 0) { el.classList.add('hidden'); return; }
+      const parts = [];
+      // agy 무료 — 5시간(병목)·주간 추정 소비% 병기. 실제 잔여 아님(타 agy 사용 미반영 추정).
+      if (aw > 0) parts.push('🆓 agy 5h ' + a5 + '장~' + p5 + '% · 주 ' + aw + '장~' + pw + '%');
+      let pct = 0, usd = '0.00';
+      if (used > 0) {   // API 폴백 분만 토큰 게이지로 표시
+        pct = Math.round(used / lim * 100);
+        const n = 10, f = Math.max(0, Math.min(n, Math.round(pct / 100 * n)));
+        const usedK = (used / 1000).toFixed(1), limK = Math.round(lim / 1000);
+        usd = (used / 1e6 * 60).toFixed(2);
+        parts.push('🎨 API ' + usedK + 'k/' + limK + 'k ' + '▓'.repeat(f) + '░'.repeat(n - f) + ' ' + pct + '% ~$' + usd);
+      }
+      el.textContent = parts.join(' · ');
+      el.title = 'agy 무료 추정 소비(실측 1장≈5h 0.97%p·주간 0.16%p 기준): 최근5시간 ' + a5 + '장 ~' + p5 + '%, 최근7일 ' + aw + '장 ~' + pw + '%. '
+        + '※ dobis 생성분만 추정 — 다른 agy 사용은 미반영, 정확값은 agy /usage 로 확인. 5시간 한도가 병목(약 4.5h마다 리셋). '
+        + 'API 폴백 토큰 ' + used.toLocaleString() + '/' + lim.toLocaleString() + ' ~$' + usd + '.';
+      el.classList.toggle('warn', (used > 0 && pct >= 70 && pct < 100) || p5 >= 70);
+      el.classList.toggle('over', (used > 0 && pct >= 100) || p5 >= 100);
       el.classList.remove('hidden');
     }
     // shared 사용량 게이지 — 논리 기준(limitGB)으로 % 표시(실제 제한 아님). 80%↑ 경고색.
