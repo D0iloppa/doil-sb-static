@@ -1406,6 +1406,50 @@
       filter: drop-shadow(0 0 2px rgba(47, 220, 106, .45));
     }
 
+    /* 클릭형 주사위(타로 방식 — 플레이어가 굴림) */
+    .dice-roll {
+      margin: 8px 0;
+      padding: 7px 10px;
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      background: #04140a;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 5px;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+    }
+
+    .dice-roll-head {
+      font-size: 12px;
+      color: var(--grn);
+      opacity: .9;
+    }
+
+    .dice-roll-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .dice-roll-row:hover .dice-die {
+      filter: drop-shadow(0 0 5px rgba(47, 220, 106, .8));
+    }
+
+    .dice-roll.rolled .dice-roll-row {
+      cursor: default;
+    }
+
+    .dice-roll.rolled .dice-roll-row:hover .dice-die {
+      filter: drop-shadow(0 0 2px rgba(47, 220, 106, .45));
+    }
+
+    .dice-roll-hint {
+      font-size: 12px;
+      color: var(--grn);
+      font-weight: 700;
+    }
+
     @keyframes imggen-scan {
 
       0%,
@@ -3318,60 +3362,88 @@
       const M = { 1: ['c'], 2: ['tl', 'br'], 3: ['tl', 'c', 'br'], 4: ['tl', 'tr', 'bl', 'br'], 5: ['tl', 'tr', 'c', 'bl', 'br'], 6: ['tl', 'tr', 'ml', 'mr', 'bl', 'br'] };
       return (M[v] || ['c']).map(k => '<circle cx="' + P[k][0] + '" cy="' + P[k][1] + '" r="2.4" fill="#d6ffe4"/>').join('');
     }
-    function _makeDie(sides, finalVal, delay) {
+    // 클릭형 주사위 1개 — 미굴림('?'/빈 눈) 상태로 만들고 .roll(finalVal, delay, onDone)로 굴림 애니메이션.
+    function _makeInteractiveDie(sides) {
       const span = document.createElement('span');
       span.style.cssText = 'display:inline-block;line-height:0;margin:0 2px';
       const isD6 = sides === 6;
-      const small = String(finalVal).length >= 3;   // d100 등 3자리는 글자 축소
       const face = isD6
-        ? '<g class="face">' + _d6pips(finalVal) + '</g>'
-        : '<text class="face" x="17" y="18.5" text-anchor="middle" dominant-baseline="central" font-size="' + (small ? 9 : 12) + '" font-weight="800" fill="#d6ffe4" font-family="ui-monospace,monospace">' + finalVal + '</text>';
+        ? '<g class="face"></g>'
+        : '<text class="face" x="17" y="18.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="800" fill="#d6ffe4" font-family="ui-monospace,monospace">?</text>';
       span.innerHTML = '<svg class="dice-die" viewBox="0 0 34 34" style="overflow:visible">'
         + '<g fill="rgba(47,220,106,0.15)" stroke="#3df08a" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">' + _dieShapePath(sides) + '</g>'
         + face + '</svg>';
       const faceEl = span.querySelector('.face');
-      const setFace = (v) => { if (isD6) faceEl.innerHTML = _d6pips(v); else faceEl.textContent = v; };
-      if (_reduceMotion()) return span;   // 모션 줄이기 설정이면 최종값 정적 표시
-      setFace(isD6 ? (1 + Math.floor(Math.random() * 6)) : '?');
-      const dur = 560 + Math.floor(Math.random() * 200);
-      setTimeout(() => {
-        try {
-          span.animate([
-            { transform: 'rotate(-20deg) scale(.55)', opacity: .35 },
-            { transform: 'rotate(200deg) scale(1.18)', offset: .55 },
-            { transform: 'rotate(360deg) scale(1)', opacity: 1 }
-          ], { duration: dur, easing: 'cubic-bezier(.2,.85,.25,1)' });
-        } catch (e) { }
-        const iv = setInterval(() => { setFace(1 + Math.floor(Math.random() * sides)); }, 55);
+      const setFace = (v) => { const s = (String(v).length >= 3 ? 9 : 12); if (isD6) faceEl.innerHTML = _d6pips(v); else { faceEl.textContent = v; faceEl.setAttribute('font-size', s); } };
+      function roll(finalVal, delay, onDone) {
+        if (_reduceMotion()) { setFace(finalVal); onDone && onDone(); return; }
+        const dur = 560 + Math.floor(Math.random() * 200);
         setTimeout(() => {
-          clearInterval(iv); setFace(finalVal);
-          try { faceEl.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 180 }); } catch (e) { }
-        }, dur);
-      }, delay);
-      return span;
+          try {
+            span.animate([
+              { transform: 'rotate(-20deg) scale(.55)', opacity: .35 },
+              { transform: 'rotate(200deg) scale(1.18)', offset: .55 },
+              { transform: 'rotate(360deg) scale(1)', opacity: 1 }
+            ], { duration: dur, easing: 'cubic-bezier(.2,.85,.25,1)' });
+          } catch (e) { }
+          const iv = setInterval(() => { setFace(1 + Math.floor(Math.random() * sides)); }, 55);
+          setTimeout(() => {
+            clearInterval(iv); setFace(finalVal);
+            try { faceEl.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 180 }); } catch (e) { }
+            onDone && onDone();
+          }, dur);
+        }, delay);
+      }
+      return { el: span, roll };
     }
-    function appendDiceCard(bubble, rolls) {
-      if (!bubble || !rolls || !rolls.length) return;
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'margin:6px 0;display:flex;flex-direction:column;gap:4px';
-      let delay = 0;   // 여러 주사위는 순차(캐스케이드)로 착지
-      rolls.forEach(r => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:monospace;font-size:13px;color:#2fdc6a';
-        if (r.label) { const b = document.createElement('b'); b.style.opacity = .85; b.textContent = r.label; row.appendChild(b); }
-        (r.dice || []).forEach(v => { row.appendChild(_makeDie(r.sides, v, delay)); delay += 90; });
-        const rest = document.createElement('span');
-        let h = '';
-        if (r.mod) h += (r.mod > 0 ? '+' : '') + r.mod + ' ';
-        h += '= <b style="font-size:16px">' + r.total + '</b>';
-        if (r.dc != null) h += ' <span style="padding:1px 7px;border:1px solid ' + (r.success ? '#2fdc6a' : '#e0566b') + ';border-radius:9px;color:' + (r.success ? '#2fdc6a' : '#e0566b') + '">DC' + r.dc + ' ' + (r.success ? '성공' : '실패') + '</span>';
-        if (r.crit) h += ' <span style="color:#ffd24a">💥대성공</span>';
-        else if (r.fumble) h += ' <span style="color:#e0566b">💀대실패</span>';
-        rest.innerHTML = h;
-        row.appendChild(rest);
-        wrap.appendChild(row);
-      });
-      bubble.appendChild(wrap);
+    // [dice:NdM±K DC<n> 라벨] → 클릭해서 굴리는 주사위 위젯(타로 방식). 굴리면 난수→애니메이션→[주사위 결과] 전송.
+    function _makeDiceRoll(spec) {
+      const m = String(spec).match(/^\s*(\d*)d(\d+)\s*((?:[+-]\s*\d+)*)\s*(?:DC\s*(\d+))?\s*(.*)$/i);
+      if (!m) { const s = document.createElement('span'); s.textContent = '[dice:' + spec + ']'; return s; }
+      let n = m[1] ? parseInt(m[1]) : 1; n = Math.max(1, Math.min(n, 12));
+      let sides = parseInt(m[2]); const OK = [4, 6, 8, 10, 12, 20, 100];
+      if (!OK.includes(sides)) sides = OK.reduce((a, b) => Math.abs(b - sides) < Math.abs(a - sides) ? b : a);
+      let mod = 0; (m[3].match(/[+-]\s*\d+/g) || []).forEach(x => mod += parseInt(x.replace(/\s/g, '')));
+      const dc = m[4] ? parseInt(m[4]) : null;
+      const label = (m[5] || '').trim();
+      const expr = (n > 1 ? n + 'd' + sides : 'd' + sides) + (mod ? (mod > 0 ? '+' : '') + mod : '');
+
+      const wrap = document.createElement('div'); wrap.className = 'dice-roll';
+      const head = document.createElement('div'); head.className = 'dice-roll-head';
+      head.textContent = '🎲 ' + (label ? label + ' · ' : '') + expr + (dc != null ? ' · DC' + dc : '');
+      const row = document.createElement('div'); row.className = 'dice-roll-row';
+      const dice = [];
+      for (let i = 0; i < n; i++) { const d = _makeInteractiveDie(sides); row.appendChild(d.el); dice.push(d); }
+      const hint = document.createElement('span'); hint.className = 'dice-roll-hint'; hint.textContent = '👆 클릭해서 굴리기';
+
+      let rolled = false;
+      row.onclick = () => {
+        if (rolled) return; rolled = true; wrap.classList.add('rolled');
+        hint.textContent = '굴리는 중…';
+        const results = []; let done = 0;
+        dice.forEach((d, i) => {
+          const v = 1 + Math.floor(Math.random() * sides); results.push(v);
+          d.roll(v, i * 90, () => { if (++done === n) finish(); });
+        });
+        const finish = () => {
+          const total = results.reduce((a, b) => a + b, 0) + mod;
+          const success = dc != null ? total >= dc : null;
+          const crit = (n === 1 && sides === 20 && results[0] === 20);
+          const fumble = (n === 1 && sides === 20 && results[0] === 1);
+          let t = '= ' + total;
+          if (dc != null) t += ' · ' + (success ? '성공 ✅' : '실패 ❌');
+          if (crit) t += ' 💥'; if (fumble) t += ' 💀';
+          hint.textContent = t;
+          // DOBIS 에 결과 전달(숨김 메타 — 위젯이 시각적 기록, DOBIS는 이걸로 진행)
+          const msg = '[주사위 결과] ' + (label ? label + ' ' : '') + expr + ' = [' + results.join(',') + ']'
+            + (mod ? (mod > 0 ? '+' : '') + mod : '') + ' → ' + total
+            + (dc != null ? ' (DC' + dc + ' ' + (success ? '성공' : '실패') + ')' : '')
+            + (crit ? ' 대성공' : '') + (fumble ? ' 대실패' : '');
+          if (!dobisBusy) botSend(msg);
+        };
+      };
+      wrap.appendChild(head); wrap.appendChild(row); wrap.appendChild(hint);
+      return wrap;
     }
 
     // ===== 뷰 전환 (한 번에 한 스크롤 영역만) =====
@@ -4042,11 +4114,13 @@
     function renderBotText(text, imgCache) {
       const frag = document.createDocumentFragment();
       text = text.replace('🎨 이미지 생성 중…', '\x00IMGGEN_PLACEHOLDER\x00');
-      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER\x00)/g;
+      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER\x00)/g;
       text.split(TOKEN_RE).forEach(p => {
         if (!p) return;
         if (p === '\x00IMGGEN_PLACEHOLDER\x00') {
           frag.appendChild(_makeImggenPlaceholder());
+        } else if (p.startsWith('[dice:')) {
+          frag.appendChild(_makeDiceRoll(p.slice(6, -1)));
         } else if (p.startsWith('[spread:')) {
           frag.appendChild(_makeTarotSpread(p.slice(8, -1)));
         } else if (p.startsWith('[tarot:')) {
@@ -4439,7 +4513,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.dice) appendDiceCard(streamBubble, d.dice); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
