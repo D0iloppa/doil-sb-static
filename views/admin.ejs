@@ -3276,6 +3276,68 @@
       bubble.appendChild(card); bubble.appendChild(img);
     }
 
+    // dobis:done 의 dice [{label,sides,mod,dice[],total,dc,success,crit,fumble}] → 버블에 SVG 주사위 카드(구르는 애니메이션)
+    function _dieShapePath(sides) {
+      if (sides === 4) return '<polygon points="17,3 32,30 2,30"/>';
+      if (sides === 6) return '<rect x="5" y="5" width="24" height="24" rx="4"/>';
+      if (sides === 8) return '<polygon points="17,2 30,17 17,32 4,17"/>';
+      if (sides === 10 || sides === 100) return '<polygon points="17,2 31,13 25,32 9,32 3,13"/>';
+      if (sides === 12) return '<polygon points="17,2 29,8 32,21 23,31 11,31 2,21 5,8"/>';
+      if (sides === 20) return '<polygon points="17,2 30,10 30,24 17,32 4,24 4,10"/>';
+      return '<circle cx="17" cy="17" r="14"/>';
+    }
+    const _reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function _makeDie(sides, finalVal, delay) {
+      const col = '#2fdc6a';
+      const span = document.createElement('span');
+      span.style.cssText = 'display:inline-block;line-height:0;margin:0 1px';
+      span.innerHTML = '<svg width="32" height="32" viewBox="0 0 34 34" style="vertical-align:middle;overflow:visible">'
+        + '<g fill="rgba(47,220,106,0.13)" stroke="' + col + '" stroke-width="1.6">' + _dieShapePath(sides) + '</g>'
+        + '<text x="17" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="' + col + '" font-family="monospace">' + finalVal + '</text></svg>';
+      const txt = span.querySelector('text');
+      if (_reduceMotion()) return span;   // 모션 줄이기 설정이면 최종값 정적 표시
+      txt.textContent = '?';
+      const dur = 560 + Math.floor(Math.random() * 200);
+      setTimeout(() => {
+        try {
+          span.animate([
+            { transform: 'rotate(-20deg) scale(.55)', opacity: .35 },
+            { transform: 'rotate(200deg) scale(1.18)', offset: .55 },
+            { transform: 'rotate(360deg) scale(1)', opacity: 1 }
+          ], { duration: dur, easing: 'cubic-bezier(.2,.85,.25,1)' });
+        } catch (e) { }
+        const iv = setInterval(() => { txt.textContent = 1 + Math.floor(Math.random() * sides); }, 55);
+        setTimeout(() => {
+          clearInterval(iv); txt.textContent = finalVal;
+          try { txt.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 180 }); } catch (e) { }
+        }, dur);
+      }, delay);
+      return span;
+    }
+    function appendDiceCard(bubble, rolls) {
+      if (!bubble || !rolls || !rolls.length) return;
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'margin:6px 0;display:flex;flex-direction:column;gap:4px';
+      let delay = 0;   // 여러 주사위는 순차(캐스케이드)로 착지
+      rolls.forEach(r => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:monospace;font-size:13px;color:#2fdc6a';
+        if (r.label) { const b = document.createElement('b'); b.style.opacity = .85; b.textContent = r.label; row.appendChild(b); }
+        (r.dice || []).forEach(v => { row.appendChild(_makeDie(r.sides, v, delay)); delay += 90; });
+        const rest = document.createElement('span');
+        let h = '';
+        if (r.mod) h += (r.mod > 0 ? '+' : '') + r.mod + ' ';
+        h += '= <b style="font-size:16px">' + r.total + '</b>';
+        if (r.dc != null) h += ' <span style="padding:1px 7px;border:1px solid ' + (r.success ? '#2fdc6a' : '#e0566b') + ';border-radius:9px;color:' + (r.success ? '#2fdc6a' : '#e0566b') + '">DC' + r.dc + ' ' + (r.success ? '성공' : '실패') + '</span>';
+        if (r.crit) h += ' <span style="color:#ffd24a">💥대성공</span>';
+        else if (r.fumble) h += ' <span style="color:#e0566b">💀대실패</span>';
+        rest.innerHTML = h;
+        row.appendChild(rest);
+        wrap.appendChild(row);
+      });
+      bubble.appendChild(wrap);
+    }
+
     // ===== 뷰 전환 (한 번에 한 스크롤 영역만) =====
     const VIEWS = { home: 'homeView', registry: 'registryView', ssh: 'sshView', dobis: 'dobisView' };
     const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis' };
@@ -4300,7 +4362,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.dice) appendDiceCard(streamBubble, d.dice); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
