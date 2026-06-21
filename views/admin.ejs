@@ -3538,6 +3538,7 @@
     // ===== 대화 초안 자동저장(localStorage) — 새로고침 복구용. '새 채팅' 전엔 보존, 새 채팅 시 클리어 =====
     const DRAFT_KEY = 'dobisChatDraft';
     let _restoring = false;
+    let _pendingRestoreMd = '';   // 복원 직후 다음 메시지에 1회 실어 워커 맥락 재주입(세션 유실 대비)
     function _saveDraft() {
       if (_restoring) return;
       try {
@@ -3559,7 +3560,7 @@
           const txt = m[2].replace(/\s+$/, ''); if (!txt) continue; any = true;
           dobisAppend(m[1] === 'YOU' ? 'you' : 'bot', txt);
         }
-        if (any) { chatTitle = d.title || ''; setChatName(); log.scrollTop = log.scrollHeight; }
+        if (any) { chatTitle = d.title || ''; setChatName(); log.scrollTop = log.scrollHeight; _pendingRestoreMd = d.md; }
         return any;
       } finally { _restoring = false; }
     }
@@ -3570,6 +3571,7 @@
         if (yes) { await dobisSaveChat(); }
       }
       try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }   // 초안 비움
+      _pendingRestoreMd = '';   // 복원 대기 맥락도 폐기
       setDobisBusy(false); stopDobisTimers(); dobisStatus('');   // 진행 중이면 소켓 끊기로 취소
       if (dobisSock) { try { dobisSock.disconnect(); } catch { } dobisSock = null; }
       dobisSession = newSessionId(); chatTitle = '';
@@ -4482,6 +4484,7 @@
       _dobisWatch = setTimeout(() => dobisFail('응답이 없어 중단했어요 (시간 초과)'), DOBIS_WATCH_MS);
       const payload = { message, model: dobisModel, hud: hudReq() };
       if (img) { payload.image_b64 = img.data; payload.image_type = img.type; }
+      if (_pendingRestoreMd) { payload.restore_md = _pendingRestoreMd; _pendingRestoreMd = ''; }   // 복원 후 첫 메시지에만 맥락 재주입
       s.emit('dobis:msg', payload);
     }
     // STATUS PANEL 가변 높이 요청 — 현재 가용 행 수(compact/expanded) + 직전 패널 텍스트 그대로 전달
