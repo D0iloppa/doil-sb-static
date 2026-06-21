@@ -280,6 +280,15 @@
       text-shadow: 0 0 6px var(--grn);
     }
 
+    .mb-vol {
+      width: 62px;
+      height: 14px;
+      cursor: pointer;
+      accent-color: var(--grn);
+      vertical-align: middle;
+      flex: 0 0 auto;
+    }
+
     /* 아이패드 등에서 컨트롤 아이콘이 컬러 이모지로 뜨는 것 방지 → 단색 텍스트(터미널 톤) 통일 */
     .music-bar,
     .music-bar .mb-btn,
@@ -2826,6 +2835,8 @@
                 <span class="mb-btn" onclick="musicNext()" title="다음 곡">⏭&#xFE0E;</span>
                 <span class="mb-btn" onclick="musicStop()" title="정지">⏹&#xFE0E;</span>
                 <span class="mb-btn" id="mbShuffle" onclick="musicShuffle()" title="셔플" style="opacity:.4">⇌</span>
+                <span class="mb-btn" id="mbMute" onclick="musicMute()" title="음소거/해제">🔊&#xFE0E;</span>
+                <input type="range" id="mbVol" class="mb-vol" min="0" max="100" value="80" oninput="musicVol(this.value)" title="볼륨">
                 <span class="mb-btn" onclick="openMusicList()" title="곡 목록">≣</span>
               </span>
               <audio id="musicAudio" preload="none" onended="musicNext()"></audio>
@@ -4623,10 +4634,33 @@
       const _t = (_musicTracks || []).find((x) => x.file === name);
       document.getElementById('mbName').textContent = name ? ('♪ ' + (_t && _t.name ? _t.name : _trackName(name))) : '🎵︎ 곡을 선택하세요';
       document.getElementById('mbToggle').textContent = playing ? '⏸︎' : '▶︎';
+      _applyVol();   // 슬라이더/아이콘/오디오 볼륨 동기화(저장값 반영)
+    }
+    // ── 볼륨 (localStorage 영속) ──
+    function _getVol() { const v = parseFloat(localStorage.getItem('dobisMusicVol')); return isNaN(v) ? 0.8 : Math.max(0, Math.min(1, v)); }
+    function _volIcon(f) { return f === 0 ? '🔇︎' : (f < 0.5 ? '🔉︎' : '🔊︎'); }
+    function _applyVol() {
+      const f = _getVol();
+      const a = document.getElementById('musicAudio'); if (a) a.volume = f;
+      const s = document.getElementById('mbVol'); if (s) s.value = Math.round(f * 100);
+      const m = document.getElementById('mbMute'); if (m) m.textContent = _volIcon(f);
+    }
+    function musicVol(v) {
+      const f = Math.max(0, Math.min(1, (parseFloat(v) || 0) / 100));
+      localStorage.setItem('dobisMusicVol', f);
+      const a = document.getElementById('musicAudio'); if (a) a.volume = f;
+      const s = document.getElementById('mbVol'); if (s) s.value = Math.round(f * 100);
+      const m = document.getElementById('mbMute'); if (m) m.textContent = _volIcon(f);
+    }
+    function musicMute() {
+      const cur = _getVol();
+      if (cur > 0) { localStorage.setItem('dobisMusicVolPrev', cur); musicVol(0); }
+      else { const prev = parseFloat(localStorage.getItem('dobisMusicVolPrev')) || 0.8; musicVol(prev * 100); }
     }
     function handleMusic(m) {
       if (!m || !m.action) return;
       const a = document.getElementById('musicAudio');
+      if (a) a.volume = _getVol();   // 재생 전 저장된 볼륨 적용(첫 재생 풀볼륨 방지)
       if (m.action === 'play' && m.url) {
         _musicPanelOn(true); _musicCur = m.track || null;
         if (a.dataset.src !== m.url) { a.src = m.url; a.dataset.src = m.url; a.dataset.name = m.track || ''; }
