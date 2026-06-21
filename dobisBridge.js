@@ -41,7 +41,7 @@ function registerDobis(io) {
       jobs.set(jid, socket);
       const payload = { jid, sessionId: socket.id, model: m.model, message, hud: m.hud };
       if (m.image_b64) { payload.image_b64 = m.image_b64; payload.image_type = m.image_type || 'image/jpeg'; }
-      if (m.restore_md) payload.restore_md = String(m.restore_md).slice(0, 16000);   // 새로고침 복원 맥락(워커가 세션 유실 시만 사용)
+      if (m.restore_md) payload.restore_md = String(m.restore_md).slice(-20000);   // 현재 대화 맥락(워커가 세션 유실 시만 사용) — 최근(tail) 우선: 긴 대화는 끝부분이 중요
       workerSocket.emit('job', payload);
     });
     // 진행 중 응답 중단 → 워커로 전달
