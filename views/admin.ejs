@@ -3572,12 +3572,15 @@
       }
       try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }   // 초안 비움
       _pendingRestoreMd = '';   // 복원 대기 맥락도 폐기
-      setDobisBusy(false); stopDobisTimers(); dobisStatus('');   // 진행 중이면 소켓 끊기로 취소
-      if (dobisSock) { try { dobisSock.disconnect(); } catch { } dobisSock = null; }
-      dobisSession = newSessionId(); chatTitle = '';
+      setDobisBusy(false); stopDobisTimers(); dobisStatus(''); _dobisCancelled = true;   // 진행 중 응답의 잔여 delta/done 무시
+      // 워커 상주 claude 세션은 (model,game,think) 키라 브라우저가 sid 만 바꿔선 맥락이 안 끊긴다.
+      // 소켓을 끊으면 이 신호가 flush 전에 유실될 수 있으므로, 연결을 유지한 채 'newchat' 으로 워커 세션을 초기화한다.
+      const _s = ensureSocket();
+      try { _s && _s.emit('newchat', { sessionId: dobisSession }); } catch (e) { }
+      dobisSession = newSessionId(); chatTitle = ''; streamBubble = null;
       document.getElementById('dobisLog').innerHTML = '';
       document.getElementById('chatList').classList.add('hidden');
-      hideDomoji(); setChatName(); ensureSocket();
+      hideDomoji(); setChatName();
     }
     // ===== 커스텀 다이얼로그 (prompt / confirm / alert) =====
     let _cdlgResolve = null;

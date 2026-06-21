@@ -47,7 +47,7 @@ function registerDobis(io) {
     // 진행 중 응답 중단 → 워커로 전달
     socket.on('dobis:cancel', () => { if (workerSocket) workerSocket.emit('cancel', {}); });
     // 채팅 저장/목록/불러오기 → 워커로 전달
-    ['chat:save', 'chat:list', 'chat:load', 'music:rename', 'music:reorder', 'fs:list', 'fs:read', 'fs:write', 'fs:upload'].forEach((ev) => socket.on(ev, (p) => { if (workerSocket) workerSocket.emit(ev, p); }));
+    ['chat:save', 'chat:list', 'chat:load', 'newchat', 'music:rename', 'music:reorder', 'fs:list', 'fs:read', 'fs:write', 'fs:upload'].forEach((ev) => socket.on(ev, (p) => { if (workerSocket) workerSocket.emit(ev, p); }));
     socket.on('disconnect', () => {
       activeBrowsers = Math.max(0, activeBrowsers - 1);
       for (const [j, b] of jobs) if (b === socket) jobs.delete(j);
