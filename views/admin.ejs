@@ -574,6 +574,52 @@
       flex-wrap: wrap;
     }
 
+    /* ── dRec 회의 녹취 카드 ── */
+    .drec-card {
+      margin: 8px 0 4px;
+      padding: 10px 12px;
+      border: 1px solid var(--dim);
+      border-left: 3px solid var(--grn);
+      border-radius: 8px;
+      background: #04140a;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 460px;
+    }
+    .drec-head { display: flex; align-items: center; gap: 8px; }
+    .drec-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #ff4d4d; box-shadow: 0 0 6px #ff4d4d;
+      animation: drec-blink 1s steps(2, start) infinite;
+    }
+    .drec-card.paused .drec-dot { background: var(--dim); box-shadow: none; animation: none; }
+    .drec-card.done .drec-dot { background: var(--grn); box-shadow: 0 0 6px var(--grn); animation: none; }
+    @keyframes drec-blink { 50% { opacity: .25; } }
+    .drec-state { font-weight: 700; color: var(--grn); }
+    .drec-time { margin-left: auto; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.85); letter-spacing: .5px; }
+    .drec-live {
+      min-height: 38px; max-height: 140px; overflow-y: auto;
+      padding: 6px 8px; border: 1px solid rgba(77,255,143,.2); border-radius: 5px;
+      background: rgba(77,255,143,.04); font-size: .88em; line-height: 1.5; white-space: pre-wrap;
+      color: rgba(255,255,255,.85);
+    }
+    .drec-live:empty::before { content: '⋯ 전사 대기 중'; color: var(--dim); }
+    .drec-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .drec-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 12px; border-radius: 5px; cursor: pointer;
+      background: rgba(77,255,143,.1); border: 1px solid rgba(77,255,143,.4); color: var(--grn);
+      font: inherit; font-size: .86em;
+    }
+    .drec-btn:hover { background: rgba(77,255,143,.2); }
+    .drec-btn.stop { background: rgba(255,77,77,.1); border-color: rgba(255,77,77,.5); color: #ff8a8a; }
+    .drec-btn[disabled] { opacity: .4; cursor: default; }
+    .drec-minutes {
+      margin-top: 4px; padding: 8px 10px; border-top: 1px dashed var(--dim);
+      font-size: .9em; line-height: 1.6; white-space: pre-wrap;
+    }
+
     /* ── 유튜브 큐 진행률 ── */
     .yt-queue {
       margin: 8px 0 4px;
@@ -3345,6 +3391,154 @@
       bubble.appendChild(card); bubble.appendChild(img);
     }
 
+    // ── dRec 회의 녹취 카드 (브라우저 마이크 → drec.doil.me REST 직결) ────────────
+    // dobis 가 [drec-rec]/[drec-minutes:id] 디렉티브를 보내면 done 이벤트의 drec 필드로 들어와 여기서 렌더.
+    // 녹음·전사·회의록 생성은 모두 브라우저↔dRec REST 로 처리하며, dobis MCP 와 같은 신원 토큰을 쓴다.
+    let _drecCfg = null, _drecActive = null;
+    async function drecConfig() {
+      if (_drecCfg) return _drecCfg;
+      const r = await fetch(API + '/auth/drec', { headers: H() });
+      if (!r.ok) throw new Error('dRec 설정을 불러오지 못했습니다');
+      _drecCfg = await r.json();
+      if (!_drecCfg.token) throw new Error('dRec 토큰 미설정(DREC_TOKEN)');
+      return _drecCfg;
+    }
+    async function drecApi(path, opt) {
+      const cfg = await drecConfig();
+      const r = await fetch(cfg.apiUrl + path, {
+        method: (opt && opt.method) || 'GET',
+        headers: { 'Authorization': 'Bearer ' + cfg.token },
+        body: opt && opt.form,
+      });
+      if (!r.ok) throw new Error('dRec ' + ((opt && opt.method) || 'GET') + ' ' + path + ' → ' + r.status);
+      return r.json();
+    }
+    function drecRenderMinutes(card, minutes) {
+      let box = card.querySelector('.drec-minutes');
+      if (!box) { box = document.createElement('div'); box.className = 'drec-minutes'; card.appendChild(box); }
+      box.innerHTML = '';
+      appendInlineMd(box, minutes || '(회의록 없음)');   // 기존 마크다운 인라인 렌더 재사용
+      document.getElementById('dobisLog').scrollTop = 1e9;
+    }
+    async function drecShowMinutes(bubble, id) {
+      const card = document.createElement('div'); card.className = 'drec-card done';
+      card.innerHTML = '<div class="drec-head"><span class="drec-dot"></span><span class="drec-state">📄 회의록 #' + id + '</span></div>';
+      bubble.appendChild(card);
+      try {
+        const m = await drecApi('/api/meetings/' + id);
+        card.querySelector('.drec-state').textContent = '📄 ' + (m.title || ('회의록 #' + id));
+        drecRenderMinutes(card, m.minutes);
+      } catch (err) { card.querySelector('.drec-state').textContent = '⚠️ 회의록 조회 실패'; }
+    }
+    function appendDrecCard(bubble, drec) {
+      if (!bubble || !drec) return;
+      if (drec.action === 'minutes') { drecShowMinutes(bubble, drec.id); return; }
+      if (drec.action !== 'record') return;
+      if (_drecActive) return;   // 동시에 하나의 녹음만
+      const card = document.createElement('div'); card.className = 'drec-card';
+      card.innerHTML =
+        '<div class="drec-head"><span class="drec-dot"></span>'
+        + '<span class="drec-state">● 녹음중</span>'
+        + '<span class="drec-time">00:00</span></div>'
+        + '<div class="drec-live"></div>'
+        + '<div class="drec-btns">'
+        + '<button class="drec-btn pause">⏸ 일시정지</button>'
+        + '<button class="drec-btn stop">⏹ 종료</button></div>';
+      bubble.appendChild(card);
+      const ui = {
+        card, elState: card.querySelector('.drec-state'), elTime: card.querySelector('.drec-time'),
+        elLive: card.querySelector('.drec-live'), btnPause: card.querySelector('.pause'), btnStop: card.querySelector('.stop'),
+      };
+      drecStart(drec.title || '', ui).catch(err => {
+        ui.elState.textContent = '⚠️ ' + (err.message || '녹음 실패'); card.classList.add('done');
+        ui.btnPause.disabled = true; ui.btnStop.disabled = true; _drecActive = null;
+      });
+    }
+    async function drecStart(title, ui) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const sess = await drecApi('/api/sessions', { method: 'POST', form: (function () { const f = new FormData(); f.append('title', title); return f; })() });
+      const meetingId = sess.id;
+      const st = { meetingId, stream, paused: false, stopped: false, seq: 0, t0: Date.now(), elapsedBefore: 0, fullChunks: [] };
+      _drecActive = st;
+      // 전체 연속 녹음(종료 시 /audio 업로드 → 화자분리/재생용)
+      const fullRec = new MediaRecorder(stream);
+      fullRec.ondataavailable = e => { if (e.data && e.data.size) st.fullChunks.push(e.data); };
+      fullRec.start(); st.fullRec = fullRec;
+      // 타이머
+      st.timer = setInterval(() => {
+        if (st.paused) return;
+        const sec = Math.floor((st.elapsedBefore + (Date.now() - st.t0)) / 1000);
+        ui.elTime.textContent = String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
+      }, 500);
+      // 녹음/처리 동안 관리자 콘솔 세션 만료 방지(touchSession 자체가 10초 throttle)
+      st.keepalive = setInterval(() => touchSession(), 30000);
+      // 60초 단위 미리보기 전사 루프 (현재 녹음중 텍스트 표출)
+      function previewCycle() {
+        if (st.stopped) return;
+        if (st.paused) { setTimeout(previewCycle, 1000); return; }
+        const parts = [];
+        let pr; try { pr = new MediaRecorder(stream); } catch (e) { return; }
+        pr.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+        pr.onstop = async () => {
+          if (parts.length && !st.stopped) {
+            const blob = new Blob(parts, { type: pr.mimeType || 'audio/webm' });
+            const f = new FormData(); f.append('seq', String(st.seq++)); f.append('audio', blob, 'chunk.webm');
+            try {
+              const res = await drecApi('/api/sessions/' + meetingId + '/chunk', { method: 'POST', form: f });
+              if (res && res.text && res.text.trim()) {
+                ui.elLive.textContent += (ui.elLive.textContent ? '\n' : '') + res.text.trim();
+                ui.elLive.scrollTop = ui.elLive.scrollHeight;
+              }
+            } catch (e) { }
+          }
+          if (!st.stopped) previewCycle();
+        };
+        pr.start(); st.preview = pr;
+        setTimeout(() => { if (pr.state !== 'inactive') pr.stop(); }, 60000);
+      }
+      previewCycle();
+      ui.btnPause.onclick = () => {
+        if (st.stopped) return;
+        st.paused = !st.paused;
+        if (st.paused) {
+          try { fullRec.pause(); } catch (e) { }
+          st.elapsedBefore += Date.now() - st.t0;
+          ui.card.classList.add('paused'); ui.elState.textContent = '⏸ 일시정지'; ui.btnPause.textContent = '▶ 재개';
+        } else {
+          try { fullRec.resume(); } catch (e) { }
+          st.t0 = Date.now();
+          ui.card.classList.remove('paused'); ui.elState.textContent = '● 녹음중'; ui.btnPause.textContent = '⏸ 일시정지';
+        }
+      };
+      ui.btnStop.onclick = async () => {
+        if (st.stopped) return;
+        st.stopped = true;
+        clearInterval(st.timer);
+        try { if (st.preview && st.preview.state !== 'inactive') st.preview.stop(); } catch (e) { }
+        ui.btnPause.disabled = true; ui.btnStop.disabled = true;
+        ui.card.classList.remove('paused'); ui.elState.textContent = '⏳ 회의록 정리 중…';
+        const flushed = new Promise(res => { fullRec.onstop = res; });
+        try { fullRec.stop(); } catch (e) { }
+        await flushed;
+        try { stream.getTracks().forEach(t => t.stop()); } catch (e) { }
+        try {
+          const full = new Blob(st.fullChunks, { type: fullRec.mimeType || 'audio/webm' });
+          if (full.size) {
+            const f = new FormData(); f.append('audio', full, 'full.webm');
+            await drecApi('/api/sessions/' + meetingId + '/audio', { method: 'POST', form: f });
+          }
+          touchSession();
+          const r = await drecApi('/api/sessions/' + meetingId + '/finish', { method: 'POST' });
+          ui.card.classList.add('done'); ui.elState.textContent = '✅ 회의록 완료';
+          drecRenderMinutes(ui.card, r.minutes);
+        } catch (err) {
+          ui.elState.textContent = '⚠️ 정리 실패: ' + (err.message || '');
+        } finally {
+          clearInterval(st.keepalive); _drecActive = null;
+        }
+      };
+    }
+
     // dobis:done 의 dice [{label,sides,mod,dice[],total,dc,success,crit,fumble}] → 버블에 SVG 주사위 카드(구르는 애니메이션)
     function _dieShapePath(sides) {
       if (sides === 4) return '<polygon points="17,3 32,30 2,30"/>';
@@ -4517,7 +4711,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));

@@ -131,6 +131,15 @@ router.post('/touch', requireToken, (req, res) => {
   res.json({ expiresInSec: TOKEN_TTL_MS / 1000 });
 });
 
+// GET /drec (토큰 필요) — dRec 녹음 카드가 쓸 공유 dRec 신원 토큰 + API base.
+// dobis 에이전트(MCP)와 같은 DREC_TOKEN 을 내려줘 회의 이력을 공유한다. 인증된 응답이라 미인증 노출 없음.
+router.get('/drec', requireToken, (req, res) => {
+  res.json({
+    token: process.env.DREC_TOKEN || '',
+    apiUrl: process.env.DREC_API_URL || 'https://drec.doil.me',
+  });
+});
+
 // POST /credentials (토큰 필요) — 현재 비번 확인 후 아이디/비번 변경(무재기동 반영)
 router.post('/credentials', requireToken, async (req, res) => {
   const { currentUsername, currentPassword, newUsername, newPassword } = req.body || {};
