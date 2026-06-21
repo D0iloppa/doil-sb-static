@@ -3440,6 +3440,7 @@
             + (dc != null ? ' (DC' + dc + ' ' + (success ? '성공' : '실패') + ')' : '')
             + (crit ? ' 대성공' : '') + (fumble ? ' 대실패' : '');
           if (!dobisBusy) botSend(msg);
+          else { _dobisQueue.push({ msg, hidden: true }); hint.textContent = t + ' · ⏳ 전송 대기'; }   // 생성 중 클릭 → 결과를 버리지 말고 큐에 담아 끝나면 전송
         };
       };
       wrap.appendChild(head); wrap.appendChild(row); wrap.appendChild(hint);
@@ -3591,7 +3592,7 @@
     // ===== DOBIS 챗봇 (소켓, 휘발성) =====
     let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, _dobisCancelled = false;
     let dobisBusy = false, _dobisT0 = 0, _dobisLen = 0, _dobisTick = null, _dobisWatch = null;
-    const _dobisQueue = [];  // {msg, img} — busy 중 입력한 메시지 큐
+    const _dobisQueue = [];  // {msg, img, hidden?} — busy 중 입력/생성된 메시지 큐(hidden=화면 비노출 메타, 예: 주사위 결과)
     const DOBIS_WATCH_MS = 210000;   // 응답 무소식 시 UI 가 영원히 매달리지 않도록 하는 백스톱(워커 180s 타임아웃보다 길게)
     let dobisSession = 'dob-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
     let chatTitle = '';   // 저장된 채팅 제목(있으면 재저장 시 덮어쓰기)
@@ -4343,8 +4344,8 @@
         thumb.className = 'dobis-img'; thumb.style.maxHeight = '120px';
         d.appendChild(thumb);
         document.getElementById('dobisLog').scrollTop = 1e9;
-      } else {
-        dobisAppend('you', next.msg);
+      } else if (!next.hidden) {
+        dobisAppend('you', next.msg);   // hidden(주사위 결과 등 메타)은 화면에 노출하지 않는다
       }
       dobisStatus(qLeft > 0 ? `▶ 큐 전송 (${qLeft}개 남음)` : '▶ 큐 전송');
       botSend(next.msg || '(이미지를 첨부했습니다)', next.img || null);
