@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -8,533 +9,2746 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
   <style>
     /* Nerd Font (MesloLGS NF) — oh-my-zsh/Powerline 글리프 렌더용 */
-    @font-face { font-family: "MesloLGS NF"; font-weight: normal; font-style: normal; font-display: swap;
-      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Regular.ttf"); }
-    @font-face { font-family: "MesloLGS NF"; font-weight: bold; font-style: normal; font-display: swap;
-      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Bold.ttf"); }
-    @font-face { font-family: "MesloLGS NF"; font-weight: normal; font-style: italic; font-display: swap;
-      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Italic.ttf"); }
-    @font-face { font-family: "MesloLGS NF"; font-weight: bold; font-style: italic; font-display: swap;
-      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Bold%20Italic.ttf"); }
-    :root { --grn: #4dff8f; --dim: #1f8a52; --scr: #03150c; }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; height: 100%; height: 100dvh; overflow: hidden; background: #05030f; }
+    @font-face {
+      font-family: "MesloLGS NF";
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Regular.ttf");
+    }
+
+    @font-face {
+      font-family: "MesloLGS NF";
+      font-weight: bold;
+      font-style: normal;
+      font-display: swap;
+      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Bold.ttf");
+    }
+
+    @font-face {
+      font-family: "MesloLGS NF";
+      font-weight: normal;
+      font-style: italic;
+      font-display: swap;
+      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Italic.ttf");
+    }
+
+    @font-face {
+      font-family: "MesloLGS NF";
+      font-weight: bold;
+      font-style: italic;
+      font-display: swap;
+      src: url("https://cdn.jsdelivr.net/gh/romkatv/powerlevel10k-media@master/MesloLGS%20NF%20Bold%20Italic.ttf");
+    }
+
+    :root {
+      --grn: #4dff8f;
+      --dim: #1f8a52;
+      --scr: #03150c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: #05030f;
+    }
 
     /* ===== 사이버펑크 배경 프리셋 (관리자 콘솔에서 선택·저장) ===== */
-    .stage { position: fixed; inset: 0; display: grid; place-items: center; }
-    body.bg-black .stage { background: #000; }
+    .stage {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    body.bg-black .stage {
+      background: #000;
+    }
+
     body.bg-grid .stage {
       background:
-        radial-gradient(ellipse at 50% 120%, rgba(0,255,200,.10), transparent 60%),
-        radial-gradient(ellipse at 50% -10%, rgba(180,0,255,.12), transparent 55%),
+        radial-gradient(ellipse at 50% 120%, rgba(0, 255, 200, .10), transparent 60%),
+        radial-gradient(ellipse at 50% -10%, rgba(180, 0, 255, .12), transparent 55%),
         #05030f;
     }
+
     body.bg-grid .stage::before {
-      content: ""; position: absolute; inset: 0; pointer-events: none;
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
       background-image:
-        linear-gradient(rgba(0,255,200,.16) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,200,.16) 1px, transparent 1px);
+        linear-gradient(rgba(0, 255, 200, .16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 200, .16) 1px, transparent 1px);
       background-size: 46px 46px;
       transform: perspective(420px) rotateX(62deg) translateY(20%) scale(2.4);
       transform-origin: 50% 100%;
       mask-image: linear-gradient(transparent 55%, #000);
       animation: gridmove 6s linear infinite;
     }
-    @keyframes gridmove { to { background-position: 0 46px, 46px 0; } }
-    body.bg-synthwave .stage { background: linear-gradient(180deg, #14002e 0%, #45086b 55%, #ff2e8b 140%); }
+
+    @keyframes gridmove {
+      to {
+        background-position: 0 46px, 46px 0;
+      }
+    }
+
+    body.bg-synthwave .stage {
+      background: linear-gradient(180deg, #14002e 0%, #45086b 55%, #ff2e8b 140%);
+    }
+
     body.bg-synthwave .stage::before {
-      content: ""; position: absolute; left: 50%; top: 30%; width: 36vmin; height: 36vmin;
-      transform: translate(-50%,-30%); border-radius: 50%;
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 30%;
+      width: 36vmin;
+      height: 36vmin;
+      transform: translate(-50%, -30%);
+      border-radius: 50%;
       background: radial-gradient(circle, #ffd84d, #ff5e8a 70%, transparent 72%);
-      filter: blur(2px); box-shadow: 0 0 80px #ff5e8a;
+      filter: blur(2px);
+      box-shadow: 0 0 80px #ff5e8a;
     }
-    body.bg-aurora .stage { background: #04060f; }
+
+    body.bg-aurora .stage {
+      background: #04060f;
+    }
+
     body.bg-aurora .stage::before {
-      content: ""; position: absolute; inset: -20%; pointer-events: none;
+      content: "";
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
       background:
-        radial-gradient(35vmax 25vmax at 20% 30%, rgba(0,229,255,.35), transparent 60%),
-        radial-gradient(30vmax 22vmax at 80% 40%, rgba(170,0,255,.32), transparent 60%),
-        radial-gradient(28vmax 20vmax at 50% 80%, rgba(255,0,128,.25), transparent 60%);
-      filter: blur(30px); animation: aurora 14s ease-in-out infinite alternate;
+        radial-gradient(35vmax 25vmax at 20% 30%, rgba(0, 229, 255, .35), transparent 60%),
+        radial-gradient(30vmax 22vmax at 80% 40%, rgba(170, 0, 255, .32), transparent 60%),
+        radial-gradient(28vmax 20vmax at 50% 80%, rgba(255, 0, 128, .25), transparent 60%);
+      filter: blur(30px);
+      animation: aurora 14s ease-in-out infinite alternate;
     }
-    @keyframes aurora { to { transform: translate3d(4%, -3%, 0) scale(1.1); } }
+
+    @keyframes aurora {
+      to {
+        transform: translate3d(4%, -3%, 0) scale(1.1);
+      }
+    }
 
     /* ===== 애플2 톤 모니터(심플, neck 없음) — 뷰포트 최대 채움 ===== */
-    .monitor { position: relative; width: min(94vw, 94vh * 1.1628); aspect-ratio: 1000 / 860; }
-    .monitor svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 12px 34px rgba(0,0,0,.55)); }
+    .monitor {
+      position: relative;
+      width: min(94vw, 94vh * 1.1628);
+      aspect-ratio: 1000 / 860;
+    }
+
+    .monitor svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 12px 34px rgba(0, 0, 0, .55));
+    }
 
     /* 화면 영역 = SVG 그린 rect(x100 y86 w800 h600 / 1000x860)에 정렬. 스크롤은 이 안에서만. */
     .screen {
-      position: absolute; left: 10%; top: 10%; right: 10%; bottom: 20.2%;
-      overflow: hidden; background: var(--scr); color: var(--grn);
+      position: absolute;
+      left: 10%;
+      top: 10%;
+      right: 10%;
+      bottom: 20.2%;
+      overflow: hidden;
+      background: var(--scr);
+      color: var(--grn);
       font: 14px/1.5 "Consolas", "DejaVu Sans Mono", ui-monospace, monospace;
-      text-shadow: 0 0 4px rgba(77,255,143,.5); border-radius: 10px;
+      text-shadow: 0 0 4px rgba(77, 255, 143, .5);
+      border-radius: 10px;
     }
+
     .screen::after {
-      content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: repeating-linear-gradient(rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
-      box-shadow: inset 0 0 70px rgba(0,0,0,.7);
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px);
+      box-shadow: inset 0 0 70px rgba(0, 0, 0, .7);
     }
 
     /* 레이아웃: head(고정) + 한 번에 한 뷰만 보이는 단일 스크롤 영역 */
-    .term { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 12px 16px; }
-    .term-head { flex: 0 0 auto; border-bottom: 1px solid var(--dim); padding-bottom: 6px; margin-bottom: 8px; }
-    .term-head b { color: #b6ffd6; }
-    #msg { min-height: 1.3em; color: #ffe08a; }
-    .toolbar { margin: 4px 0 2px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
-    .toolbar .spacer { flex: 1; }
-    .navtab.on { color: #d6ffe8; text-shadow: 0 0 8px var(--grn); }
-    .music-cb { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
-    .music-cb input { accent-color: var(--grn); cursor: pointer; }
-    /* 전역 음악 바 — nav 아래 슬라이드 다운, 탭과 무관하게 상주 */
-    .music-bar { display: flex; align-items: center; gap: 10px; margin-top: 6px; padding: 5px 10px;
-      border: 1px solid var(--dim); border-radius: 7px; background: #04140a;
-      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 12px; color: var(--grn); }
-    .music-bar.hidden { display: none; }
-    .mb-name { flex: 1 1 auto; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .mb-name:hover { text-shadow: 0 0 6px var(--grn); }
-    .mb-ctrls { flex: 0 0 auto; display: flex; gap: 10px; }
-    .mb-btn { cursor: pointer; } .mb-btn:hover { text-shadow: 0 0 6px var(--grn); }
-    /* 아이패드 등에서 컨트롤 아이콘이 컬러 이모지로 뜨는 것 방지 → 단색 텍스트(터미널 톤) 통일 */
-    .music-bar, .music-bar .mb-btn, .mb-name, .music-cb, .music-list, .mr-name { font-variant-emoji: text; }
-    .music-list { display: flex; flex-direction: column; gap: 5px; max-height: 50vh; overflow: auto; min-width: 300px; scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
-    .music-list::-webkit-scrollbar { width: 9px; }
-    .music-list::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
-    .music-list::-webkit-scrollbar-track { background: transparent; }
-    .music-row { padding: 7px 9px; border: 1px solid var(--dim); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-    .music-row:hover { border-color: var(--grn); }
-    .music-row.on { border-color: var(--grn); background: rgba(77,255,143,.08); }
-    .mr-info { flex: 1 1 auto; min-width: 0; }
-    .mr-name { display: block; color: var(--grn); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .mr-desc { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; }
-    .mr-dl { flex: 0 0 auto; color: var(--dim); text-decoration: none; font-size: 13px; padding: 2px 5px; }
-    .mr-dl:hover { color: var(--grn); text-shadow: 0 0 6px var(--grn); }
-    .mr-edit { flex: 0 0 auto; cursor: pointer; color: var(--dim); font-size: 13px; padding: 2px 5px; font-variant-emoji: text; }
-    .mr-edit:hover { color: var(--grn); text-shadow: 0 0 6px var(--grn); }
-    .mr-drag { flex: 0 0 auto; cursor: grab; color: var(--dim); font-size: 14px; padding: 2px 4px; touch-action: none; user-select: none; }
-    .mr-drag:hover { color: var(--grn); }
-    .music-row.dragging { opacity: .65; border-color: var(--grn); background: rgba(77,255,143,.12); }
-    /* ── 파일 탐색기 ── */
-    .fs-box { width: min(880px, 86vw); max-width: 86vw; }
-    .fs-path { font-size: .8em; color: var(--dim); margin: 4px 0 8px; word-break: break-all; }
-    .fs-crumb { color: var(--grn); cursor: pointer; }
-    .fs-crumb:hover { text-decoration: underline; }
-    .fs-drop { border: 1px dashed rgba(77,255,143,.25); border-radius: 6px; padding: 6px; }
-    .fs-drop.drag { border-color: var(--grn); background: rgba(77,255,143,.08); }
-    .fs-drophint { font-size: 11px; text-align: center; margin-top: 6px; opacity: .5; }
-    .fs-list { display: flex; flex-direction: column; gap: 3px; max-height: 42vh; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
-    .fs-list::-webkit-scrollbar { width: 9px; } .fs-list::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
-    .fs-row { display: flex; align-items: center; gap: 8px; padding: 6px 9px; border-radius: 5px; cursor: pointer; font-size: .9em; }
-    .fs-row:hover { background: rgba(77,255,143,.1); }
-    .fs-row.dir { color: #d6ffe8; }
-    .fs-fn { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .fs-sz { flex: 0 0 auto; font-size: .8em; }
-    .fs-viewer { max-height: 58vh; overflow: auto; scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
-    .fs-viewer::-webkit-scrollbar { width: 9px; } .fs-viewer::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; } .fs-viewer::-webkit-scrollbar-track { background: transparent; }
-    .fs-vhead { margin-bottom: 8px; }
-    .fs-edit { width: 100%; box-sizing: border-box; min-height: 46vh; background: #0a140a; color: #cfeede; border: 1px solid rgba(77,255,143,.3); border-radius: 5px; padding: 9px 11px; font-family: ui-monospace,"Cascadia Mono",monospace; font-size: .85em; line-height: 1.5; resize: vertical; outline: none; scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
-    .fs-edit::-webkit-scrollbar { width: 10px; } .fs-edit::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; } .fs-edit::-webkit-scrollbar-track { background: transparent; }
-    .fs-media { max-width: 100%; max-height: 52vh; display: block; border-radius: 4px; }
-    .fs-foot { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
-    .dl-card { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-    /* ── 유튜브 큐 진행률 ── */
-    .yt-queue { margin: 8px 0 4px; display: flex; flex-direction: column; gap: 5px; }
-    .yt-row { display: flex; align-items: center; gap: 6px; font-size: .82em; }
-    .yt-num { color: var(--dim); flex: 0 0 auto; font-variant-numeric: tabular-nums; }
-    .yt-bar-wrap { flex: 0 0 90px; height: 7px; background: rgba(77,255,143,.08); border: 1px solid rgba(77,255,143,.2); border-radius: 2px; overflow: hidden; }
-    .yt-bar { height: 100%; background: rgba(77,255,143,.55); width: 0%; transition: width .35s ease; }
-    .yt-label { flex: 1 1 auto; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .yt-row.ok .yt-bar { width: 100% !important; background: var(--grn); }
-    .yt-row.ok .yt-label { color: var(--grn); }
-    .yt-row.err .yt-bar { background: #ff6060; width: 30% !important; }
-    .yt-row.err .yt-label { color: #ff8888; }
-    .dl-btn { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(77,255,143,.1); border: 1px solid rgba(77,255,143,.4); color: var(--grn); text-decoration: none; font-family: inherit; font-size: 12px; cursor: pointer; white-space: nowrap; }
-    .dl-btn:hover { background: rgba(77,255,143,.22); border-color: var(--grn); }
-    .dl-btn.add { border-color: rgba(77,255,143,.25); color: var(--dim); }
-    .dl-btn.add:hover { border-color: rgba(77,255,143,.5); color: var(--grn); }
-    .body { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-    /* 레지스트리·터미널 뷰포트 스크롤바 통일 */
-    #registryView, .xterm-viewport { scrollbar-width: thin; scrollbar-color: var(--dim) transparent; }
-    #registryView::-webkit-scrollbar, .xterm-viewport::-webkit-scrollbar { width: 9px; }
-    #registryView::-webkit-scrollbar-thumb, .xterm-viewport::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
-    #registryView { flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 4px; }
-    #sshView { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-    #termWrap { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-    #sshDropZone { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(3,21,12,.9); border: 2px dashed rgba(77,255,143,.8); color: var(--grn); font-size: 14px; letter-spacing: .12em; pointer-events: none; z-index: 5; }
-    #sshDropZone.hidden { display: none; }
-    #sshXferBar { display: none; align-items: center; gap: 6px; }
-    #sshXferBar.active { display: flex; }
-    #ssh_dl_path { width: 220px; }
-    /* 앱 윈도우 (Windows 식 창) — 플로팅, 드래그, 최소화/전체화면/닫기 */
-    .appwin { position: absolute; z-index: 30; left: 8%; top: 7%; width: 80%; height: 80%;
-      display: flex; flex-direction: column; background: #04140a; border: 1px solid var(--grn);
-      border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,.6), 0 0 14px rgba(77,255,143,.28); overflow: hidden; }
-    .appwin.hidden { display: none; }
-    .appwin.win-max { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; border-radius: 0; }
-    .appwin-bar { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 5px 10px; background: linear-gradient(#0a2417, #072011); border-bottom: 1px solid var(--dim);
-      cursor: move; user-select: none; font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 12px; color: #b6ffd6; }
-    .appwin-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .appwin-btns { flex: 0 0 auto; display: flex; gap: 6px; }
-    .awb { cursor: pointer; min-width: 20px; height: 18px; line-height: 16px; text-align: center;
-      border: 1px solid var(--dim); border-radius: 4px; font-size: 11px; }
-    .awb:hover { border-color: var(--grn); background: rgba(77,255,143,.12); }
-    .awb.close:hover { background: #ff6b6b; color: #1a0a0a; border-color: #ff6b6b; }
-    .awb.tint.on { background: var(--grn); color: #04140a; border-color: var(--grn); }
-    .appwin-body { flex: 1 1 auto; position: relative; min-height: 0; }
-    .geo-frame { width: 100%; height: 100%; border: 0; display: block; background: #04140a; }
-    /* CRT 틴트 모드 — iframe 전체에 그린 필터 + 스캔라인 오버레이(클릭은 통과) */
-    .appwin.tinted .geo-frame { filter: saturate(.5) brightness(1.05) contrast(1.05) sepia(.42) hue-rotate(66deg); }
-    .appwin-scan { position: absolute; inset: 0; pointer-events: none; display: none; z-index: 2;
-      background: repeating-linear-gradient(rgba(0,0,0,.16) 0 1px, transparent 1px 3px); }
-    .appwin.tinted .appwin-scan { display: block; }
-    /* 명반(CHART) — 답변 버블 안 인라인 토글(dl-card 패턴 재활용) */
-    .chart-img { display: block; max-width: 100%; height: auto; margin: 6px 0 2px; border-radius: 4px;
-      background: #fff; border: 1px solid rgba(77,255,143,.3); cursor: zoom-in; }
-    .chart-img.hidden { display: none !important; }
-    .hidden { display: none !important; }
-
-    .muted { color: var(--dim); }
-    .cmd { color: var(--grn); cursor: pointer; }
-    .cmd:hover { color: #d6ffe8; text-shadow: 0 0 8px var(--grn); }
-    input, select.inl {
-      background: transparent; border: none; border-bottom: 1px solid rgba(77,255,143,.35);
-      color: var(--grn); font: inherit; caret-color: var(--grn); padding: 1px 2px; min-width: 0;
+    .term {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
     }
-    input:focus, select.inl:focus { outline: none; border-bottom-color: var(--grn); }
-    select.inl option { background: #03150c; }
-    input[type=checkbox] { accent-color: var(--grn); }
-    .rec { border-bottom: 1px dashed rgba(77,255,143,.18); padding: 7px 0; }
-    .rec-head { color: #b6ffd6; }
-    .rec-grid { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 2px 8px; margin: 4px 0; align-items: center; }
-    .rec-grid label { color: var(--dim); }
-    .rec-acts { margin-top: 3px; } .rec-acts .cmd { margin-right: 14px; }
-    .newform { border: 1px solid var(--dim); padding: 8px 10px; margin-bottom: 10px; }
-    .ssh-form { flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-bottom: 6px; }
-    .ssh-form label { color: var(--dim); }
-    #sshStatus { color: #ffe08a; }
-    #termMain { display:flex; flex-direction:row; flex:1 1 auto; min-height:0; }
-    #sshSidebar { width:0; overflow:hidden; flex-shrink:0; transition:width .18s ease; display:flex; flex-direction:column; border-left:1px solid transparent; background:#020e07; }
-    #sshSidebar.open { width:158px; border-left-color:var(--dim); }
-    .sb-head { flex:0 0 auto; padding:5px 8px; border-bottom:1px solid var(--dim); font-size:10px; color:var(--dim); letter-spacing:.1em; }
-    .sb-list { flex:1 1 auto; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--dim) transparent; }
-    .sb-item { display:flex; align-items:center; gap:5px; padding:6px 8px; cursor:pointer; font-size:11px; color:var(--dim); border-bottom:1px dashed rgba(77,255,143,.1); user-select:none; white-space:nowrap; }
-    .sb-item:hover { background:rgba(77,255,143,.07); color:var(--grn); }
-    .sb-item.active { background:rgba(77,255,143,.12); color:var(--grn); border-left:2px solid var(--grn); padding-left:6px; }
-    .sb-item .sb-dot { font-size:7px; opacity:.3; flex-shrink:0; }
-    .sb-item.live .sb-dot { color:#9fffce; opacity:1; }
-    .sb-item .sb-name { flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; }
-    .sb-item .sb-x { opacity:.3; font-size:10px; flex-shrink:0; }
-    .sb-item:hover .sb-x { opacity:.6; }
-    .sb-item .sb-x:hover { opacity:1; color:#ff9aa6; }
-    .sb-foot { flex:0 0 auto; padding:6px 8px; border-top:1px solid var(--dim); }
-    .term-pane { display:none; flex:1 1 auto; min-height:0; overflow:hidden; border:1px solid var(--dim); padding:4px; }
-    .term-pane.active { display:flex; flex-direction:column; }
-    .cursor { display: inline-block; width: 8px; height: 1.05em; background: var(--grn);
-      vertical-align: text-bottom; animation: blink 1s steps(1) infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+
+    .term-head {
+      flex: 0 0 auto;
+      border-bottom: 1px solid var(--dim);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .term-head b {
+      color: #b6ffd6;
+    }
+
+    #msg {
+      min-height: 1.3em;
+      color: #ffe08a;
+    }
+
+    .toolbar {
+      margin: 4px 0 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      align-items: center;
+    }
+
+    .toolbar .spacer {
+      flex: 1;
+    }
+
+    .navtab.on {
+      color: #d6ffe8;
+      text-shadow: 0 0 8px var(--grn);
+    }
+
+    .music-cb {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .music-cb input {
+      accent-color: var(--grn);
+      cursor: pointer;
+    }
+
+    /* 전역 음악 바 — nav 아래 슬라이드 다운, 탭과 무관하게 상주 */
+    .music-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--dim);
+      border-radius: 7px;
+      background: #04140a;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 12px;
+      color: var(--grn);
+    }
+
+    .music-bar.hidden {
+      display: none;
+    }
+
+    .mb-name {
+      flex: 1 1 auto;
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mb-name:hover {
+      text-shadow: 0 0 6px var(--grn);
+    }
+
+    .mb-ctrls {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .mb-btn {
+      cursor: pointer;
+    }
+
+    .mb-btn:hover {
+      text-shadow: 0 0 6px var(--grn);
+    }
+
+    /* 아이패드 등에서 컨트롤 아이콘이 컬러 이모지로 뜨는 것 방지 → 단색 텍스트(터미널 톤) 통일 */
+    .music-bar,
+    .music-bar .mb-btn,
+    .mb-name,
+    .music-cb,
+    .music-list,
+    .mr-name {
+      font-variant-emoji: text;
+    }
+
+    .music-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 50vh;
+      overflow: auto;
+      min-width: 300px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .music-list::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .music-list::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .music-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .music-row {
+      padding: 7px 9px;
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .music-row:hover {
+      border-color: var(--grn);
+    }
+
+    .music-row.on {
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .08);
+    }
+
+    .mr-info {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .mr-name {
+      display: block;
+      color: var(--grn);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mr-desc {
+      display: block;
+      font-size: 11px;
+      color: var(--dim);
+      margin-top: 2px;
+    }
+
+    .mr-dl {
+      flex: 0 0 auto;
+      color: var(--dim);
+      text-decoration: none;
+      font-size: 13px;
+      padding: 2px 5px;
+    }
+
+    .mr-dl:hover {
+      color: var(--grn);
+      text-shadow: 0 0 6px var(--grn);
+    }
+
+    .mr-edit {
+      flex: 0 0 auto;
+      cursor: pointer;
+      color: var(--dim);
+      font-size: 13px;
+      padding: 2px 5px;
+      font-variant-emoji: text;
+    }
+
+    .mr-edit:hover {
+      color: var(--grn);
+      text-shadow: 0 0 6px var(--grn);
+    }
+
+    .mr-drag {
+      flex: 0 0 auto;
+      cursor: grab;
+      color: var(--dim);
+      font-size: 14px;
+      padding: 2px 4px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .mr-drag:hover {
+      color: var(--grn);
+    }
+
+    .music-row.dragging {
+      opacity: .65;
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .12);
+    }
+
+    /* ── 파일 탐색기 ── */
+    .fs-box {
+      width: min(880px, 86vw);
+      max-width: 86vw;
+    }
+
+    .fs-path {
+      font-size: .8em;
+      color: var(--dim);
+      margin: 4px 0 8px;
+      word-break: break-all;
+    }
+
+    .fs-crumb {
+      color: var(--grn);
+      cursor: pointer;
+    }
+
+    .fs-crumb:hover {
+      text-decoration: underline;
+    }
+
+    .fs-drop {
+      border: 1px dashed rgba(77, 255, 143, .25);
+      border-radius: 6px;
+      padding: 6px;
+    }
+
+    .fs-drop.drag {
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .08);
+    }
+
+    .fs-drophint {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 6px;
+      opacity: .5;
+    }
+
+    .fs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      max-height: 42vh;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .fs-list::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .fs-list::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .fs-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 9px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: .9em;
+    }
+
+    .fs-row:hover {
+      background: rgba(77, 255, 143, .1);
+    }
+
+    .fs-row.dir {
+      color: #d6ffe8;
+    }
+
+    .fs-fn {
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .fs-sz {
+      flex: 0 0 auto;
+      font-size: .8em;
+    }
+
+    .fs-viewer {
+      max-height: 58vh;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .fs-viewer::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .fs-viewer::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .fs-viewer::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .fs-vhead {
+      margin-bottom: 8px;
+    }
+
+    .fs-edit {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 46vh;
+      background: #0a140a;
+      color: #cfeede;
+      border: 1px solid rgba(77, 255, 143, .3);
+      border-radius: 5px;
+      padding: 9px 11px;
+      font-family: ui-monospace, "Cascadia Mono", monospace;
+      font-size: .85em;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .fs-edit::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .fs-edit::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .fs-edit::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .fs-media {
+      max-width: 100%;
+      max-height: 52vh;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .fs-foot {
+      margin-top: 12px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .dl-card {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ── 유튜브 큐 진행률 ── */
+    .yt-queue {
+      margin: 8px 0 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .yt-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .82em;
+    }
+
+    .yt-num {
+      color: var(--dim);
+      flex: 0 0 auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .yt-bar-wrap {
+      flex: 0 0 90px;
+      height: 7px;
+      background: rgba(77, 255, 143, .08);
+      border: 1px solid rgba(77, 255, 143, .2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .yt-bar {
+      height: 100%;
+      background: rgba(77, 255, 143, .55);
+      width: 0%;
+      transition: width .35s ease;
+    }
+
+    .yt-label {
+      flex: 1 1 auto;
+      color: var(--dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .yt-row.ok .yt-bar {
+      width: 100% !important;
+      background: var(--grn);
+    }
+
+    .yt-row.ok .yt-label {
+      color: var(--grn);
+    }
+
+    .yt-row.err .yt-bar {
+      background: #ff6060;
+      width: 30% !important;
+    }
+
+    .yt-row.err .yt-label {
+      color: #ff8888;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: rgba(77, 255, 143, .1);
+      border: 1px solid rgba(77, 255, 143, .4);
+      color: var(--grn);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .dl-btn:hover {
+      background: rgba(77, 255, 143, .22);
+      border-color: var(--grn);
+    }
+
+    .dl-btn.add {
+      border-color: rgba(77, 255, 143, .25);
+      color: var(--dim);
+    }
+
+    .dl-btn.add:hover {
+      border-color: rgba(77, 255, 143, .5);
+      color: var(--grn);
+    }
+
+    .imggen-form {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .imggen-form.hidden {
+      display: none;
+    }
+
+    .imggen-prompt {
+      background: rgba(77, 255, 143, .06);
+      border: 1px solid rgba(77, 255, 143, .3);
+      color: var(--grn);
+      font-family: inherit;
+      font-size: 12px;
+      padding: 3px 8px;
+      outline: none;
+      min-width: 170px;
+      max-width: 46vw;
+    }
+
+    .imggen-prompt::placeholder {
+      color: var(--dim);
+    }
+
+    .imggen-high {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--dim);
+      font-size: 11px;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .imggen-high input {
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .msg-copy {
+      cursor: pointer;
+      margin-left: 6px;
+      color: var(--dim);
+      opacity: .3;
+      font-size: .85em;
+      user-select: none;
+    }
+
+    .dobis-msg.you:hover .msg-copy {
+      opacity: .75;
+    }
+
+    .msg-copy:hover {
+      color: var(--grn);
+      opacity: 1;
+    }
+
+    .body {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 레지스트리·터미널 뷰포트 스크롤바 통일 */
+    #registryView,
+    .xterm-viewport {
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    #registryView::-webkit-scrollbar,
+    .xterm-viewport::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    #registryView::-webkit-scrollbar-thumb,
+    .xterm-viewport::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    #registryView {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    #sshView {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #termWrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #sshDropZone {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(3, 21, 12, .9);
+      border: 2px dashed rgba(77, 255, 143, .8);
+      color: var(--grn);
+      font-size: 14px;
+      letter-spacing: .12em;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #sshDropZone.hidden {
+      display: none;
+    }
+
+    #sshXferBar {
+      display: none;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #sshXferBar.active {
+      display: flex;
+    }
+
+    #ssh_dl_path {
+      width: 220px;
+    }
+
+    /* 앱 윈도우 (Windows 식 창) — 플로팅, 드래그, 최소화/전체화면/닫기 */
+    .appwin {
+      position: absolute;
+      z-index: 30;
+      left: 8%;
+      top: 7%;
+      width: 80%;
+      height: 80%;
+      display: flex;
+      flex-direction: column;
+      background: #04140a;
+      border: 1px solid var(--grn);
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, .6), 0 0 14px rgba(77, 255, 143, .28);
+      overflow: hidden;
+    }
+
+    .appwin.hidden {
+      display: none;
+    }
+
+    .appwin.win-max {
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0;
+    }
+
+    .appwin-bar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 10px;
+      background: linear-gradient(#0a2417, #072011);
+      border-bottom: 1px solid var(--dim);
+      cursor: move;
+      user-select: none;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 12px;
+      color: #b6ffd6;
+    }
+
+    .appwin-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .appwin-btns {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 6px;
+    }
+
+    .awb {
+      cursor: pointer;
+      min-width: 20px;
+      height: 18px;
+      line-height: 16px;
+      text-align: center;
+      border: 1px solid var(--dim);
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .awb:hover {
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .12);
+    }
+
+    .awb.close:hover {
+      background: #ff6b6b;
+      color: #1a0a0a;
+      border-color: #ff6b6b;
+    }
+
+    .awb.tint.on {
+      background: var(--grn);
+      color: #04140a;
+      border-color: var(--grn);
+    }
+
+    .appwin-body {
+      flex: 1 1 auto;
+      position: relative;
+      min-height: 0;
+    }
+
+    .geo-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #04140a;
+    }
+
+    /* CRT 틴트 모드 — iframe 전체에 그린 필터 + 스캔라인 오버레이(클릭은 통과) */
+    .appwin.tinted .geo-frame {
+      filter: saturate(.5) brightness(1.05) contrast(1.05) sepia(.42) hue-rotate(66deg);
+    }
+
+    .appwin-scan {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      z-index: 2;
+      background: repeating-linear-gradient(rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px);
+    }
+
+    .appwin.tinted .appwin-scan {
+      display: block;
+    }
+
+    /* 명반(CHART) — 답변 버블 안 인라인 토글(dl-card 패턴 재활용) */
+    .chart-img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 6px 0 2px;
+      border-radius: 4px;
+      background: #fff;
+      border: 1px solid rgba(77, 255, 143, .3);
+      cursor: zoom-in;
+    }
+
+    .chart-img.hidden {
+      display: none !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .muted {
+      color: var(--dim);
+    }
+
+    .cmd {
+      color: var(--grn);
+      cursor: pointer;
+    }
+
+    .cmd:hover {
+      color: #d6ffe8;
+      text-shadow: 0 0 8px var(--grn);
+    }
+
+    input,
+    select.inl {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(77, 255, 143, .35);
+      color: var(--grn);
+      font: inherit;
+      caret-color: var(--grn);
+      padding: 1px 2px;
+      min-width: 0;
+    }
+
+    input:focus,
+    select.inl:focus {
+      outline: none;
+      border-bottom-color: var(--grn);
+    }
+
+    select.inl option {
+      background: #03150c;
+    }
+
+    input[type=checkbox] {
+      accent-color: var(--grn);
+    }
+
+    .rec {
+      border-bottom: 1px dashed rgba(77, 255, 143, .18);
+      padding: 7px 0;
+    }
+
+    .rec-head {
+      color: #b6ffd6;
+    }
+
+    .rec-grid {
+      display: grid;
+      grid-template-columns: auto 1fr auto 1fr;
+      gap: 2px 8px;
+      margin: 4px 0;
+      align-items: center;
+    }
+
+    .rec-grid label {
+      color: var(--dim);
+    }
+
+    .rec-acts {
+      margin-top: 3px;
+    }
+
+    .rec-acts .cmd {
+      margin-right: 14px;
+    }
+
+    .newform {
+      border: 1px solid var(--dim);
+      padding: 8px 10px;
+      margin-bottom: 10px;
+    }
+
+    .ssh-form {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .ssh-form label {
+      color: var(--dim);
+    }
+
+    #sshStatus {
+      color: #ffe08a;
+    }
+
+    #termMain {
+      display: flex;
+      flex-direction: row;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    #sshSidebar {
+      width: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: width .18s ease;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid transparent;
+      background: #020e07;
+    }
+
+    #sshSidebar.open {
+      width: 158px;
+      border-left-color: var(--dim);
+    }
+
+    .sb-head {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--dim);
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: .1em;
+    }
+
+    .sb-list {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--dim);
+      border-bottom: 1px dashed rgba(77, 255, 143, .1);
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .sb-item:hover {
+      background: rgba(77, 255, 143, .07);
+      color: var(--grn);
+    }
+
+    .sb-item.active {
+      background: rgba(77, 255, 143, .12);
+      color: var(--grn);
+      border-left: 2px solid var(--grn);
+      padding-left: 6px;
+    }
+
+    .sb-item .sb-dot {
+      font-size: 7px;
+      opacity: .3;
+      flex-shrink: 0;
+    }
+
+    .sb-item.live .sb-dot {
+      color: #9fffce;
+      opacity: 1;
+    }
+
+    .sb-item .sb-name {
+      flex: 1 1 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sb-item .sb-x {
+      opacity: .3;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .sb-item:hover .sb-x {
+      opacity: .6;
+    }
+
+    .sb-item .sb-x:hover {
+      opacity: 1;
+      color: #ff9aa6;
+    }
+
+    .sb-foot {
+      flex: 0 0 auto;
+      padding: 6px 8px;
+      border-top: 1px solid var(--dim);
+    }
+
+    .term-pane {
+      display: none;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--dim);
+      padding: 4px;
+    }
+
+    .term-pane.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1.05em;
+      background: var(--grn);
+      vertical-align: text-bottom;
+      animation: blink 1s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
     /* DOBIS 챗봇 */
-    #dobisView { flex: 1 1 auto; min-height: 0; display: flex; gap: 12px; align-items: stretch; }
-    .dobis-bubble { position: relative; flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
-      border: 2px solid var(--grn); border-radius: 18px; padding: 10px 14px;
-      box-shadow: 0 0 14px rgba(77,255,143,.15); }
+    #dobisView {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .dobis-bubble {
+      position: relative;
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid var(--grn);
+      border-radius: 18px;
+      padding: 10px 14px;
+      box-shadow: 0 0 14px rgba(77, 255, 143, .15);
+    }
+
     /* 꼬리: 마스코트 머리 높이(세로 중앙)로 정렬 */
-    .dobis-bubble::after { content: ""; position: absolute; right: -16px; top: 44%;
-      border: 15px solid transparent; border-left-color: var(--grn); }
-    .dobis-bubble::before { content: ""; position: absolute; right: -11px; top: 46%; z-index: 1;
-      border: 12px solid transparent; border-left-color: var(--scr); }
-    .dobis-head { position: relative; flex: 0 0 auto; color: #b6ffd6; margin-bottom: 6px; }
-    .dobis-head .dobis-menu-btn { margin-right: 8px; }
-    .dobis-bar { position: relative; flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px; }
-    .dobis-bar #chatName { margin-left: auto; }
+    .dobis-bubble::after {
+      content: "";
+      position: absolute;
+      right: -16px;
+      top: 44%;
+      border: 15px solid transparent;
+      border-left-color: var(--grn);
+    }
+
+    .dobis-bubble::before {
+      content: "";
+      position: absolute;
+      right: -11px;
+      top: 46%;
+      z-index: 1;
+      border: 12px solid transparent;
+      border-left-color: var(--scr);
+    }
+
+    .dobis-head {
+      position: relative;
+      flex: 0 0 auto;
+      color: #b6ffd6;
+      margin-bottom: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dobis-head .dobis-menu-btn {
+      margin-right: 8px;
+    }
+
+    .dobis-head #chatName {
+      margin-left: auto;
+      max-width: 45%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dobis-bar {
+      position: relative;
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
     /* 햄버거 드롭다운 — 항시 노출하던 툴바 버튼들을 ☰ 안으로 접음 */
-    .dobis-menu { position: absolute; top: calc(100% + 4px); left: 0; background: #0d1a0d; border: 1px solid rgba(77,255,143,.5); border-radius: 6px; padding: 4px 0; min-width: 150px; z-index: 25; box-shadow: 0 0 14px rgba(77,255,143,.2); }
-    .dobis-menu.hidden { display: none; }
-    .chatlist { flex: 0 0 auto; max-height: 38%; overflow: auto; border: 1px solid var(--dim); border-radius: 6px;
-      padding: 6px 8px; margin-bottom: 6px; }
-    .chatlist .row { padding: 4px 2px; cursor: pointer; }
-    .chatlist .row:hover { color: #d6ffe8; }
-    .modelchips { margin-left: 4px; }
-    .modelchips .chip { cursor: pointer; padding: 0 7px; margin: 0 2px; border: 1px solid var(--dim);
-      border-radius: 9px; color: var(--dim); font-size: .92em; }
-    .modelchips .chip.on { background: var(--grn); color: #04140a; border-color: var(--grn); }
-    .modelchips .chip:hover { color: #d6ffe8; }
-    .dobis-log { flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 4px; }
-    .dobis-log::-webkit-scrollbar { width: 9px; }
-    .dobis-log::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 4px; }
-    .dobis-msg { margin: 5px 0; white-space: pre-wrap; word-break: break-word; }
+    .dobis-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: #0d1a0d;
+      border: 1px solid rgba(77, 255, 143, .5);
+      border-radius: 6px;
+      padding: 4px 0;
+      min-width: 150px;
+      z-index: 25;
+      box-shadow: 0 0 14px rgba(77, 255, 143, .2);
+    }
+
+    .dobis-menu.hidden {
+      display: none;
+    }
+
+    .chatlist {
+      flex: 0 0 auto;
+      max-height: 38%;
+      overflow: auto;
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin-bottom: 6px;
+    }
+
+    .chatlist .row {
+      padding: 4px 2px;
+      cursor: pointer;
+    }
+
+    .chatlist .row:hover {
+      color: #d6ffe8;
+    }
+
+    .modelchips {
+      margin-left: 4px;
+    }
+
+    .model-select {
+      margin-left: 4px;
+      padding: 0 4px;
+      background: transparent;
+      color: var(--grn);
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: .92em;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .model-select:hover {
+      border-color: var(--grn);
+    }
+
+    .model-select option {
+      background: #0d1a0d;
+      color: var(--grn);
+    }
+
+    .modelchips .chip {
+      cursor: pointer;
+      padding: 0 7px;
+      margin: 0 2px;
+      border: 1px solid var(--dim);
+      border-radius: 9px;
+      color: var(--dim);
+      font-size: .92em;
+    }
+
+    .modelchips .chip.on {
+      background: var(--grn);
+      color: #04140a;
+      border-color: var(--grn);
+    }
+
+    .modelchips .chip:hover {
+      color: #d6ffe8;
+    }
+
+    .dobis-log {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .dobis-log::-webkit-scrollbar {
+      width: 9px;
+    }
+
+    .dobis-log::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .dobis-msg {
+      margin: 5px 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     /* 각 내 발화(YOU) 위에 턴 구분선 — 한 교환(YOU→DOBIS)을 한 덩어리로 */
-    .dobis-msg.you { color: var(--dim); border-top: 1px dashed rgba(77,255,143,.22); margin-top: 11px; padding-top: 9px; }
-    .dobis-log > .dobis-msg.you:first-child { border-top: none; margin-top: 5px; padding-top: 0; }
-    .dobis-msg.bot { color: var(--grn); }
-    .dobis-img { display: block; max-width: 100%; max-height: 320px; margin: 6px 0; border: 1px solid rgba(77,255,143,.3); border-radius: 4px; cursor: pointer; }
-    .dobis-img:hover { border-color: var(--grn); }
+    .dobis-msg.you {
+      color: var(--dim);
+      border-top: 1px dashed rgba(77, 255, 143, .22);
+      margin-top: 11px;
+      padding-top: 9px;
+    }
+
+    .dobis-log>.dobis-msg.you:first-child {
+      border-top: none;
+      margin-top: 5px;
+      padding-top: 0;
+    }
+
+    .dobis-msg.bot {
+      color: var(--grn);
+    }
+
+    .dobis-img {
+      display: block;
+      max-width: 100%;
+      max-height: 320px;
+      margin: 6px 0;
+      border: 1px solid rgba(77, 255, 143, .3);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .dobis-img:hover {
+      border-color: var(--grn);
+    }
+
     /* 스피너는 이미지 들어갈 자리(~200px 정사각)만.
        ⚠️ '.monitor svg { position:absolute; inset:0; width:100%; height:100% }'(CRT 프레임용)이
        .monitor 안의 모든 svg에 걸려 스피너를 거대 오버레이로 만든다. 더 구체적인 셀렉터(.dobis-log .imggen-placeholder,
        specificity 0,2,0 > .monitor svg 0,1,1)로 이기고 position/inset 을 리셋해 인라인 200px 로 고정. */
-    .dobis-log .imggen-placeholder { position: static; inset: auto; display: block; width: 200px; height: 200px; max-width: 100%; margin: 6px 0; border-radius: 4px; }
-    @keyframes imggen-scan { 0%,100%{opacity:.18} 50%{opacity:.55} }
-    @keyframes imggen-bar { 0%{width:4%} 60%{width:82%} 100%{width:4%} }
-    .dobis-img-preview { display: flex; align-items: center; gap: 6px; margin: 4px 0; padding: 4px 8px; background: rgba(77,255,143,.07); border: 1px solid rgba(77,255,143,.25); border-radius: 4px; font-size: .78em; color: var(--dim); }
-    .dobis-img-preview img { height: 36px; width: 36px; object-fit: cover; border-radius: 3px; border: 1px solid var(--dim); }
-    .dobis-img-preview .rm { cursor: pointer; color: #ff6b6b; margin-left: auto; padding: 0 4px; }
-    /* ── 캐릭챗 ── */
-    .cc-header { position: relative; width: 100%; border-radius: 6px; overflow: hidden; margin: 4px 0 12px; }
-    .cc-header img { display: block; width: 100%; max-height: 340px; object-fit: cover; object-position: top; }
-    .cc-namecard { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 14px 10px; background: linear-gradient(transparent, rgba(0,0,0,.88)); }
-    .cc-name { font-size: 1.05em; font-weight: 700; color: #fff; letter-spacing: .04em; }
-    .cc-world { font-size: .72em; color: rgba(255,255,255,.4); letter-spacing: .1em; margin-top: 3px; text-transform: uppercase; }
-    .cc-narr { display: block; color: rgba(77,255,143,.38); font-style: italic; font-size: .88em; line-height: 1.65; margin: 3px 0; }
-    .cc-speaker { display: block; font-size: .7em; color: rgba(77,255,143,.42); letter-spacing: .12em; text-transform: uppercase; margin: 10px 0 2px; }
-    .cc-speech { display: block; color: rgba(255,255,255,.88); font-weight: 600; line-height: 1.7; margin: 0 0 4px; }
-    .cc-status { display: block; margin: 10px 0 4px; padding: 10px 13px; background: rgba(77,255,143,.04); border: 1px solid rgba(77,255,143,.18); border-left: 3px solid rgba(77,255,143,.35); border-radius: 4px; font-size: .77em; line-height: 1.75; color: rgba(77,255,143,.48); white-space: pre-wrap; }
-    .cc-status strong { color: rgba(77,255,143,.88); font-weight: 700; }
-    /* ── 타로 ── */
-    .tarot-card { display: inline-block; vertical-align: top; width: 92px; margin: 8px 8px 8px 0; text-align: center; }
-    /* 타로 이미지 = 데이터 URI <img>, 명시적 px → 찌부러짐/오버레이 불가 */
-    .tarot-art { display: block; width: 88px; height: 141px; margin: 0 auto; image-rendering: pixelated; }
-    .tarot-rev .tarot-art { transform: rotate(180deg); }
-    .tarot-title { font-size: .72em; color: var(--grn); margin-top: 5px; font-weight: 700; letter-spacing: .03em; }
-    .tarot-kor { font-size: .72em; color: rgba(255,255,255,.78); margin-top: 1px; }
-    .tarot-kor .rev { color: #f38ba8; }
-    .tarot-kor .up { color: #a6e3a1; }
-    .tarot-kw { font-size: .66em; color: var(--dim); margin-top: 3px; line-height: 1.45; }
-    /* ── 타로 스프레드 (5장 뒷면 → 선택 → 채팅 확인) ── */
-    .tarot-spread { margin: 8px 0; }
-    .tarot-spread-cards { display: flex; gap: 5px; flex-wrap: wrap; }
-    .tarot-face-down { position: relative; width: 88px; flex: 0 0 88px; cursor: pointer; user-select: none; }
-    .tarot-back-img { display: block; width: 88px; height: 141px; border-radius: 4px; border: 1px solid rgba(139,105,20,.5); transition: box-shadow .2s; }
-    .tarot-face-down.tarot-back-rev .tarot-back-img { transform: rotate(180deg); }
-    .tarot-face-down.tarot-selected .tarot-back-img { box-shadow: 0 0 0 2px #4dff8f, 0 0 14px rgba(77,255,143,.4); }
-    .tarot-face-down:not(.tarot-selected):hover .tarot-back-img { box-shadow: 0 0 8px rgba(139,105,20,.45); }
-    @keyframes tarot-cw-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .tarot-face-down.tarot-spinning .tarot-back-img { animation: tarot-cw-spin .38s ease-out; }
-    .tarot-spin-btn { position: absolute; bottom: 5px; right: 4px; background: rgba(10,3,22,.8); border: 1px solid rgba(139,105,20,.5); border-radius: 3px; cursor: pointer; font-size: .78em; line-height: 1; padding: 2px 3px; color: #c9922b; opacity: .75; z-index: 2; }
-    .tarot-spin-btn:hover { opacity: 1; background: rgba(139,105,20,.2); }
-    .tarot-spread-controls { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
-    .tarot-spread-hint { font-size: .72em; color: var(--dim); }
-    /* ── 인라인 마크다운 ── */
-    .dobis-msg.bot strong { color: #fff; font-weight: 700; }
-    .dobis-msg.bot em { font-style: italic; color: rgba(77,255,143,.82); }
-    .dobis-msg.bot code { font-family: ui-monospace,"Cascadia Mono",monospace; font-size: .9em; background: rgba(77,255,143,.1); border: 1px solid rgba(77,255,143,.2); border-radius: 3px; padding: 0 4px; }
-    /* 펜스드 코드블록 (```) */
-    .code-block { position: relative; background: #0a140a; border: 1px solid rgba(77,255,143,.25); border-radius: 5px; padding: 9px 11px; margin: 8px 0; overflow-x: auto; font-family: ui-monospace,"Cascadia Mono",monospace; font-size: .8em; line-height: 1.5; color: #cfeede; white-space: pre; }
-    .code-block code { background: none; border: none; padding: 0; font: inherit; color: inherit; white-space: pre; }
-    .code-copy { position: absolute; top: 5px; right: 6px; background: none; border: none; cursor: pointer; font-size: 1em; opacity: .35; line-height: 1; padding: 2px 3px; transition: opacity .15s; }
-    .code-copy:hover { opacity: 1; }
-    .code-copy.copied { opacity: 1; filter: brightness(1.6); }
-    /* ── 선택지 버튼 ── */
-    .dobis-choices { display: flex; flex-direction: column; gap: 6px; margin: 9px 0 4px; }
-    .dobis-choice-btn { display: block; width: 100%; text-align: left; background: rgba(77,255,143,.06); border: 1px solid rgba(77,255,143,.3); border-radius: 5px; color: var(--grn); padding: 8px 11px; font: inherit; font-size: .9em; line-height: 1.4; cursor: pointer; transition: background .12s, border-color .12s; }
-    .dobis-choice-btn:hover { background: rgba(77,255,143,.16); border-color: var(--grn); }
-    .dobis-choice-btn .cn { color: var(--grn); font-weight: 700; margin-right: 6px; opacity: .85; }
-    .dobis-choice-btn:disabled { cursor: default; opacity: .4; }
-    .dobis-choice-btn.chosen { opacity: 1; background: rgba(77,255,143,.2); border-color: var(--grn); }
-    .domoji-in { height: 1.4em; vertical-align: -0.35em; margin: 0 1px; }
-    .dobis-input-row { flex: 0 0 auto; display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 8px; align-items: center; }
-    .dobis-input-icons { position: relative; display: flex; gap: 4px; flex: 0 0 auto; }
-    .dobis-input-menu { position: absolute; bottom: calc(100% + 6px); left: 0; background: #0d1a0d; border: 1px solid rgba(77,255,143,.5); border-radius: 6px; padding: 4px 0; min-width: 150px; z-index: 20; box-shadow: 0 0 14px rgba(77,255,143,.2); }
-    .dobis-input-menu.hidden { display: none; }
-    .dim-item { padding: 8px 14px; cursor: pointer; font-size: .85em; white-space: nowrap; color: rgba(77,255,143,.75); }
-    .dim-item:hover, .dim-item:active { background: rgba(77,255,143,.1); color: var(--grn); }
-    .dim-item.on { color: var(--grn); font-weight: bold; }
-    .dim-item.on::after { content: " ✓"; }
-    .dobis-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-    .dobis-chips:empty { display: none; }
-    .dobis-chip { display: inline-flex; align-items: center; gap: 4px; background: rgba(77,255,143,.12); border: 1px solid rgba(77,255,143,.4); border-radius: 10px; padding: 2px 8px 2px 6px; font-size: .78em; color: var(--grn); }
-    .dobis-chip-rm { cursor: pointer; opacity: .55; line-height: 1; }
-    .dobis-chip-rm:hover { opacity: 1; }
-    #dobisInput { flex: 1 1 auto; min-width: 0; border: 1px solid var(--dim); border-radius: 6px; padding: 6px 9px; }
-    .dobis-send { flex: 0 0 auto; border: 1px solid var(--grn); border-radius: 6px; padding: 6px 14px; }
-    .dobis-stop { flex: 0 0 auto; cursor: pointer; border: 1px solid #ff6b6b; color: #ff9b9b; border-radius: 6px; padding: 5px 10px; font-size: .85em; }
-    .dobis-stop:hover { background: #ff6b6b; color: #1a0a0a; }
-    #dobisInput:disabled { opacity: .45; cursor: not-allowed; }
-    .dobis-send.disabled { opacity: .4; pointer-events: none; }
-    .dobis-side { flex: 0 0 auto; max-width: 26%; align-self: stretch; display: flex; flex-direction: column; justify-content: flex-start; gap: 8px; min-height: 0; }
-    /* 마스코트는 줄어들 수 있고 높이 상한을 둔다 — 전체화면/와이드에서 비대해져 STATUS PANEL·음악바를 밀어내지 않도록 */
-    .dobis-mascot-wrap { flex: 0 1 auto; min-height: 0; position: relative; }
-    /* STATUS PANEL — 폭 24열 고정, 높이 가변(남는 공간을 flex 로 채움). DOBIS 가 그 행 수에 맞춰 ASCII 렌더 */
-    /* 폭은 domoji 섹션과 동일(88%), cols=24 고정 — font-size 는 JS(fitHud)가 폭에 맞춰 가변 설정 */
-    .dobis-hud { flex: 1 1 auto; align-self: center; margin: 0; white-space: pre; font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
-      font-size: 13px; line-height: 1.18; color: var(--grn); width: 88%; min-height: calc(8 * 1.18em); height: auto;
-      padding: 6px 7px; box-sizing: border-box; overflow: hidden; border: 1px solid var(--dim, #1f5f37);
-      border-radius: 6px; background: #04140a; text-shadow: 0 0 6px rgba(77,255,143,.4); }
-    .dobis-hud:empty::before { content: "╔══ STATUS PANEL ═════╗\A║                     ║\A║   booting…          ║\A╚═════════════════════╝"; white-space: pre; opacity: .4; }
-    /* 음악 컨트롤 바 — STATUS PANEL 하단 */
-    .dobis-music { flex: 0 0 auto; align-self: center; width: 88%; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 11px; color: var(--grn);
-      border: 1px solid var(--dim, #1f5f37); border-radius: 6px; padding: 4px 7px; background: #04140a; }
-    .dm-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .dm-btns { flex: 0 0 auto; display: flex; gap: 8px; }
-    .dm-btn { cursor: pointer; }
-    .dm-btn:hover { text-shadow: 0 0 6px var(--grn); }
-    /* 진행상태 readout — STATUS PANEL 바로 아래(생성 중·완료·오류). 비었을 땐 자리만 차지(레이아웃 흔들림 방지) */
-    .dobis-prog { flex: 0 0 auto; align-self: center; width: 88%; min-height: 1.35em; box-sizing: border-box;
-      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 10.5px; line-height: 1.35;
-      color: var(--dim); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .dobis-prog:not(:empty) { color: var(--grn); text-shadow: 0 0 6px rgba(77,255,143,.35); }
-    /* thinking 중 shining 효과 — letter-spacing 펄스 + glow 강화 */
-    @keyframes think-shine {
-      0%, 100% { text-shadow: 0 0 6px rgba(77,255,143,.5); letter-spacing: .02em; opacity: 1; }
-      50% { text-shadow: 0 0 22px rgba(77,255,143,1), 0 0 44px rgba(0,255,140,.45); letter-spacing: .1em; opacity: .82; }
+    .dobis-log .imggen-placeholder {
+      position: static;
+      inset: auto;
+      display: block;
+      width: 200px;
+      height: 200px;
+      max-width: 100%;
+      margin: 6px 0;
+      border-radius: 4px;
     }
-    .dobis-prog.thinking-on { animation: think-shine 1.6s ease-in-out infinite; color: var(--grn); }
-    /* shared 사용량 게이지 (논리 10GB 기준) */
-    .shared-gauge { flex: 0 0 auto; align-self: center; width: 88%; box-sizing: border-box;
-      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 10.5px; color: var(--dim);
-      text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .shared-gauge.hidden { display: none; }
-    .shared-gauge.warn { color: #ffcf6b; text-shadow: 0 0 6px rgba(255,207,107,.4); }
-    .imggen-gauge { flex: 0 0 auto; align-self: center; width: 88%; box-sizing: border-box;
-      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace; font-size: 10.5px; color: var(--dim);
-      text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .imggen-gauge.hidden { display: none; }
-    .imggen-gauge.warn { color: #ffcf6b; text-shadow: 0 0 6px rgba(255,207,107,.4); }
-    .imggen-gauge.over { color: #ff6b6b; text-shadow: 0 0 6px rgba(255,107,107,.5); }
-    .dobis-mascot { width: 100%; height: auto; max-height: 40vh; object-fit: contain; display: block;
-      filter: drop-shadow(0 0 10px rgba(111,255,168,.3)); }
-    /* domoji 표시 중엔 전신 마스코트를 감추고(display:none → wrap 축소) 박스만 → STATUS PANEL 이 그만큼 늘어남 */
-    .domoji-overlay { display: flex; align-items: flex-start; justify-content: center; }
-    .domoji-box { width: 88%; max-height: 40vh; aspect-ratio: 1 / 1; margin: 0 auto; display: flex; align-items: flex-end; justify-content: center; padding: 7% 7% 0 7%; }
-    .domoji-box img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: bottom; }
-    .domoji-overlay.pop { animation: domoji-pop .35s ease-out; }
-    @keyframes domoji-pop { 0% { transform: scale(.82); opacity: .2; } 100% { transform: scale(1); opacity: 1; } }
-    /* 게임 캐릭터 대화창 — 그린 라운드 보더 박스 + 다크 배경 + CRT(스캔라인·필름그레인·그린틴트) */
-    .domoji-fx { position: relative; overflow: hidden; border: 2px solid var(--grn); border-radius: 14px;
-      background: #04140a; box-shadow: 0 0 12px rgba(77,255,143,.25); }
-    .domoji-fx > img { filter: saturate(.6) brightness(1.08) contrast(1.06) sepia(.28) hue-rotate(72deg); }
-    .domoji-fx::before { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
-      background: repeating-linear-gradient(rgba(0,0,0,.30) 0 1px, transparent 1px 3px); }
-    /* 필름 그레인 + 비디오 노이즈 — canvas 로 매 프레임 생성(domoji 표시 중에만). 스캔라인은 ::before 유지 */
-    .domoji-noise { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: .5; }
-    /* 사용자 전송 domoji 스티커(채팅 내) */
-    .domoji-sticker { display: inline-block; width: 78px; aspect-ratio: 1 / 1; vertical-align: middle; }
-    .domoji-sticker > img { width: 100%; height: 100%; object-fit: contain; padding: 9%; display: block; }
-    /* domoji 피커 — 입력창 바로 위 팝업 */
-    .domoji-picker { position: absolute; left: 14px; right: 14px; bottom: 52px; z-index: 10;
-      display: flex; flex-wrap: wrap; gap: 6px; max-height: 42%; overflow: auto;
-      border: 1px solid var(--grn); border-radius: 8px; padding: 8px; background: #04140a;
-      box-shadow: 0 0 16px rgba(0,0,0,.55); }
-    .domoji-picker .pick { width: 46px; height: 56px; cursor: pointer; border: 1px solid transparent; border-radius: 4px;
-      display: flex; align-items: center; justify-content: center; }
-    .domoji-picker .pick:hover { border-color: var(--grn); }
-    .domoji-picker .pick img { max-width: 100%; max-height: 100%; }
-    /* 우상단 버튼/헬스 */
-    .topbtns { position: absolute; top: 10px; right: 14px; display: flex; gap: 10px; align-items: center; z-index: 5; }
-    .health { font-size: .82em; letter-spacing: .02em; }
-    .health.live { color: #9fffce; text-shadow: 0 0 8px rgba(77,255,143,.6); }
-    .health.dead { color: #ff9aa6; }
-    .cmd.ico { font-size: 1.15em; line-height: 1; }
-    /* 설정 모달 */
-    .modal { position: absolute; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,.55); }
-    .modal-box { background: #04190e; border: 1px solid var(--grn); border-radius: 10px; padding: 16px 18px;
-      min-width: min(420px, 86%); box-shadow: 0 0 24px rgba(77,255,143,.25); }
-    .modal-box input { border: 1px solid var(--dim); border-radius: 5px; padding: 4px 7px; }
-    /* WORKS 서브툴바 */
-    .subbar { display: flex; gap: 14px; margin-bottom: 10px; }
-    /* HOME 대시보드 */
-    .home-banner { color: var(--grn); font-size: clamp(7px, 1.1vw, 12px); line-height: 1.15; margin: 2px 0 14px; text-shadow: 0 0 6px rgba(77,255,143,.4); }
-    .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 14px; }
-    .home-tile { border: 1px solid var(--dim); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
-    .home-tile b { color: #b6ffd6; font-size: 1.05em; }
-    /* RATE LIMIT 타일 */
-    .home-rate { border: 1px solid var(--dim); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
-    .home-rate-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .home-rate-head #rateAcct { color: #b6ffd6; }
-    .rate-bar { letter-spacing: 1px; color: var(--grn); text-shadow: 0 0 6px rgba(77,255,143,.4); margin-bottom: 4px; word-break: break-all; }
-    /* 윈도우98 실행 아이콘풍 카드 */
-    .home-actions { display: flex; flex-wrap: wrap; gap: 14px; }
-    .app-card { width: 92px; display: flex; flex-direction: column; align-items: center; gap: 6px;
-      padding: 12px 8px; cursor: pointer; text-decoration: none; color: var(--grn);
-      border: 1px solid var(--dim); border-radius: 8px; background: rgba(77,255,143,.03);
-      box-shadow: inset 1px 1px rgba(182,255,214,.18), inset -1px -1px rgba(0,0,0,.4); }
-    .app-card:hover { border-color: var(--grn); background: rgba(77,255,143,.1); box-shadow: 0 0 12px rgba(77,255,143,.25); }
-    .app-card:active { box-shadow: inset -1px -1px rgba(182,255,214,.18), inset 1px 1px rgba(0,0,0,.45); }
-    .app-ico { font-size: 30px; line-height: 1; filter: drop-shadow(0 0 6px rgba(77,255,143,.4)); }
-    .app-label { font-size: .85em; color: #b6ffd6; letter-spacing: .04em; }
-    /* CRT 곡면 유리 느낌 — 데스크톱 모니터 모드 한정(전체화면/모바일 제외) */
-    @media (min-width: 821px) {
-      body:not(.fullscreen) .screen { border-radius: 28px / 20px; }
-      body:not(.fullscreen) .screen::after {
-        background:
-          radial-gradient(125% 80% at 50% -12%, rgba(190,255,214,.05), transparent 52%),
-          repeating-linear-gradient(rgba(0,0,0,.16) 0 1px, transparent 1px 3px);
-        box-shadow: inset 0 0 95px rgba(0,0,0,.82), inset 0 0 26px rgba(0,0,0,.5);
+
+    @keyframes imggen-scan {
+
+      0%,
+      100% {
+        opacity: .18
+      }
+
+      50% {
+        opacity: .55
       }
     }
-    .setmenu { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
-    .setmenu-item { border: 1px solid var(--dim); border-radius: 6px; padding: 8px 10px; }
-    .setmenu-item:hover { border-color: var(--grn); }
+
+    @keyframes imggen-bar {
+      0% {
+        width: 4%
+      }
+
+      60% {
+        width: 82%
+      }
+
+      100% {
+        width: 4%
+      }
+    }
+
+    .dobis-img-preview {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0;
+      padding: 4px 8px;
+      background: rgba(77, 255, 143, .07);
+      border: 1px solid rgba(77, 255, 143, .25);
+      border-radius: 4px;
+      font-size: .78em;
+      color: var(--dim);
+    }
+
+    .dobis-img-preview img {
+      height: 36px;
+      width: 36px;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid var(--dim);
+    }
+
+    .dobis-img-preview .rm {
+      cursor: pointer;
+      color: #ff6b6b;
+      margin-left: auto;
+      padding: 0 4px;
+    }
+
+    /* ── 캐릭챗 ── */
+    .cc-header {
+      position: relative;
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 4px 0 12px;
+    }
+
+    .cc-header img {
+      display: block;
+      /*width: 100%;*/
+      max-height: 450px;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .cc-namecard {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 14px 10px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, .88));
+    }
+
+    .cc-name {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .04em;
+    }
+
+    .cc-world {
+      font-size: .72em;
+      color: rgba(255, 255, 255, .4);
+      letter-spacing: .1em;
+      margin-top: 3px;
+      text-transform: uppercase;
+    }
+
+    .cc-narr {
+      display: block;
+      color: rgba(77, 255, 143, .38);
+      font-style: italic;
+      font-size: .88em;
+      line-height: 1.65;
+      margin: 3px 0;
+    }
+
+    .cc-speaker {
+      display: block;
+      font-size: .7em;
+      color: rgba(77, 255, 143, .42);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 10px 0 2px;
+    }
+
+    .cc-speech {
+      display: block;
+      color: rgba(255, 255, 255, .88);
+      font-weight: 600;
+      line-height: 1.7;
+      margin: 0 0 4px;
+    }
+
+    .cc-status {
+      display: block;
+      margin: 10px 0 4px;
+      padding: 10px 13px;
+      background: rgba(77, 255, 143, .04);
+      border: 1px solid rgba(77, 255, 143, .18);
+      border-left: 3px solid rgba(77, 255, 143, .35);
+      border-radius: 4px;
+      font-size: .77em;
+      line-height: 1.75;
+      color: rgba(77, 255, 143, .48);
+      white-space: pre-wrap;
+    }
+
+    .cc-status strong {
+      color: rgba(77, 255, 143, .88);
+      font-weight: 700;
+    }
+
+    /* ── 타로 ── */
+    .tarot-card {
+      display: inline-block;
+      vertical-align: top;
+      width: 92px;
+      margin: 8px 8px 8px 0;
+      text-align: center;
+    }
+
+    /* 타로 이미지 = 데이터 URI <img>, 명시적 px → 찌부러짐/오버레이 불가 */
+    .tarot-art {
+      display: block;
+      width: 88px;
+      height: 141px;
+      margin: 0 auto;
+      image-rendering: pixelated;
+    }
+
+    .tarot-rev .tarot-art {
+      transform: rotate(180deg);
+    }
+
+    .tarot-title {
+      font-size: .72em;
+      color: var(--grn);
+      margin-top: 5px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .tarot-kor {
+      font-size: .72em;
+      color: rgba(255, 255, 255, .78);
+      margin-top: 1px;
+    }
+
+    .tarot-kor .rev {
+      color: #f38ba8;
+    }
+
+    .tarot-kor .up {
+      color: #a6e3a1;
+    }
+
+    .tarot-kw {
+      font-size: .66em;
+      color: var(--dim);
+      margin-top: 3px;
+      line-height: 1.45;
+    }
+
+    /* ── 타로 스프레드 (5장 뒷면 → 선택 → 채팅 확인) ── */
+    .tarot-spread {
+      margin: 8px 0;
+    }
+
+    .tarot-spread-cards {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .tarot-face-down {
+      position: relative;
+      width: 88px;
+      flex: 0 0 88px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tarot-back-img {
+      display: block;
+      width: 88px;
+      height: 141px;
+      border-radius: 4px;
+      border: 1px solid rgba(139, 105, 20, .5);
+      transition: box-shadow .2s;
+    }
+
+    .tarot-face-down.tarot-back-rev .tarot-back-img {
+      transform: rotate(180deg);
+    }
+
+    .tarot-face-down.tarot-selected .tarot-back-img {
+      box-shadow: 0 0 0 2px #4dff8f, 0 0 14px rgba(77, 255, 143, .4);
+    }
+
+    .tarot-face-down:not(.tarot-selected):hover .tarot-back-img {
+      box-shadow: 0 0 8px rgba(139, 105, 20, .45);
+    }
+
+    @keyframes tarot-cw-spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .tarot-face-down.tarot-spinning .tarot-back-img {
+      animation: tarot-cw-spin .38s ease-out;
+    }
+
+    .tarot-spin-btn {
+      position: absolute;
+      bottom: 5px;
+      right: 4px;
+      background: rgba(10, 3, 22, .8);
+      border: 1px solid rgba(139, 105, 20, .5);
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: .78em;
+      line-height: 1;
+      padding: 2px 3px;
+      color: #c9922b;
+      opacity: .75;
+      z-index: 2;
+    }
+
+    .tarot-spin-btn:hover {
+      opacity: 1;
+      background: rgba(139, 105, 20, .2);
+    }
+
+    .tarot-spread-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tarot-spread-hint {
+      font-size: .72em;
+      color: var(--dim);
+    }
+
+    /* ── 인라인 마크다운 ── */
+    .dobis-msg.bot strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .dobis-msg.bot em {
+      font-style: italic;
+      color: rgba(77, 255, 143, .82);
+    }
+
+    .dobis-msg.bot code {
+      font-family: ui-monospace, "Cascadia Mono", monospace;
+      font-size: .9em;
+      background: rgba(77, 255, 143, .1);
+      border: 1px solid rgba(77, 255, 143, .2);
+      border-radius: 3px;
+      padding: 0 4px;
+    }
+
+    /* 펜스드 코드블록 (```) */
+    .code-block {
+      position: relative;
+      background: #0a140a;
+      border: 1px solid rgba(77, 255, 143, .25);
+      border-radius: 5px;
+      padding: 9px 11px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-family: ui-monospace, "Cascadia Mono", monospace;
+      font-size: .8em;
+      line-height: 1.5;
+      color: #cfeede;
+      white-space: pre;
+    }
+
+    .code-block code {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      white-space: pre;
+    }
+
+    .code-copy {
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      opacity: .35;
+      line-height: 1;
+      padding: 2px 3px;
+      transition: opacity .15s;
+    }
+
+    .code-copy:hover {
+      opacity: 1;
+    }
+
+    .code-copy.copied {
+      opacity: 1;
+      filter: brightness(1.6);
+    }
+
+    /* ── 선택지 버튼 ── */
+    .dobis-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 9px 0 4px;
+    }
+
+    .dobis-choice-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: rgba(77, 255, 143, .06);
+      border: 1px solid rgba(77, 255, 143, .3);
+      border-radius: 5px;
+      color: var(--grn);
+      padding: 8px 11px;
+      font: inherit;
+      font-size: .9em;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: background .12s, border-color .12s;
+    }
+
+    .dobis-choice-btn:hover {
+      background: rgba(77, 255, 143, .16);
+      border-color: var(--grn);
+    }
+
+    .dobis-choice-btn .cn {
+      color: var(--grn);
+      font-weight: 700;
+      margin-right: 6px;
+      opacity: .85;
+    }
+
+    .dobis-choice-btn:disabled {
+      cursor: default;
+      opacity: .4;
+    }
+
+    .dobis-choice-btn.chosen {
+      opacity: 1;
+      background: rgba(77, 255, 143, .2);
+      border-color: var(--grn);
+    }
+
+    .domoji-in {
+      height: 1.4em;
+      vertical-align: -0.35em;
+      margin: 0 1px;
+    }
+
+    .dobis-input-row {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    .dobis-input-icons {
+      position: relative;
+      display: flex;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+
+    .dobis-input-menu {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 0;
+      background: #0d1a0d;
+      border: 1px solid rgba(77, 255, 143, .5);
+      border-radius: 6px;
+      padding: 4px 0;
+      min-width: 150px;
+      z-index: 20;
+      box-shadow: 0 0 14px rgba(77, 255, 143, .2);
+    }
+
+    .dobis-input-menu.hidden {
+      display: none;
+    }
+
+    .dim-item {
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: .85em;
+      white-space: nowrap;
+      color: rgba(77, 255, 143, .75);
+    }
+
+    .dim-item:hover,
+    .dim-item:active {
+      background: rgba(77, 255, 143, .1);
+      color: var(--grn);
+    }
+
+    .dim-item.on {
+      color: var(--grn);
+      font-weight: bold;
+    }
+
+    .dim-item.on::after {
+      content: " ✓";
+    }
+
+    .dobis-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 5px;
+    }
+
+    .dobis-chips:empty {
+      display: none;
+    }
+
+    .dobis-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(77, 255, 143, .12);
+      border: 1px solid rgba(77, 255, 143, .4);
+      border-radius: 10px;
+      padding: 2px 8px 2px 6px;
+      font-size: .78em;
+      color: var(--grn);
+    }
+
+    .dobis-chip-rm {
+      cursor: pointer;
+      opacity: .55;
+      line-height: 1;
+    }
+
+    .dobis-chip-rm:hover {
+      opacity: 1;
+    }
+
+    #dobisInput {
+      flex: 1 1 auto;
+      min-width: 0;
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      padding: 6px 9px;
+    }
+
+    .dobis-send {
+      flex: 0 0 auto;
+      border: 1px solid var(--grn);
+      border-radius: 6px;
+      padding: 6px 14px;
+    }
+
+    .dobis-stop {
+      flex: 0 0 auto;
+      cursor: pointer;
+      border: 1px solid #ff6b6b;
+      color: #ff9b9b;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: .85em;
+    }
+
+    .dobis-stop:hover {
+      background: #ff6b6b;
+      color: #1a0a0a;
+    }
+
+    #dobisInput:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .dobis-send.disabled {
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    .dobis-side {
+      flex: 0 0 auto;
+      max-width: 26%;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    /* 마스코트는 줄어들 수 있고 높이 상한을 둔다 — 전체화면/와이드에서 비대해져 STATUS PANEL·음악바를 밀어내지 않도록 */
+    .dobis-mascot-wrap {
+      flex: 0 1 auto;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* STATUS PANEL — 폭 24열 고정, 높이 가변(남는 공간을 flex 로 채움). DOBIS 가 그 행 수에 맞춰 ASCII 렌더 */
+    /* 폭은 domoji 섹션과 동일(88%), cols=24 고정 — font-size 는 JS(fitHud)가 폭에 맞춰 가변 설정 */
+    .dobis-hud {
+      flex: 1 1 auto;
+      align-self: center;
+      margin: 0;
+      white-space: pre;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.18;
+      color: var(--grn);
+      width: 88%;
+      min-height: calc(8 * 1.18em);
+      height: auto;
+      padding: 6px 7px;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 1px solid var(--dim, #1f5f37);
+      border-radius: 6px;
+      background: #04140a;
+      text-shadow: 0 0 6px rgba(77, 255, 143, .4);
+    }
+
+    .dobis-hud:empty::before {
+      content: "╔══ STATUS PANEL ═════╗\A║                     ║\A║   booting…          ║\A╚═════════════════════╝";
+      white-space: pre;
+      opacity: .4;
+    }
+
+    /* 음악 컨트롤 바 — STATUS PANEL 하단 */
+    .dobis-music {
+      flex: 0 0 auto;
+      align-self: center;
+      width: 88%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 11px;
+      color: var(--grn);
+      border: 1px solid var(--dim, #1f5f37);
+      border-radius: 6px;
+      padding: 4px 7px;
+      background: #04140a;
+    }
+
+    .dm-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dm-btns {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    .dm-btn {
+      cursor: pointer;
+    }
+
+    .dm-btn:hover {
+      text-shadow: 0 0 6px var(--grn);
+    }
+
+    /* 진행상태 readout — STATUS PANEL 바로 아래(생성 중·완료·오류). 비었을 땐 자리만 차지(레이아웃 흔들림 방지) */
+    .dobis-prog {
+      flex: 0 0 auto;
+      align-self: center;
+      width: 88%;
+      min-height: 1.35em;
+      box-sizing: border-box;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 10.5px;
+      line-height: 1.35;
+      color: var(--dim);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dobis-prog:not(:empty) {
+      color: var(--grn);
+      text-shadow: 0 0 6px rgba(77, 255, 143, .35);
+    }
+
+    /* thinking 중 shining 효과 — letter-spacing 펄스 + glow 강화 */
+    @keyframes think-shine {
+
+      0%,
+      100% {
+        text-shadow: 0 0 6px rgba(77, 255, 143, .5);
+        letter-spacing: .02em;
+        opacity: 1;
+      }
+
+      50% {
+        text-shadow: 0 0 22px rgba(77, 255, 143, 1), 0 0 44px rgba(0, 255, 140, .45);
+        letter-spacing: .1em;
+        opacity: .82;
+      }
+    }
+
+    .dobis-prog.thinking-on {
+      animation: think-shine 1.6s ease-in-out infinite;
+      color: var(--grn);
+    }
+
+    /* shared 사용량 게이지 (논리 10GB 기준) */
+    .shared-gauge {
+      flex: 0 0 auto;
+      align-self: center;
+      width: 88%;
+      box-sizing: border-box;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .shared-gauge.hidden {
+      display: none;
+    }
+
+    .shared-gauge.warn {
+      color: #ffcf6b;
+      text-shadow: 0 0 6px rgba(255, 207, 107, .4);
+    }
+
+    .imggen-gauge {
+      flex: 0 0 auto;
+      align-self: center;
+      width: 88%;
+      box-sizing: border-box;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .imggen-gauge.hidden {
+      display: none;
+    }
+
+    .imggen-gauge.warn {
+      color: #ffcf6b;
+      text-shadow: 0 0 6px rgba(255, 207, 107, .4);
+    }
+
+    .imggen-gauge.over {
+      color: #ff6b6b;
+      text-shadow: 0 0 6px rgba(255, 107, 107, .5);
+    }
+
+    .dobis-mascot {
+      width: 100%;
+      height: auto;
+      max-height: 40vh;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 0 10px rgba(111, 255, 168, .3));
+    }
+
+    /* domoji 표시 중엔 전신 마스코트를 감추고(display:none → wrap 축소) 박스만 → STATUS PANEL 이 그만큼 늘어남 */
+    .domoji-overlay {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .domoji-box {
+      width: 88%;
+      max-height: 40vh;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 7% 7% 0 7%;
+    }
+
+    .domoji-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: bottom;
+    }
+
+    .domoji-overlay.pop {
+      animation: domoji-pop .35s ease-out;
+    }
+
+    @keyframes domoji-pop {
+      0% {
+        transform: scale(.82);
+        opacity: .2;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* 게임 캐릭터 대화창 — 그린 라운드 보더 박스 + 다크 배경 + CRT(스캔라인·필름그레인·그린틴트) */
+    .domoji-fx {
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--grn);
+      border-radius: 14px;
+      background: #04140a;
+      box-shadow: 0 0 12px rgba(77, 255, 143, .25);
+    }
+
+    .domoji-fx>img {
+      filter: saturate(.6) brightness(1.08) contrast(1.06) sepia(.28) hue-rotate(72deg);
+    }
+
+    .domoji-fx::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: repeating-linear-gradient(rgba(0, 0, 0, .30) 0 1px, transparent 1px 3px);
+    }
+
+    /* 필름 그레인 + 비디오 노이즈 — canvas 로 매 프레임 생성(domoji 표시 중에만). 스캔라인은 ::before 유지 */
+    .domoji-noise {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .5;
+    }
+
+    /* 사용자 전송 domoji 스티커(채팅 내) */
+    .domoji-sticker {
+      display: inline-block;
+      width: 78px;
+      aspect-ratio: 1 / 1;
+      vertical-align: middle;
+    }
+
+    .domoji-sticker>img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 9%;
+      display: block;
+    }
+
+    /* domoji 피커 — 입력창 바로 위 팝업 */
+    .domoji-picker {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 52px;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 42%;
+      overflow: auto;
+      border: 1px solid var(--grn);
+      border-radius: 8px;
+      padding: 8px;
+      background: #04140a;
+      box-shadow: 0 0 16px rgba(0, 0, 0, .55);
+    }
+
+    .domoji-picker .pick {
+      width: 46px;
+      height: 56px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .domoji-picker .pick:hover {
+      border-color: var(--grn);
+    }
+
+    .domoji-picker .pick img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* 우상단 버튼/헬스 */
+    .topbtns {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .health {
+      font-size: .82em;
+      letter-spacing: .02em;
+    }
+
+    .health.live {
+      color: #9fffce;
+      text-shadow: 0 0 8px rgba(77, 255, 143, .6);
+    }
+
+    .health.dead {
+      color: #ff9aa6;
+    }
+
+    .cmd.ico {
+      font-size: 1.15em;
+      line-height: 1;
+    }
+
+    /* 설정 모달 */
+    .modal {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .55);
+    }
+
+    .modal-box {
+      background: #04190e;
+      border: 1px solid var(--grn);
+      border-radius: 10px;
+      padding: 16px 18px;
+      min-width: min(420px, 86%);
+      box-shadow: 0 0 24px rgba(77, 255, 143, .25);
+    }
+
+    .modal-box input {
+      border: 1px solid var(--dim);
+      border-radius: 5px;
+      padding: 4px 7px;
+    }
+
+    /* WORKS 서브툴바 */
+    .subbar {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    /* HOME 대시보드 */
+    .home-banner {
+      color: var(--grn);
+      font-size: clamp(7px, 1.1vw, 12px);
+      line-height: 1.15;
+      margin: 2px 0 14px;
+      text-shadow: 0 0 6px rgba(77, 255, 143, .4);
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .home-tile {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .home-tile b {
+      color: #b6ffd6;
+      font-size: 1.05em;
+    }
+
+    /* RATE LIMIT 타일 */
+    .home-rate {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .home-rate-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .home-rate-head #rateAcct {
+      color: #b6ffd6;
+    }
+
+    .rate-bar {
+      letter-spacing: 1px;
+      color: var(--grn);
+      text-shadow: 0 0 6px rgba(77, 255, 143, .4);
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+
+    /* 윈도우98 실행 아이콘풍 카드 */
+    .home-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .app-card {
+      width: 92px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--grn);
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      background: rgba(77, 255, 143, .03);
+      box-shadow: inset 1px 1px rgba(182, 255, 214, .18), inset -1px -1px rgba(0, 0, 0, .4);
+    }
+
+    .app-card:hover {
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .1);
+      box-shadow: 0 0 12px rgba(77, 255, 143, .25);
+    }
+
+    .app-card:active {
+      box-shadow: inset -1px -1px rgba(182, 255, 214, .18), inset 1px 1px rgba(0, 0, 0, .45);
+    }
+
+    .app-ico {
+      font-size: 30px;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(77, 255, 143, .4));
+    }
+
+    .app-label {
+      font-size: .85em;
+      color: #b6ffd6;
+      letter-spacing: .04em;
+    }
+
+    /* CRT 곡면 유리 느낌 — 데스크톱 모니터 모드 한정(전체화면/모바일 제외) */
+    @media (min-width: 821px) {
+      body:not(.fullscreen) .screen {
+        border-radius: 28px / 20px;
+      }
+
+      body:not(.fullscreen) .screen::after {
+        background:
+          radial-gradient(125% 80% at 50% -12%, rgba(190, 255, 214, .05), transparent 52%),
+          repeating-linear-gradient(rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px);
+        box-shadow: inset 0 0 95px rgba(0, 0, 0, .82), inset 0 0 26px rgba(0, 0, 0, .5);
+      }
+    }
+
+    .setmenu {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setmenu-item {
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .setmenu-item:hover {
+      border-color: var(--grn);
+    }
+
     /* 전체화면 — 모니터 프레임 제거하고 화면을 뷰포트 가득 */
-    body.fullscreen .monitor { width: 100vw; height: 100vh; aspect-ratio: auto; }
-    body.fullscreen .monitor svg { display: none; }
-    body.fullscreen .screen { left: 0; top: 0; right: 0; bottom: 0; border-radius: 0; }
-    body.fullscreen .stage { background: var(--scr); }
-    .hud-toggle { display: none; }   /* 상태패널 토글 — 모바일에서만 노출 */
+    body.fullscreen .monitor {
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: auto;
+    }
+
+    body.fullscreen .monitor svg {
+      display: none;
+    }
+
+    body.fullscreen .screen {
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 0;
+    }
+
+    body.fullscreen .stage {
+      background: var(--scr);
+    }
+
+    .hud-toggle {
+      display: none;
+    }
+
+    /* 상태패널 토글 — 모바일에서만 노출 */
     /* 모바일/좁은·낮은 화면 — 전체화면(모니터 프레임 생략). 가로폰(폭>820 but 높이↓)도 포함 */
-    @media (max-width: 820px), (max-height: 540px), (hover: none) and (pointer: coarse) {
-      .monitor { width: 100vw; height: 100vh; height: 100dvh; aspect-ratio: auto; }
-      .monitor svg { display: none; }
-      .screen { left: 0; top: 0; right: 0; bottom: 0; border-radius: 0; overflow-x: hidden;
-                transition: top .2s ease-out, bottom .2s ease-out; }
+    @media (max-width: 820px),
+    (max-height: 540px) {
+      .monitor {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        aspect-ratio: auto;
+      }
+
+      .monitor svg {
+        display: none;
+      }
+
+      .screen {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
+        overflow-x: hidden;
+        transition: top .2s ease-out, bottom .2s ease-out;
+      }
+
       /* 키보드 열렸을 때 상단 툴바 숨김 — 협소한 공간 확보 */
-      .screen.kbd-open .dobis-bar { display: none; }
+      .screen.kbd-open .dobis-bar {
+        display: none;
+      }
+
       /* stage를 상단 정렬 — dvh로 monitor가 줄어들 때 가운데 정렬로 gap 생기는 문제 방지 */
-      .stage { background: var(--scr); place-items: start; align-items: flex-start; justify-items: stretch; }
-      .term { padding: 9px 11px; }
-      .term-head { padding-bottom: 5px; margin-bottom: 6px; }
+      .stage {
+        background: var(--scr);
+        place-items: start;
+        align-items: flex-start;
+        justify-items: stretch;
+      }
+
+      .term {
+        padding: 9px 11px;
+      }
+
+      .term-head {
+        padding-bottom: 5px;
+        margin-bottom: 6px;
+      }
+
       /* 헤더: 장황한 타이틀 숨김 + 우측 상태칩을 흐름 배치(겹침 제거) */
-      .rc-long { display: none; }
-      .term-title { font-size: .95em; }
-      .topbtns { position: static; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 12px; margin-bottom: 5px; font-size: .82em; }
+      .rc-long {
+        display: none;
+      }
+
+      .term-title {
+        font-size: .95em;
+      }
+
+      .topbtns {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px 12px;
+        margin-bottom: 5px;
+        font-size: .82em;
+      }
+
       /* 내비: 한 줄 가로 스크롤(레트로 터미널 느낌) */
-      .toolbar { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 3px; }
-      .toolbar::-webkit-scrollbar { display: none; }
-      .toolbar > * { flex: 0 0 auto; white-space: nowrap; }
-      .toolbar .spacer { display: none; }
+      .toolbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 3px;
+      }
+
+      .toolbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .toolbar>* {
+        flex: 0 0 auto;
+        white-space: nowrap;
+      }
+
+      .toolbar .spacer {
+        display: none;
+      }
+
       /* 가로 오버플로 차단 */
-      .body, .dobis-bubble, #dobisView, #registryView { min-width: 0; }
-      .home-grid > * { min-width: 0; overflow: hidden; }
-      .dobis-head, .dobis-bar { flex-wrap: wrap; row-gap: 5px; }
-      .modelchips { display: inline-flex; flex-wrap: wrap; }
-      #dobisInput { flex: 1 1 auto; min-width: 0; }
+      .body,
+      .dobis-bubble,
+      #dobisView,
+      #registryView {
+        min-width: 0;
+      }
+
+      .home-grid>* {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .dobis-head,
+      .dobis-bar {
+        flex-wrap: wrap;
+        row-gap: 5px;
+      }
+
+      .modelchips {
+        display: inline-flex;
+        flex-wrap: wrap;
+      }
+
+      #dobisInput {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+
       /* 로그인·SSH 폼: 세로 스택(라벨/입력 한 줄씩) */
-      .ssh-form { flex-direction: column; align-items: stretch; }
-      .ssh-form input { width: 100%; box-sizing: border-box; }
+      .ssh-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .ssh-form input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
       /* 채팅: 마스코트 숨김, 세로 스택, 상태패널은 기본 접힘([📊 상태]로 토글) */
-      .dobis-mascot { display: none; }
-      .dobis-bubble::after, .dobis-bubble::before { display: none; }
+      .dobis-mascot {
+        display: none;
+      }
+
+      .dobis-bubble::after,
+      .dobis-bubble::before {
+        display: none;
+      }
+
       /* 키보드 대응: dobisView가 남은 공간을 채우고, 메시지 영역만 스크롤 — 입력창은 항상 하단 고정 */
-      #dobisView { flex-direction: column; gap: 0; overflow: hidden; flex: 1 1 auto; min-height: 0; }
-      .dobis-bubble { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; border-radius: 10px; }
-      .dobis-log { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
-      .dobis-input-row { flex: 0 0 auto; }
-      .dobis-side { display: none; max-width: none; width: 100%; flex: 0 0 auto; align-items: center; }
-      body.hud-show .dobis-side { display: flex; }
-      .hud-toggle { display: inline-flex; }
-      .hud-toggle.on { color: #04140a; background: var(--grn); border-radius: 4px; }
+      #dobisView {
+        flex-direction: column;
+        gap: 0;
+        overflow: hidden;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+
+      .dobis-bubble {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+      }
+
+      .dobis-log {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+      }
+
+      .dobis-input-row {
+        flex: 0 0 auto;
+      }
+
+      .dobis-side {
+        display: none;
+        max-width: none;
+        width: 100%;
+        flex: 0 0 auto;
+        align-items: center;
+      }
+
+      body.hud-show .dobis-side {
+        display: flex;
+      }
+
+      .hud-toggle {
+        display: inline-flex;
+      }
+
+      .hud-toggle.on {
+        color: #04140a;
+        background: var(--grn);
+        border-radius: 4px;
+      }
     }
+
     @media (max-width: 480px) {
-      .home-grid { grid-template-columns: 1fr 1fr; }   /* 초소형: 카드 2열 고정 */
+      .home-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      /* 초소형: 카드 2열 고정 */
     }
-  /* ===== 커스텀 다이얼로그 ===== */
-  .cdlg-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 9000; display: flex; align-items: center; justify-content: center; }
-  .cdlg-backdrop.hidden { display: none; }
-  .cdlg { background: #0d1a0d; border: 1px solid var(--grn); border-radius: 6px; min-width: 280px; max-width: 420px; width: 90%; padding: 20px 22px 16px; font-family: ui-monospace,"Cascadia Mono",Menlo,monospace; box-shadow: 0 0 24px rgba(77,255,143,.18); }
-  .cdlg-title { color: var(--grn); font-size: .8em; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; opacity: .7; }
-  .cdlg-msg { color: var(--grn); font-size: .92em; white-space: pre-wrap; margin-bottom: 14px; line-height: 1.55; }
-  .cdlg input[type=text] { width: 100%; box-sizing: border-box; background: #0a140a; border: 1px solid var(--grn); border-radius: 4px; color: var(--grn); padding: 6px 9px; font-family: inherit; font-size: .9em; margin-bottom: 14px; outline: none; }
-  .cdlg input[type=text]:focus { border-color: #88ffbb; box-shadow: 0 0 6px rgba(77,255,143,.25); }
-  .cdlg-btns { display: flex; gap: 8px; justify-content: flex-end; }
-  .cdlg-btns .cmd { padding: 5px 14px; font-size: .85em; }
-  .cdlg-btns .cmd.ok { border-color: var(--grn); color: var(--grn); }
-  .cdlg-btns .cmd.cancel { border-color: var(--dim); color: var(--dim); }
-  .cdlg-btns .cmd.ok:hover { background: rgba(77,255,143,.12); }
-  .cdlg-btns .cmd.cancel:hover { background: rgba(255,255,255,.06); }
+
+    /* ===== 커스텀 다이얼로그 ===== */
+    .cdlg-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .72);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cdlg-backdrop.hidden {
+      display: none;
+    }
+
+    .cdlg {
+      background: #0d1a0d;
+      border: 1px solid var(--grn);
+      border-radius: 6px;
+      min-width: 280px;
+      max-width: 420px;
+      width: 90%;
+      padding: 20px 22px 16px;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      box-shadow: 0 0 24px rgba(77, 255, 143, .18);
+    }
+
+    .cdlg-title {
+      color: var(--grn);
+      font-size: .8em;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      opacity: .7;
+    }
+
+    .cdlg-msg {
+      color: var(--grn);
+      font-size: .92em;
+      white-space: pre-wrap;
+      margin-bottom: 14px;
+      line-height: 1.55;
+    }
+
+    .cdlg input[type=text] {
+      width: 100%;
+      box-sizing: border-box;
+      background: #0a140a;
+      border: 1px solid var(--grn);
+      border-radius: 4px;
+      color: var(--grn);
+      padding: 6px 9px;
+      font-family: inherit;
+      font-size: .9em;
+      margin-bottom: 14px;
+      outline: none;
+    }
+
+    .cdlg input[type=text]:focus {
+      border-color: #88ffbb;
+      box-shadow: 0 0 6px rgba(77, 255, 143, .25);
+    }
+
+    .cdlg-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .cdlg-btns .cmd {
+      padding: 5px 14px;
+      font-size: .85em;
+    }
+
+    .cdlg-btns .cmd.ok {
+      border-color: var(--grn);
+      color: var(--grn);
+    }
+
+    .cdlg-btns .cmd.cancel {
+      border-color: var(--dim);
+      color: var(--dim);
+    }
+
+    .cdlg-btns .cmd.ok:hover {
+      background: rgba(77, 255, 143, .12);
+    }
+
+    .cdlg-btns .cmd.cancel:hover {
+      background: rgba(255, 255, 255, .06);
+    }
   </style>
 </head>
+
 <body class="bg-grid">
   <!-- 커스텀 다이얼로그 -->
   <div id="cdlgBackdrop" class="cdlg-backdrop hidden" onclick="cdlgBackdropClick(event)">
@@ -550,23 +2764,27 @@
       <svg viewBox="0 0 1000 860" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <defs>
           <linearGradient id="case" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#ece1c6"/><stop offset="1" stop-color="#cbbf9f"/>
+            <stop offset="0" stop-color="#ece1c6" />
+            <stop offset="1" stop-color="#cbbf9f" />
           </linearGradient>
         </defs>
         <!-- 케이스 (심플 베이지, neck/스탠드 없음) -->
-        <rect x="18" y="18" width="964" height="824" rx="46" fill="url(#case)" stroke="#b0a684" stroke-width="2"/>
-        <rect x="30" y="30" width="940" height="800" rx="38" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
+        <rect x="18" y="18" width="964" height="824" rx="46" fill="url(#case)" stroke="#b0a684" stroke-width="2" />
+        <rect x="30" y="30" width="940" height="800" rx="38" fill="none" stroke="#fff" stroke-opacity=".35"
+          stroke-width="2" />
         <!-- 리세스 베젤 + 다크 림 (그린스크린은 HTML 오버레이가 덮음) -->
-        <rect x="78" y="66" width="844" height="642" rx="26" fill="#b6aa8a"/>
-        <rect x="90" y="78" width="820" height="618" rx="18" fill="#0a0c0a" stroke="#070807" stroke-width="4"/>
+        <rect x="78" y="66" width="844" height="642" rx="26" fill="#b6aa8a" />
+        <rect x="90" y="78" width="820" height="618" rx="18" fill="#0a0c0a" stroke="#070807" stroke-width="4" />
         <!-- 상단 통풍 슬릿 -->
         <g stroke="#b3a886" stroke-width="4" stroke-linecap="round">
-          <line x1="430" y1="46" x2="570" y2="46"/>
+          <line x1="430" y1="46" x2="570" y2="46" />
         </g>
         <!-- 전원 LED + 심플 애플 마크 -->
-        <circle cx="120" cy="772" r="7" fill="#39ff8f"><animate attributeName="opacity" values="1;.35;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle cx="120" cy="772" r="7" fill="#39ff8f">
+          <animate attributeName="opacity" values="1;.35;1" dur="2.4s" repeatCount="indefinite" />
+        </circle>
         <path transform="translate(842,742) scale(1.1)" fill="#7c745b"
-          d="M20 6c-1 0-3 1-5 1s-4-1-5-1c-3 0-7 3-7 9 0 7 5 14 8 14 1 0 2-1 4-1s3 1 4 1c3 0 7-6 7-11-3-1-4-3-4-5 0-3 2-4 3-5-1-1-3-2-5-2zM16 3c1-1 2-3 2-4-1 0-3 1-4 2-1 1-2 2-2 4 1 0 3-1 4-2z"/>
+          d="M20 6c-1 0-3 1-5 1s-4-1-5-1c-3 0-7 3-7 9 0 7 5 14 8 14 1 0 2-1 4-1s3 1 4 1c3 0 7-6 7-11-3-1-4-3-4-5 0-3 2-4 3-5-1-1-3-2-5-2zM16 3c1-1 2-3 2-4-1 0-3 1-4 2-1 1-2 2-2 4 1 0 3-1 4-2z" />
       </svg>
 
       <div class="screen">
@@ -578,7 +2796,8 @@
               <span class="cmd ico" title="설정 (ID/PW 등)" onclick="openSettings()">⚙</span>
               <span class="cmd ico" title="전체화면 토글" onclick="toggleFullscreen()">⛶</span>
             </div>
-            <div class="term-title"><span class="rc-long"><b>RobCo Industries (TM)</b> TermLink — </span><b>VOID//OS ADMIN</b></div>
+            <div class="term-title"><span class="rc-long"><b>RobCo Industries (TM)</b> TermLink — </span><b>VOID//OS
+                ADMIN</b></div>
             <div class="muted" id="status">SERVICE REGISTRY · doil.me</div>
             <div class="toolbar" id="toolbar">
               <span class="cmd navtab on" id="tabHome" onclick="showView('home')">[ HOME ]</span>
@@ -586,7 +2805,8 @@
               <span class="cmd navtab" id="tabSsh" onclick="showView('ssh')">[ SSH ]</span>
               <span class="cmd navtab" id="tabDobis" onclick="showView('dobis')">[ 🤖 DOBIS ]</span>
               <span class="cmd navtab" id="tabGeo" onclick="openGeoWindow()">[ 🗺️ GEO ]</span>
-              <label class="navtab music-cb" title="음악 패널 토글"><input type="checkbox" id="musicToggleCb" onchange="toggleMusicPanel()"> 🎵&#xFE0E;</label>
+              <label class="navtab music-cb" title="음악 패널 토글"><input type="checkbox" id="musicToggleCb"
+                  onchange="toggleMusicPanel()"> 🎵&#xFE0E;</label>
               <span class="spacer"></span>
               <span class="muted">BG</span>
               <select id="bgSel" class="inl" onchange="setBg(this.value)">
@@ -620,8 +2840,8 @@
               <div class="muted">&gt; AUTHORIZATION REQUIRED</div>
               <form class="ssh-form" style="margin-top:8px" autocomplete="off" onsubmit="return false">
                 <label>USER</label><input id="loginId" autocomplete="off" data-lpignore="true" data-form-type="other" />
-                <label>PASS</label><input id="loginPw" type="password" autocomplete="off" data-lpignore="true" data-form-type="other"
-                  onkeydown="if(event.key==='Enter')login()" />
+                <label>PASS</label><input id="loginPw" type="password" autocomplete="off" data-lpignore="true"
+                  data-form-type="other" onkeydown="if(event.key==='Enter')login()" />
                 <span class="cmd" onclick="login()">[ LOG IN ]</span>
                 <span class="cursor"></span>
               </form>
@@ -641,16 +2861,22 @@
                 <div class="home-tile"><span class="muted">TIME</span><b id="homeClock">—</b></div>
               </div>
               <div class="home-rate">
-                <div class="home-rate-head"><span class="muted">RATE LIMIT · 5H 윈도우</span><span id="rateAcct">계정 —</span></div>
+                <div class="home-rate-head"><span class="muted">RATE LIMIT · 5H 윈도우</span><span id="rateAcct">계정
+                    —</span></div>
                 <div id="rateBar" class="rate-bar">□□□□□□□□□□□□□□□□□□□□</div>
                 <div id="rateInfo" class="muted">DOBIS 대화 시 갱신</div>
               </div>
               <div class="home-actions">
-                <div class="app-card" onclick="showView('registry')" title="프로젝트·소셜링크 관리"><span class="app-ico">🗂️</span><span class="app-label">WORKS</span></div>
-                <div class="app-card" onclick="showView('ssh')" title="호스트 SSH 터미널"><span class="app-ico">🖥️</span><span class="app-label">SSH</span></div>
-                <div class="app-card" onclick="showView('dobis')" title="DOBIS 챗봇"><span class="app-ico">🤖</span><span class="app-label">DOBIS</span></div>
-                <div class="app-card" onclick="openGeoWindow()" title="지리 학습 도구"><span class="app-ico">🗺️</span><span class="app-label">GEO</span></div>
-                <a class="app-card" href="https://doil.me/" target="_blank" rel="noreferrer" title="홈페이지 새 탭"><span class="app-ico">🌐</span><span class="app-label">홈페이지</span></a>
+                <div class="app-card" onclick="showView('registry')" title="프로젝트·소셜링크 관리"><span
+                    class="app-ico">🗂️</span><span class="app-label">WORKS</span></div>
+                <div class="app-card" onclick="showView('ssh')" title="호스트 SSH 터미널"><span
+                    class="app-ico">🖥️</span><span class="app-label">SSH</span></div>
+                <div class="app-card" onclick="showView('dobis')" title="DOBIS 챗봇"><span class="app-ico">🤖</span><span
+                    class="app-label">DOBIS</span></div>
+                <div class="app-card" onclick="openGeoWindow()" title="지리 학습 도구"><span class="app-ico">🗺️</span><span
+                    class="app-label">GEO</span></div>
+                <a class="app-card" href="https://doil.me/" target="_blank" rel="noreferrer" title="홈페이지 새 탭"><span
+                    class="app-ico">🌐</span><span class="app-label">홈페이지</span></a>
               </div>
             </div>
 
@@ -664,7 +2890,10 @@
                 <div class="rec-head">&gt; NEW ENTRY</div>
                 <div class="rec-grid">
                   <label>TYPE</label>
-                  <select id="n_type" class="inl"><option value="project">project</option><option value="social">social</option></select>
+                  <select id="n_type" class="inl">
+                    <option value="project">project</option>
+                    <option value="social">social</option>
+                  </select>
                   <label>ICON</label><input id="n_icon" placeholder="🎮 / SiNotion" />
                   <label>TITLE</label><input id="n_title" />
                   <label>LABEL</label><input id="n_label" placeholder="social only" />
@@ -684,14 +2913,15 @@
               <div class="ssh-form">
                 <span class="muted">&gt; host shell (자격 저장 안 됨)</span>
                 <form autocomplete="off" onsubmit="return false" style="display:contents">
-                <label>USER</label><input id="ssh_user" autocomplete="new-password" />
-                <label>PASS</label><input id="ssh_pass" type="password" autocomplete="new-password"
-                  onkeydown="if(event.key==='Enter')sshConnect()" />
-                <span class="cmd" onclick="sshConnect()">[ CONNECT ]</span>
-                <span class="cmd" onclick="sshDisconnect()">[ DISCONNECT ]</span>
+                  <label>USER</label><input id="ssh_user" autocomplete="new-password" />
+                  <label>PASS</label><input id="ssh_pass" type="password" autocomplete="new-password"
+                    onkeydown="if(event.key==='Enter')sshConnect()" />
+                  <span class="cmd" onclick="sshConnect()">[ CONNECT ]</span>
+                  <span class="cmd" onclick="sshDisconnect()">[ DISCONNECT ]</span>
                 </form>
                 <span id="sshStatus">idle</span>
-                <span class="cmd" onclick="toggleSshSidebar()" title="터미널 목록 패널 토글" style="margin-left:auto">[ ≡ ]</span>
+                <span class="cmd" onclick="toggleSshSidebar()" title="터미널 목록 패널 토글" style="margin-left:auto">[ ≡
+                  ]</span>
                 <span class="cmd" onclick="openSshPopup()" title="SSH 터미널을 별도 팝업 창으로 열기">[ ↗ 새 창 ]</span>
                 <span id="sshXferBar">
                   <label>PATH</label>
@@ -715,26 +2945,28 @@
             <!-- DOBIS 챗봇 뷰 (말풍선 + 우측 마스코트, 스크롤은 로그 내부) -->
             <div id="dobisView" class="hidden">
               <div class="dobis-bubble">
-                <div class="dobis-head"><span class="cmd dobis-menu-btn" id="dobisMenuBtn" title="메뉴" onclick="toggleDobisMenu()">[ ☰ ]</span>
+                <div class="dobis-head"><span class="cmd dobis-menu-btn" id="dobisMenuBtn" title="메뉴"
+                    onclick="toggleDobisMenu()">[ ☰ ]</span>
                   <div id="dobisMenu" class="dobis-menu hidden">
                     <div class="dim-item" onclick="dobisNewChat(); toggleDobisMenu(true)">＋ 새 채팅</div>
                     <div class="dim-item" onclick="dobisSaveChat(); toggleDobisMenu(true)">💾 저장</div>
                     <div class="dim-item" onclick="dobisListChats(); toggleDobisMenu(true)">📂 불러오기</div>
                     <div class="dim-item" onclick="openFs(); toggleDobisMenu(true)">🗂 탐색기</div>
-                    <div class="dim-item" onclick="window.open('https://www.notion.so/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','_blank','noopener'); toggleDobisMenu(true)">📚 Notion 지식베이스</div>
+                    <div class="dim-item"
+                      onclick="window.open('https://www.notion.so/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','_blank','noopener'); toggleDobisMenu(true)">
+                      📚 Notion 지식베이스</div>
                     <div class="dim-item" onclick="toggleStatusPanel(); toggleDobisMenu(true)">📊 상태 패널</div>
                   </div>
                   <b>DOBIS</b><span class="muted"> · claude · model</span>
-                  <span class="modelchips">
-                    <span class="chip" data-m="opus" onclick="dobisSetModel('opus')">opus</span>
-                    <span class="chip on" data-m="sonnet" onclick="dobisSetModel('sonnet')">sonnet</span>
-                    <span class="chip" data-m="haiku" onclick="dobisSetModel('haiku')">haiku</span>
-                  </span>
-                  <span class="modelchips"><span class="chip think-chip" id="thinkChip" title="확장 사고 — 느리지만 더 깊게 추론 (기본 OFF)" onclick="dobisToggleThink()">🧠 thinking</span></span>
-                </div>
-                <div class="dobis-bar">
-                  <span id="chatName" class="muted"></span>
+                  <select class="model-select" id="modelSelect" onchange="dobisSetModel(this.value)">
+                    <option value="opus">opus</option>
+                    <option value="sonnet" selected>sonnet</option>
+                    <option value="haiku">haiku</option>
+                  </select>
+                  <span class="modelchips"><span class="chip think-chip" id="thinkChip"
+                      title="확장 사고 — 느리지만 더 깊게 추론 (기본 OFF)" onclick="dobisToggleThink()">🧠 thinking</span></span>
                   <span id="dobisQueueBadge" class="muted" style="font-size:.75em;display:none"></span>
+                  <span id="chatName" class="muted"></span>
                 </div>
                 <div id="chatList" class="chatlist hidden"></div>
                 <div class="dobis-log" id="dobisLog"></div>
@@ -744,14 +2976,17 @@
                   <span id="dobisImgName"></span>
                   <span class="rm" onclick="clearImgAttach()" title="첨부 취소">✕</span>
                 </div>
-                <input type="file" id="dobisImgInput" accept="image/*" style="display:none" onchange="onImgAttach(this)" />
+                <input type="file" id="dobisImgInput" accept="image/*" style="display:none"
+                  onchange="onImgAttach(this)" />
                 <div id="dobisChips" class="dobis-chips"></div>
                 <div class="dobis-input-row">
                   <div class="dobis-input-icons">
                     <span class="cmd" id="dobisMoreBtn" title="도구" onclick="toggleInputMenu()">[ + ]</span>
                     <div id="dobisInputMenu" class="dobis-input-menu hidden">
                       <div class="dim-item" onclick="toggleDomojiPicker(); toggleInputMenu(true)">🙂 도모지</div>
-                      <div class="dim-item" onclick="document.getElementById('dobisImgInput').click(); toggleInputMenu(true)">📷 이미지 첨부</div>
+                      <div class="dim-item"
+                        onclick="document.getElementById('dobisImgInput').click(); toggleInputMenu(true)">📷 이미지 첨부
+                      </div>
                       <div class="dim-item" id="dimSearch" onclick="dobisToggleSearch()">🌐 인터넷 검색</div>
                     </div>
                   </div>
@@ -764,12 +2999,17 @@
               <div class="dobis-side">
                 <div class="dobis-mascot-wrap">
                   <img class="dobis-mascot" id="dobisMascot" src="/cdn/dobis.webp" alt="DOBIS" />
-                  <div class="domoji-overlay hidden" id="domojiOverlay"><div class="domoji-fx domoji-box"><img id="domojiImg" alt="" /><canvas id="domojiNoise" class="domoji-noise"></canvas></div></div>
+                  <div class="domoji-overlay hidden" id="domojiOverlay">
+                    <div class="domoji-fx domoji-box"><img id="domojiImg" alt="" /><canvas id="domojiNoise"
+                        class="domoji-noise"></canvas></div>
+                  </div>
                 </div>
                 <pre class="dobis-hud" id="dobisHud"></pre>
                 <div id="dobisStatus" class="dobis-prog"></div>
-                <div id="sharedGauge" class="shared-gauge hidden" title="shared 폴더 사용량 (논리 기준 10GB · 실제 제한 아님). 80%↑면 /clean 권장"></div>
-                <div id="imggenGauge" class="imggen-gauge hidden" title="오늘 이미지 생성 토큰 사용량 (일간 한도 100K). 초과 시 생성 중단."></div>
+                <div id="sharedGauge" class="shared-gauge hidden"
+                  title="shared 폴더 사용량 (논리 기준 10GB · 실제 제한 아님). 80%↑면 /clean 권장"></div>
+                <div id="imggenGauge" class="imggen-gauge hidden" title="오늘 이미지 생성 토큰 사용량 (일간 한도 100K). 초과 시 생성 중단.">
+                </div>
               </div>
             </div>
             <!-- GEO 앱 윈도우 — doil.me/geo/ iframe(CSP frame-ancestors 'self'). 드래그/전체화면/최소화/닫기/틴트 -->
@@ -784,7 +3024,8 @@
                 </span>
               </div>
               <div class="appwin-body">
-                <iframe id="geoFrame" class="geo-frame" title="GEO 지리 학습" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <iframe id="geoFrame" class="geo-frame" title="GEO 지리 학습"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 <div class="appwin-scan" aria-hidden="true"></div>
               </div>
             </div>
@@ -822,8 +3063,10 @@
               <div id="setMenu">
                 <div class="rec-head">&gt; 설정</div>
                 <div class="setmenu">
-                  <div class="cmd setmenu-item" onclick="setShow('admin')">[ 관리자 관리 ]<span class="muted"> — ID/PW 변경</span></div>
-                  <div class="cmd setmenu-item" onclick="setShow('account')">[ DOBIS 계정 ]<span class="muted"> — Claude 토큰 전환</span></div>
+                  <div class="cmd setmenu-item" onclick="setShow('admin')">[ 관리자 관리 ]<span class="muted"> — ID/PW
+                      변경</span></div>
+                  <div class="cmd setmenu-item" onclick="setShow('account')">[ DOBIS 계정 ]<span class="muted"> — Claude
+                      토큰 전환</span></div>
                 </div>
                 <div style="margin-top:12px"><span class="cmd" onclick="closeSettings()">[ 닫기 ]</span></div>
               </div>
@@ -834,9 +3077,10 @@
                   <label>현재 ID</label><input id="set_curId" autocomplete="username" />
                   <label>현재 PW</label><input id="set_curPw" type="password" autocomplete="current-password" />
                   <label>새 ID</label><input id="set_newId" placeholder="(변경 시만)" autocomplete="off" />
-                  <label>새 PW</label><input id="set_newPw" type="password" placeholder="(변경 시만, 6자+)" autocomplete="new-password" />
-                  <label>새 PW 확인</label><input id="set_newPw2" type="password" placeholder="(새 PW 재입력)" autocomplete="new-password"
-                    onkeydown="if(event.key==='Enter')saveCredentials()" />
+                  <label>새 PW</label><input id="set_newPw" type="password" placeholder="(변경 시만, 6자+)"
+                    autocomplete="new-password" />
+                  <label>새 PW 확인</label><input id="set_newPw2" type="password" placeholder="(새 PW 재입력)"
+                    autocomplete="new-password" onkeydown="if(event.key==='Enter')saveCredentials()" />
                 </div>
                 <div id="setMsg" class="muted" style="min-height:1.2em;margin-top:6px"></div>
                 <div style="margin-top:8px">
@@ -845,12 +3089,14 @@
                   <span class="cmd" onclick="closeSettings()">[ 닫기 ]</span>
                 </div>
                 <!-- 서브 관리자 (루트 전용) -->
-                <div id="subAdminSec" class="hidden" style="margin-top:14px;border-top:1px dashed rgba(77,255,143,.25);padding-top:10px">
+                <div id="subAdminSec" class="hidden"
+                  style="margin-top:14px;border-top:1px dashed rgba(77,255,143,.25);padding-top:10px">
                   <div class="rec-head">&gt; 서브 관리자 <span class="muted">(루트 전용)</span></div>
                   <div id="adminList" class="muted" style="margin:6px 0">—</div>
                   <div class="rec-grid" style="grid-template-columns:auto 1fr">
                     <label>새 ID</label><input id="sa_id" autocomplete="off" placeholder="2-32자, 영숫자._-" />
-                    <label>새 PW</label><input id="sa_pw" type="password" autocomplete="new-password" placeholder="6자+" />
+                    <label>새 PW</label><input id="sa_pw" type="password" autocomplete="new-password"
+                      placeholder="6자+" />
                   </div>
                   <div style="margin-top:6px"><span class="cmd" onclick="addSubAdmin()">[ 서브관리자 추가 ]</span></div>
                   <div id="saMsg" class="muted" style="min-height:1.2em"></div>
@@ -859,7 +3105,8 @@
               <!-- DOBIS 계정 전환 -->
               <div id="setAccount" class="hidden">
                 <div class="rec-head">&gt; 설정 · DOBIS 계정 (Claude 토큰)</div>
-                <div class="muted" style="margin:6px 0">현재 활성: <b id="acctCur" style="color:#b6ffd6">—</b> · 5시간 제한 시 자동 전환됩니다.</div>
+                <div class="muted" style="margin:6px 0">현재 활성: <b id="acctCur" style="color:#b6ffd6">—</b> · 5시간 제한 시 자동
+                  전환됩니다.</div>
                 <div style="display:flex;gap:10px;margin:8px 0">
                   <span class="cmd setmenu-item" onclick="dobisSwitch(0)">[ 계정 #1 사용 ]</span>
                   <span class="cmd setmenu-item" onclick="dobisSwitch(1)">[ 계정 #2 사용 ]</span>
@@ -897,7 +3144,7 @@
         const r = await fetch(API + '/auth/touch', { method: 'POST', headers: H() });
         if (r.status === 401) return showLogin();
         if (r.ok) { const j = await r.json(); sessionExp = Date.now() + (j.expiresInSec || 600) * 1000; }
-      } catch {}
+      } catch { }
     }
     function updateSessTtl() {
       const el = document.getElementById('sessTtl'); if (!el) return;
@@ -911,16 +3158,16 @@
     // 비인증 상태: 로그인 뷰만 노출(콘솔·데이터는 토큰 API 뒤). redirect 안 함.
     function showLogin() {
       token = ''; wsshSecret = '';
-      try { sessionStorage.removeItem('dobis_tok'); sessionStorage.removeItem('dobis_wssh'); } catch {}
+      try { sessionStorage.removeItem('dobis_tok'); sessionStorage.removeItem('dobis_wssh'); } catch { }
       document.getElementById('toolbar').classList.add('hidden');
       document.getElementById('loginView').classList.remove('hidden');
-      ['homeView','registryView','sshView','dobisView'].forEach((id) => document.getElementById(id).classList.add('hidden'));
+      ['homeView', 'registryView', 'sshView', 'dobisView'].forEach((id) => document.getElementById(id).classList.add('hidden'));
       document.getElementById('status').textContent = 'AUTHORIZATION REQUIRED';
       // 로그인 화면에선 폴링/소켓 정지 — 401 루프로 포커스를 뺏는 버그 방지
       if (window._hp) { clearInterval(window._hp); window._hp = null; }
       if (window._clk) { clearInterval(window._clk); window._clk = null; }
-      if (typeof dobisSock !== 'undefined' && dobisSock) { try { dobisSock.disconnect(); } catch {} dobisSock = null; }
-      tabs.forEach(t => { try { if (t.sock) { t.sock.emit('ssh:end'); t.sock.disconnect(); t.sock = null; t.sshOn = false; } } catch {} });
+      if (typeof dobisSock !== 'undefined' && dobisSock) { try { dobisSock.disconnect(); } catch { } dobisSock = null; }
+      tabs.forEach(t => { try { if (t.sock) { t.sock.emit('ssh:end'); t.sock.disconnect(); t.sock = null; t.sshOn = false; } } catch { } });
       if (typeof hideDomoji === 'function') hideDomoji();
       if (typeof stopHudAnim === 'function') { stopHudAnim(); _hudFrames = []; const _h = document.getElementById('dobisHud'); if (_h) { _h.textContent = ''; _h.dataset.bot = ''; } }
       if (typeof musicStop === 'function') musicStop();
@@ -947,7 +3194,7 @@
       token = j.token; myRole = j.role || 'sub'; myName = j.username || '';
       sessionExp = Date.now() + (j.expiresInSec || 600) * 1000; _lastTouch = Date.now();
       wsshSecret = j.wsshSecret || '';
-      try { sessionStorage.setItem('dobis_tok', token); sessionStorage.setItem('dobis_wssh', wsshSecret); } catch {}
+      try { sessionStorage.setItem('dobis_tok', token); sessionStorage.setItem('dobis_wssh', wsshSecret); } catch { }
       showApp();
     }
 
@@ -1038,7 +3285,7 @@
       for (const [k, id] of Object.entries(TABS)) document.getElementById(id).classList.toggle('on', k === v);
       if (v === 'home') loadHome();
       if (v === 'registry') load();
-      if (v === 'ssh') { ensureSshTabs(); const _t = ct(); if (_t && _t.fit) requestAnimationFrame(() => { try { _t.fit.fit(); if (_t.sshOn) _t.sock && _t.sock.emit('ssh:resize', { cols: _t.term.cols, rows: _t.term.rows }); } catch {} }); }
+      if (v === 'ssh') { ensureSshTabs(); const _t = ct(); if (_t && _t.fit) requestAnimationFrame(() => { try { _t.fit.fit(); if (_t.sshOn) _t.sock && _t.sock.emit('ssh:resize', { cols: _t.term.cols, rows: _t.term.rows }); } catch { } }); }
       if (v === 'dobis') { ensureSocket(); setChatName(); requestAnimationFrame(() => { const i = document.getElementById('dobisInput'); if (i) i.focus(); }); }
     }
 
@@ -1154,7 +3401,7 @@
         const r = await fetch(API + '/dobis/health', { headers: H() });
         if (r.status === 401) return showLogin();
         if (r.ok) { const j = await r.json(); setHealth(j.worker); renderRate(j.usage); }
-      } catch {}
+      } catch { }
     }
 
     // ===== HOME 대시보드 =====
@@ -1166,8 +3413,8 @@
         const r = await fetch(API + '/services/all', { headers: H() });
         if (r.status === 401) return showLogin();
         if (r.ok) { const { items } = await r.json(); const p = items.filter((i) => i.type === 'project').length, s = items.filter((i) => i.type === 'social').length; const w = document.getElementById('homeWorks'); if (w) w.textContent = p + ' projects · ' + s + ' social'; }
-      } catch {}
-      try { const h = await fetch('/api/health'); if (h.ok) { const u = document.getElementById('homeUptime'); if (u) u.textContent = fmtUptime((await h.json()).uptime); } } catch {}
+      } catch { }
+      try { const h = await fetch('/api/health'); if (h.ok) { const u = document.getElementById('homeUptime'); if (u) u.textContent = fmtUptime((await h.json()).uptime); } } catch { }
     }
 
     // ===== DOBIS 챗봇 (소켓, 휘발성) =====
@@ -1179,23 +3426,23 @@
     let chatTitle = '';   // 저장된 채팅 제목(있으면 재저장 시 덮어쓰기)
 
     function newSessionId() { return 'dob-' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
-    function setChatName() { document.getElementById('chatName').textContent = chatTitle ? ('저장됨: ' + chatTitle) : '(미저장)'; }
+    function setChatName() { const el = document.getElementById('chatName'); const t = chatTitle ? ('저장됨: ' + chatTitle) : '(미저장)'; el.textContent = t; el.title = t; }
     function buildChatMd(title) {
-        const lines = ['# ' + title, '', '> DOBIS chat · ' + new Date().toLocaleString('ko-KR'), ''];
-        document.querySelectorAll('#dobisLog .dobis-msg').forEach((m) => {
-            const you = m.classList.contains('you');
-            const txt = you ? m.textContent.replace(/^YOU:\s?/, '') : (m.dataset.raw || '');
-            lines.push((you ? '**YOU:** ' : '**DOBIS:** ') + txt, '');
-        });
-        return lines.join('\n');
+      const lines = ['# ' + title, '', '> DOBIS chat · ' + new Date().toLocaleString('ko-KR'), ''];
+      document.querySelectorAll('#dobisLog .dobis-msg').forEach((m) => {
+        const you = m.classList.contains('you');
+        const txt = you ? m.textContent.replace(/^YOU:\s?/, '') : (m.dataset.raw || '');
+        lines.push((you ? '**YOU:** ' : '**DOBIS:** ') + txt, '');
+      });
+      return lines.join('\n');
     }
     function dobisNewChat() {
-        setDobisBusy(false); stopDobisTimers(); dobisStatus('');   // 진행 중이면 소켓 끊기로 취소
-        if (dobisSock) { try { dobisSock.disconnect(); } catch {} dobisSock = null; }
-        dobisSession = newSessionId(); chatTitle = '';
-        document.getElementById('dobisLog').innerHTML = '';
-        document.getElementById('chatList').classList.add('hidden');
-        hideDomoji(); setChatName(); ensureSocket();
+      setDobisBusy(false); stopDobisTimers(); dobisStatus('');   // 진행 중이면 소켓 끊기로 취소
+      if (dobisSock) { try { dobisSock.disconnect(); } catch { } dobisSock = null; }
+      dobisSession = newSessionId(); chatTitle = '';
+      document.getElementById('dobisLog').innerHTML = '';
+      document.getElementById('chatList').classList.add('hidden');
+      hideDomoji(); setChatName(); ensureSocket();
     }
     // ===== 커스텀 다이얼로그 (prompt / confirm / alert) =====
     let _cdlgResolve = null;
@@ -1233,23 +3480,23 @@
     function dlgAlert(msg, title = '알림') { return _cdlgShow({ title, msg, type: 'alert' }); }
 
     async function dobisSaveChat() {
-        if (!document.querySelector('#dobisLog .dobis-msg')) { flash('저장할 대화가 없습니다', false); return; }
-        let title = chatTitle;
-        if (!title) {
-            const first = (document.querySelector('#dobisLog .dobis-msg.you') || {}).textContent || '';
-            title = await dlgPrompt('채팅 제목을 입력하세요', first.replace(/^YOU:\s?/, '').slice(0, 40) || 'DOBIS chat', '채팅 저장');
-            if (!title) return;
-        }
-        ensureSocket().emit('chat:save', { title, md: buildChatMd(title) });
+      if (!document.querySelector('#dobisLog .dobis-msg')) { flash('저장할 대화가 없습니다', false); return; }
+      let title = chatTitle;
+      if (!title) {
+        const first = (document.querySelector('#dobisLog .dobis-msg.you') || {}).textContent || '';
+        title = await dlgPrompt('채팅 제목을 입력하세요', first.replace(/^YOU:\s?/, '').slice(0, 40) || 'DOBIS chat', '채팅 저장');
+        if (!title) return;
+      }
+      ensureSocket().emit('chat:save', { title, md: buildChatMd(title) });
     }
     function dobisListChats() {
-        const box = document.getElementById('chatList');
-        if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
-        ensureSocket().emit('chat:list', {});
-        box.innerHTML = '<span class="muted">불러오는 중…</span>'; box.classList.remove('hidden');
+      const box = document.getElementById('chatList');
+      if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+      ensureSocket().emit('chat:list', {});
+      box.innerHTML = '<span class="muted">불러오는 중…</span>'; box.classList.remove('hidden');
     }
     function dobisLoadChat(slug) { ensureSocket().emit('chat:load', { slug }); document.getElementById('chatList').classList.add('hidden'); }
-    const EMO_NAMES = ['neutral','happy','laughing','wink','sad','angry','surprised','confused','thinking','love','cool','thumbsup','sleepy','worried','facepalm','celebrate'];
+    const EMO_NAMES = ['neutral', 'happy', 'laughing', 'wink', 'sad', 'angry', 'surprised', 'confused', 'thinking', 'love', 'cool', 'thumbsup', 'sleepy', 'worried', 'facepalm', 'celebrate'];
     const EMO_RE = new RegExp(':(' + EMO_NAMES.join('|') + '):', 'g');
     function escHtml(s) { return (s || '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
     // :NAME: 토큰 → 인라인 domoji 이모티콘(없으면 숨김)
@@ -1265,18 +3512,18 @@
       'f': '#308253', 'g': '#ffcd75', 'h': '#e4a672'
     };
     const TAROT_SYMBOLS = {
-      wands: ["0000001100000000","000001ee10000000","000019a9a1000000","00001a9a91000000","000019a9a1000000","00001a9a91000000","000019a9a1001100","0001e1a9a101ee10","001ee19a9a11ef10","001fe1a9a9111000","0001119a9a100000","000001a9a9100000","0000019a9a100000","000001a9a9100000","0000019a9a100000","0000001111000000"],
-      cups: ["0000000000000000","0011111111111100","0155552555555510","0157777777777510","0157888888887510","0015788888875100","0001555555551000","0000156666510000","0000015665100000","0000015665100000","0000155665510000","0001555665551000","0015566666655100","0011111111111100","0000000000000000","0000000000000000"],
-      swords: ["0000000100000000","0000001210000000","0000001210000000","0000001310000000","0000001310000000","0000001310000000","0000001310000000","0000001310000000","0000001310000000","0000001310000000","0000011311000000","0000155555100000","0000161616100000","0000011911000000","0000001910000000","0000001810000000"],
-      pentacles: ["0000001111000000","0000115555110000","0001552555551000","0015511511555100","0155155155155510","0151555555515510","0151511111515510","0155155555155510","0155515551555510","0015551515555100","0001555155551000","0000115555110000","0000001111000000","0000000000000000"]
+      wands: ["0000001100000000", "000001ee10000000", "000019a9a1000000", "00001a9a91000000", "000019a9a1000000", "00001a9a91000000", "000019a9a1001100", "0001e1a9a101ee10", "001ee19a9a11ef10", "001fe1a9a9111000", "0001119a9a100000", "000001a9a9100000", "0000019a9a100000", "000001a9a9100000", "0000019a9a100000", "0000001111000000"],
+      cups: ["0000000000000000", "0011111111111100", "0155552555555510", "0157777777777510", "0157888888887510", "0015788888875100", "0001555555551000", "0000156666510000", "0000015665100000", "0000015665100000", "0000155665510000", "0001555665551000", "0015566666655100", "0011111111111100", "0000000000000000", "0000000000000000"],
+      swords: ["0000000100000000", "0000001210000000", "0000001210000000", "0000001310000000", "0000001310000000", "0000001310000000", "0000001310000000", "0000001310000000", "0000001310000000", "0000001310000000", "0000011311000000", "0000155555100000", "0000161616100000", "0000011911000000", "0000001910000000", "0000001810000000"],
+      pentacles: ["0000001111000000", "0000115555110000", "0001552555551000", "0015511511555100", "0155155155155510", "0151555555515510", "0151511111515510", "0155155555155510", "0155515551555510", "0015551515555100", "0001555155551000", "0000115555110000", "0000001111000000", "0000000000000000"]
     };
     const TAROT_MAJOR_SPRITES = [
-      ["0000005500000000","0000005500000000","0000000000000000","000gg00000000000","00egee0000000000","00eeee2000000000","00egee2000000000","0099900000000000","0090900002200000","0090900022220000","0000000022020000","0000000002220000","0006660000000000","0660006000000000","6666666666666666","6666666666666666"],
-      ["0000000220000000","0000000220000000","0000000000000000","0002000000000000","00200000g0000000","00000007g7000000","0000000777000000","00000027g0000000","0000020700000000","0000000700000000","0000007770000000","0050009990004000","0050099999004000","05e509999904b400","1111111111111111","1111111111111111"],
-      ["0011000000001100","0012100000012100","0012100220012100","0012102552012100","0012100220012100","0012100gg0012100","001210bggb012100","001210bbbb012100","001210bbbb012100","001210bbbb012100","001210bbbb012100","001210bbbb012100","0012100550012100","0012105005012100","0012100550012100","1111111111111111"],
-      ["0000000550000000","0000005555000000","0000000gg0000000","000000fggf000000","000000ffff000000","000000ffff000000","000000ffff000000","000550ffff000000","005775ffff000000","005775ffff000000","000550ffff000000","0e0000ffff0000e0","eee000ffff000eee","eeee00ffff00eeee","eeeeeeffffeeeeee","eeeeeeffffeeeeee"],
-      ["0000000000000000","0044000000004400","0044000000004400","0044000550004400","0044005555004400","0044000gg0004400","0044007gg7004400","0044007777004400","0044007777004400","0220007777000220","0220007777000220","0020007777000200","0044447777444400","0044447777444400","0044447777444400","0044447777444400"],
-      ["0000000000000000","0000000550000000","0000005555000000","0000055555500000","0000000gg0000000","0002208gg8022000","0002208888022000","0002208888022000","0002208888022000","0002208888022000","0000008888000000","0000008888000000","0000050880500000","0000055005500000","0000055005500000","0000005555000000"]
+      ["0000005500000000", "0000005500000000", "0000000000000000", "000gg00000000000", "00egee0000000000", "00eeee2000000000", "00egee2000000000", "0099900000000000", "0090900002200000", "0090900022220000", "0000000022020000", "0000000002220000", "0006660000000000", "0660006000000000", "6666666666666666", "6666666666666666"],
+      ["0000000220000000", "0000000220000000", "0000000000000000", "0002000000000000", "00200000g0000000", "00000007g7000000", "0000000777000000", "00000027g0000000", "0000020700000000", "0000000700000000", "0000007770000000", "0050009990004000", "0050099999004000", "05e509999904b400", "1111111111111111", "1111111111111111"],
+      ["0011000000001100", "0012100000012100", "0012100220012100", "0012102552012100", "0012100220012100", "0012100gg0012100", "001210bggb012100", "001210bbbb012100", "001210bbbb012100", "001210bbbb012100", "001210bbbb012100", "001210bbbb012100", "0012100550012100", "0012105005012100", "0012100550012100", "1111111111111111"],
+      ["0000000550000000", "0000005555000000", "0000000gg0000000", "000000fggf000000", "000000ffff000000", "000000ffff000000", "000000ffff000000", "000550ffff000000", "005775ffff000000", "005775ffff000000", "000550ffff000000", "0e0000ffff0000e0", "eee000ffff000eee", "eeee00ffff00eeee", "eeeeeeffffeeeeee", "eeeeeeffffeeeeee"],
+      ["0000000000000000", "0044000000004400", "0044000000004400", "0044000550004400", "0044005555004400", "0044000gg0004400", "0044007gg7004400", "0044007777004400", "0044007777004400", "0220007777000220", "0220007777000220", "0020007777000200", "0044447777444400", "0044447777444400", "0044447777444400", "0044447777444400"],
+      ["0000000000000000", "0000000550000000", "0000005555000000", "0000055555500000", "0000000gg0000000", "0002208gg8022000", "0002208888022000", "0002208888022000", "0002208888022000", "0002208888022000", "0000008888000000", "0000008888000000", "0000050880500000", "0000055005500000", "0000055005500000", "0000005555000000"]
     ];
     for (let i = 6; i < 22; i++) {
       let pattern = [];
@@ -1381,11 +3628,11 @@
         else positions[rankId].forEach(pos => { compiled += tarotCompile(symbolData, pos[0], pos[1], 1); });
       } else {
         let crown = [];
-        if (rankId === 11) crown = ["0000000000000000","0000000000000000","0000222222220000","00002gg2gg2g0000","00002ggggggg0000"];
-        if (rankId === 12) crown = ["0000003333000000","0000033333300000","0000333333330000","0000311311330000","0000333333330000"];
-        if (rankId === 13) crown = ["0000500500500000","0000550505500000","0000555555500000","0000511511500000","0000555555500000"];
-        if (rankId === 14) crown = ["0005505505500000","0005755755750000","0005555555550000","0005115511550000","0005555555550000"];
-        let body = ["00000bbaabb00000","00000bbaabb00000","0000bbbaabbb0000","000bbbbbbbbbb000","00bbbbbbbbbbbb00","00bbbbbbbbbbbb00","0bbbbbbbbbbbbbb0","0bbbbbbbbbbbbbb0","bbbbbbbbbbbbbbbb","bbbbbbbbbbbbbbbb","bbbbbbbbbbbbbbbb"];
+        if (rankId === 11) crown = ["0000000000000000", "0000000000000000", "0000222222220000", "00002gg2gg2g0000", "00002ggggggg0000"];
+        if (rankId === 12) crown = ["0000003333000000", "0000033333300000", "0000333333330000", "0000311311330000", "0000333333330000"];
+        if (rankId === 13) crown = ["0000500500500000", "0000550505500000", "0000555555500000", "0000511511500000", "0000555555500000"];
+        if (rankId === 14) crown = ["0005505505500000", "0005755755750000", "0005555555550000", "0005115511550000", "0005555555550000"];
+        let body = ["00000bbaabb00000", "00000bbaabb00000", "0000bbbaabbb0000", "000bbbbbbbbbb000", "00bbbbbbbbbbbb00", "00bbbbbbbbbbbb00", "0bbbbbbbbbbbbbb0", "0bbbbbbbbbbbbbb0", "bbbbbbbbbbbbbbbb", "bbbbbbbbbbbbbbbb", "bbbbbbbbbbbbbbbb"];
         compiled += tarotCompile(crown.concat(body), 34, 40, 2);
         compiled += tarotCompile(symbolData, 65, 85, 1.5);
       }
@@ -1718,11 +3965,23 @@
       });
       return frag;
     }
+    // 클립보드 복사 + 아이콘 피드백(✓) — 봇/유저 메시지 공용
+    function copyToClip(text, el, restore) {
+      const ok = () => { if (el) { el.textContent = '✓'; setTimeout(() => { el.textContent = restore; }, 1200); } };
+      const fb = () => { try { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); ok(); } catch { } };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(ok).catch(fb); else fb();
+    }
     function dobisAppend(role, text) {
       const log = document.getElementById('dobisLog');
       const d = document.createElement('div');
       d.className = 'dobis-msg ' + (role === 'you' ? 'you' : 'bot');
-      if (role === 'you') d.textContent = 'YOU: ' + text;
+      if (role === 'you') {
+        d.appendChild(document.createTextNode('YOU: ' + text));
+        const cp = document.createElement('span');
+        cp.className = 'msg-copy'; cp.textContent = '⧉'; cp.title = '복사';
+        cp.onclick = () => copyToClip(text, cp, '⧉');
+        d.appendChild(cp);
+      }
       else {
         d.appendChild(document.createTextNode('DOBIS: '));
         d.appendChild(renderBotText(stripEmo(text)));
@@ -1760,6 +4019,34 @@
       }
       bubble.appendChild(card);
     }
+    // 캐릭챗 답변 말미 🎨 이미지 생성 pill — 클릭 시 (지시사항) 입력 펼침, [생성]으로 실행
+    function appendImggenCard(bubble) {
+      const card = document.createElement('div'); card.className = 'dl-card';
+      const btn = document.createElement('span'); btn.className = 'dl-btn add'; btn.textContent = '🎨'; btn.title = '이미지 생성';
+      const form = document.createElement('span'); form.className = 'imggen-form hidden';
+      const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'imggen-prompt'; inp.placeholder = '(지시사항)';
+      const hi = document.createElement('label'); hi.className = 'imggen-high'; hi.title = '고품질(HIGH) — 느리고 토큰 더 씀';
+      const hcb = document.createElement('input'); hcb.type = 'checkbox';
+      hi.appendChild(hcb); hi.appendChild(document.createTextNode(' HIGH'));
+      const go = document.createElement('span'); go.className = 'dl-btn'; go.textContent = '생성';
+      const submit = () => { dobisGenImage(inp.value.trim(), hcb.checked); form.classList.add('hidden'); inp.value = ''; };
+      go.onclick = submit;
+      inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } };
+      btn.onclick = () => { form.classList.toggle('hidden'); if (!form.classList.contains('hidden')) inp.focus(); };
+      form.appendChild(inp); form.appendChild(hi); form.appendChild(go);
+      card.appendChild(btn); card.appendChild(form);
+      bubble.appendChild(card);
+    }
+    // 이미지 생성 트리거 — 유저 버블 없이 메타 메시지 전송(캐릭챗 몰입 유지)
+    function dobisGenImage(prompt, high) {
+      if (dobisBusy) { dobisStatus('⏳ 생성 중 — 잠시 후 다시'); return; }
+      touchSession();
+      const tag = high ? '[이미지생성|HIGH]' : '[이미지생성]';
+      const meta = prompt
+        ? tag + ' ' + prompt
+        : tag + ' 직전 답변(방금 장면)을 한 장의 이미지로 만들어줘.';
+      botSend(meta);
+    }
     // 사용자가 보낸 domoji 스티커(채팅 내) — 원본 이미지 그대로, 크기만 스티커 사이즈
     function appendSticker(name) {
       const log = document.getElementById('dobisLog');
@@ -1769,7 +4056,7 @@
     }
     function setModelChip(m) {
       if (!m) return; dobisModel = m;
-      document.querySelectorAll('.modelchips .chip[data-m]').forEach((c) => c.classList.toggle('on', c.dataset.m === m));
+      const sel = document.getElementById('modelSelect'); if (sel) sel.value = m;
     }
     function setThinkChip(on) {
       dobisThink = !!on;
@@ -1884,7 +4171,7 @@
       let fs = Math.max(9, Math.min(34, inner / _ch24));
       if (Math.abs(parseFloat(hud.style.fontSize) - fs) > 0.4) hud.style.fontSize = fs.toFixed(1) + 'px';
     }
-    if (window.ResizeObserver) { try { new ResizeObserver(() => fitHud()).observe(document.getElementById('dobisHud')); } catch (e) {} }
+    if (window.ResizeObserver) { try { new ResizeObserver(() => fitHud()).observe(document.getElementById('dobisHud')); } catch (e) { } }
     // 콘솔 측 폴백 HUD(접속 직후 등 DOBIS 렌더 전). DOBIS 가 그린 HUD 가 있으면 덮어쓰지 않음.
     function renderStatsHud(s) {
       const hud = document.getElementById('dobisHud');
@@ -1904,12 +4191,13 @@
       const el = document.getElementById('imggenGauge'); if (!el) return;
       if (!d) { el.classList.add('hidden'); return; }
       const used = d.usedTokens || 0, lim = d.limitTokens || 100000;
-      const a5 = d.agy5h || 0, aw = d.agyWeek || 0;
-      const p5 = d.agy5hPct || 0, pw = d.agyWeekPct || 0;
-      if (used === 0 && aw === 0) { el.classList.add('hidden'); return; }
+      const a5 = d.agy5h || 0, aday = d.agyDay || 0, dlim = d.agyDayLimit || 100;
+      const p5 = d.agy5hPct || 0;
+      const dpct = dlim > 0 ? Math.round(aday / dlim * 100) : 0;
+      if (used === 0 && aday === 0) { el.classList.add('hidden'); return; }
       const parts = [];
-      // agy 무료 — 5시간(병목)·주간 추정 소비% 병기. 실제 잔여 아님(타 agy 사용 미반영 추정).
-      if (aw > 0) parts.push('🆓 agy 5h ' + a5 + '장~' + p5 + '% · 주 ' + aw + '장~' + pw + '%');
+      // agy 무료 — 5시간 스프린트(연산량 병목)·일간(AI Pro ~100장) 추정 병기. 장수는 하한 추정(타 agy 사용·스로틀 미반영).
+      if (aday > 0) parts.push('🆓 agy 5h ' + a5 + '장~' + p5 + '% · 오늘 ' + aday + '/' + dlim + '장');
       let pct = 0, usd = '0.00';
       if (used > 0) {   // API 폴백 분만 토큰 게이지로 표시
         pct = Math.round(used / lim * 100);
@@ -1919,11 +4207,12 @@
         parts.push('🎨 API ' + usedK + 'k/' + limK + 'k ' + '▓'.repeat(f) + '░'.repeat(n - f) + ' ' + pct + '% ~$' + usd);
       }
       el.textContent = parts.join(' · ');
-      el.title = 'agy 무료 추정 소비(실측 1장≈5h 0.97%p·주간 0.16%p 기준): 최근5시간 ' + a5 + '장 ~' + p5 + '%, 최근7일 ' + aw + '장 ~' + pw + '%. '
-        + '※ dobis 생성분만 추정 — 다른 agy 사용은 미반영, 정확값은 agy /usage 로 확인. 5시간 한도가 병목(약 4.5h마다 리셋). '
+      el.title = 'agy 무료 추정 소비: 최근5시간 ' + a5 + '장 ~' + p5 + '%(스프린트 병목), 오늘 ' + aday + '/' + dlim + '장 ~' + dpct + '%(AI Pro 일간). '
+        + '※ Antigravity는 장수가 아닌 통합 연산량 기준 쿼터라 이미지가 무겁고 5시간 풀을 타 코딩작업과 공유 — 장수 카운트는 하한 추정(실제 소비는 더 클 수 있음). '
+        + 'dobis 생성분만 집계(타 agy 사용·스로틀 미반영). 정확값은 agy /usage. 5h 스프린트가 병목(~4.5h 리셋). '
         + 'API 폴백 토큰 ' + used.toLocaleString() + '/' + lim.toLocaleString() + ' ~$' + usd + '.';
-      el.classList.toggle('warn', (used > 0 && pct >= 70 && pct < 100) || p5 >= 70);
-      el.classList.toggle('over', (used > 0 && pct >= 100) || p5 >= 100);
+      el.classList.toggle('warn', (used > 0 && pct >= 70 && pct < 100) || (p5 >= 70 && p5 < 100) || (dpct >= 70 && dpct < 100));
+      el.classList.toggle('over', (used > 0 && pct >= 100) || p5 >= 100 || dpct >= 100);
       el.classList.remove('hidden');
     }
     // shared 사용량 게이지 — 논리 기준(limitGB)으로 % 표시(실제 제한 아님). 80%↑ 경고색.
@@ -2011,7 +4300,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
@@ -2241,7 +4530,7 @@
     function _rebuildOrder() {
       if (!_musicTracks || !_musicTracks.length) { _musicOrder = []; return; }
       const n = _musicTracks.length, order = Array.from({ length: n }, (_, i) => i);
-      if (_musicShuffle) { for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; } }
+      if (_musicShuffle) { for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[order[i], order[j]] = [order[j], order[i]]; } }
       _musicOrder = order;
       if (_musicCur) { const ci = _musicTracks.findIndex((t) => t.file === _musicCur); const cp = _musicOrder.indexOf(ci); _musicIdx = cp !== -1 ? cp : 0; }
     }
@@ -2252,8 +4541,10 @@
     }
     async function loadMusicTracks() {
       if (_musicTracks) return _musicTracks;
-      try { const r = await fetch('/music/tracks.json', { cache: 'no-store' }); const j = await r.json();
-        _musicTracks = Object.keys(j).map((f) => { const v = j[f]; const o = (v && typeof v === 'object') ? v : { desc: v }; return { file: f, name: o.name || '', desc: o.desc || '' }; }); }
+      try {
+        const r = await fetch('/music/tracks.json', { cache: 'no-store' }); const j = await r.json();
+        _musicTracks = Object.keys(j).map((f) => { const v = j[f]; const o = (v && typeof v === 'object') ? v : { desc: v }; return { file: f, name: o.name || '', desc: o.desc || '' }; });
+      }
       catch (e) { _musicTracks = []; }
       return _musicTracks;
     }
@@ -2280,13 +4571,13 @@
         loadMusicTracks().then(() => { if (!_musicOrder.length) _rebuildOrder(); else _syncMusicIdx(); });
         a.play().then(() => showMusicBar(a.dataset.name, true)).catch(() => showMusicBar(a.dataset.name, false)); // 자동재생 차단 시 ▶ 로 노출
       } else if (m.action === 'pause') { a.pause(); showMusicBar(a.dataset.name, false); }
-      else if (m.action === 'resume') { _musicPanelOn(true); a.play().then(() => showMusicBar(a.dataset.name, true)).catch(() => {}); }
-      else if (m.action === 'stop') { a.pause(); try { a.currentTime = 0; } catch {} _musicCur = null; showMusicBar('', false); }
+      else if (m.action === 'resume') { _musicPanelOn(true); a.play().then(() => showMusicBar(a.dataset.name, true)).catch(() => { }); }
+      else if (m.action === 'stop') { a.pause(); try { a.currentTime = 0; } catch { } _musicCur = null; showMusicBar('', false); }
     }
     function musicToggle() {
       const a = document.getElementById('musicAudio');
       if (!a.dataset.src) { openMusicList(); return; }   // 아직 곡 없음 → 목록 열기
-      if (a.paused) a.play().then(() => showMusicBar(a.dataset.name, true)).catch(() => {});
+      if (a.paused) a.play().then(() => showMusicBar(a.dataset.name, true)).catch(() => { });
       else { a.pause(); showMusicBar(a.dataset.name, false); }
     }
     function musicStop() { handleMusic({ action: 'stop' }); }
@@ -2322,7 +4613,7 @@
       e.preventDefault(); e.stopPropagation();
       _mdrag = { row, box: row.parentElement };
       row.classList.add('dragging');
-      try { e.target.setPointerCapture(e.pointerId); } catch {}
+      try { e.target.setPointerCapture(e.pointerId); } catch { }
       document.addEventListener('pointermove', _musicDragMove);
       document.addEventListener('pointerup', _musicDragEnd, { once: true });
     }
@@ -2593,7 +4884,7 @@
       }
     }
     function openSettings() { document.getElementById('settingsModal').classList.remove('hidden'); setShow('menu'); }
-    function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); ['set_curId','set_curPw','set_newId','set_newPw','set_newPw2'].forEach(i=>document.getElementById(i).value=''); document.getElementById('setMsg').textContent=''; }
+    function closeSettings() { document.getElementById('settingsModal').classList.add('hidden');['set_curId', 'set_curPw', 'set_newId', 'set_newPw', 'set_newPw2'].forEach(i => document.getElementById(i).value = ''); document.getElementById('setMsg').textContent = ''; }
     async function saveCredentials() {
       const g = (i) => document.getElementById(i).value;
       const newPw = g('set_newPw'), newPw2 = g('set_newPw2');
@@ -2613,7 +4904,7 @@
     // ===== 전체화면 토글 (모니터 프레임 ↔ 풀스크린) =====
     function toggleFullscreen() {
       document.body.classList.toggle('fullscreen');
-      const _ft = ct(); if (_ft && _ft.fit && !document.getElementById('sshView').classList.contains('hidden')) requestAnimationFrame(() => { try { _ft.fit.fit(); } catch {} });
+      const _ft = ct(); if (_ft && _ft.fit && !document.getElementById('sshView').classList.contains('hidden')) requestAnimationFrame(() => { try { _ft.fit.fit(); } catch { } });
     }
 
     // ===== SSH 터미널 (멀티탭 + 사이드바) =====
@@ -2624,7 +4915,7 @@
 
     function toggleSshSidebar() {
       document.getElementById('sshSidebar').classList.toggle('open');
-      const t = ct(); if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch {} });
+      const t = ct(); if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch { } });
     }
     function renderSidebar() {
       const list = document.getElementById('sbList'); if (!list) return;
@@ -2650,7 +4941,7 @@
       if (_dragInit) return; _dragInit = true;
       const termWrap = document.getElementById('termWrap'), dropZone = document.getElementById('sshDropZone');
       termWrap.addEventListener('dragenter', (e) => { e.preventDefault(); const t = ct(); if (t && t.sshOn) dropZone.classList.remove('hidden'); });
-      termWrap.addEventListener('dragover',  (e) => { e.preventDefault(); const t = ct(); if (t && t.sshOn) dropZone.classList.remove('hidden'); });
+      termWrap.addEventListener('dragover', (e) => { e.preventDefault(); const t = ct(); if (t && t.sshOn) dropZone.classList.remove('hidden'); });
       termWrap.addEventListener('dragleave', (e) => { if (!termWrap.contains(e.relatedTarget)) dropZone.classList.add('hidden'); });
       termWrap.addEventListener('drop', async (e) => {
         e.preventDefault(); dropZone.classList.add('hidden');
@@ -2677,7 +4968,7 @@
       tabs.forEach(t => t.el.classList.toggle('active', t.id === id));
       renderSidebar();
       const t = ct();
-      if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch {} });
+      if (t && t.fit) requestAnimationFrame(() => { try { t.fit.fit(); } catch { } });
       if (t) {
         setSshStatus(t.sshOn ? 'connected' : (t.sock ? 'connecting…' : 'idle'));
         document.getElementById('sshXferBar').classList.toggle('active', !!t.sshOn);
@@ -2687,8 +4978,8 @@
     }
     function closeSshTab(id) {
       const t = tabs.find(t => t.id === id); if (!t) return;
-      if (t.sock) { try { t.sock.emit('ssh:end'); t.sock.disconnect(); } catch {} }
-      if (t.term) { try { t.term.dispose(); } catch {} }
+      if (t.sock) { try { t.sock.emit('ssh:end'); t.sock.disconnect(); } catch { } }
+      if (t.term) { try { t.term.dispose(); } catch { } }
       t.el.remove();
       tabs = tabs.filter(t => t.id !== id);
       if (!tabs.length) { addSshTab(); return; }
@@ -2702,27 +4993,27 @@
       const password = document.getElementById('ssh_pass').value;
       if (!username || !password) { setSshStatus('user/pass 필요'); return; }
       if (!t.term) {
-        try { await Promise.all([document.fonts.load('13px "MesloLGS NF"'), document.fonts.load('700 13px "MesloLGS NF"')]); } catch {}
+        try { await Promise.all([document.fonts.load('13px "MesloLGS NF"'), document.fonts.load('700 13px "MesloLGS NF"')]); } catch { }
         t.term = new Terminal({
           fontFamily: '"MesloLGS NF", "DejaVu Sans Mono", monospace', fontSize: 13, cursorBlink: true,
           allowProposedApi: true, theme: { background: '#03150c', foreground: '#4dff8f', cursor: '#4dff8f' },
         });
         t.fit = new FitAddon.FitAddon(); t.term.loadAddon(t.fit);
-        try { const u = new Unicode11Addon.Unicode11Addon(); t.term.loadAddon(u); t.term.unicode.activeVersion = '11'; } catch {}
+        try { const u = new Unicode11Addon.Unicode11Addon(); t.term.loadAddon(u); t.term.unicode.activeVersion = '11'; } catch { }
         t.term.open(t.el); t.fit.fit();
         t.term.onData((d) => { if (t.sock) t.sock.emit('ssh:data', d); touchSession(); });
-        t.term.onSelectionChange(() => { const s = t.term.getSelection(); if (s) navigator.clipboard.writeText(s).catch(() => {}); });
+        t.term.onSelectionChange(() => { const s = t.term.getSelection(); if (s) navigator.clipboard.writeText(s).catch(() => { }); });
         t.el.addEventListener('contextmenu', (e) => {
           e.preventDefault();
-          navigator.clipboard.readText().then((text) => { if (t.sock && text) t.sock.emit('ssh:data', text); }).catch(() => {});
+          navigator.clipboard.readText().then((text) => { if (t.sock && text) t.sock.emit('ssh:data', text); }).catch(() => { });
         });
-        new ResizeObserver(() => { try { t.fit.fit(); if (t.sshOn) t.sock && t.sock.emit('ssh:resize', { cols: t.term.cols, rows: t.term.rows }); } catch {} })
+        new ResizeObserver(() => { try { t.fit.fit(); if (t.sshOn) t.sock && t.sock.emit('ssh:resize', { cols: t.term.cols, rows: t.term.rows }); } catch { } })
           .observe(t.el);
         t.sentry = new Zmodem.Sentry({
           to_terminal: (octets) => t.term.write(new Uint8Array(octets)),
-          sender:      (octets) => { if (t.sock) t.sock.emit('ssh:data', new Uint8Array(octets)); },
-          on_retract:  () => {},
-          on_detect:   async (detection) => {
+          sender: (octets) => { if (t.sock) t.sock.emit('ssh:data', new Uint8Array(octets)); },
+          on_retract: () => { },
+          on_detect: async (detection) => {
             const session = detection.confirm();
             if (session.type === 'receive') {
               const input = document.createElement('input');
@@ -2730,12 +5021,12 @@
               document.body.appendChild(input);
               input.onchange = async () => {
                 for (const file of Array.from(input.files)) {
-                  t.term.write(`\r\n\x1b[36m▶ rz: ${file.name} (${(file.size/1024).toFixed(1)}KB)…\x1b[0m`);
+                  t.term.write(`\r\n\x1b[36m▶ rz: ${file.name} (${(file.size / 1024).toFixed(1)}KB)…\x1b[0m`);
                   try {
-                    const xfer = await session.send_offer({ name: file.name, size: file.size, mtime: Math.floor(file.lastModified/1000) });
+                    const xfer = await session.send_offer({ name: file.name, size: file.size, mtime: Math.floor(file.lastModified / 1000) });
                     if (xfer) { await xfer.send(new Uint8Array(await file.arrayBuffer())); await xfer.end(); }
                     t.term.write(`\r\n\x1b[32m✓ rz: ${file.name} 완료\x1b[0m\r\n`);
-                  } catch(e) { t.term.write(`\r\n\x1b[31m✗ rz: ${e.message}\x1b[0m\r\n`); }
+                  } catch (e) { t.term.write(`\r\n\x1b[31m✗ rz: ${e.message}\x1b[0m\r\n`); }
                 }
                 await session.close(); document.body.removeChild(input);
               };
@@ -2752,7 +5043,7 @@
                   a.href = URL.createObjectURL(new Blob(chunks)); a.download = name; a.click();
                   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
                   t.term.write(`\r\n\x1b[32m✓ sz: ${name} 저장됨\x1b[0m\r\n`);
-                } catch(e) { t.term.write(`\r\n\x1b[31m✗ sz: ${e.message}\x1b[0m\r\n`); }
+                } catch (e) { t.term.write(`\r\n\x1b[31m✗ sz: ${e.message}\x1b[0m\r\n`); }
               });
               await session.start();
             }
@@ -2771,7 +5062,7 @@
         touchSession();
         if (!t.sentry) { t.term.write(typeof d === 'string' ? d : new Uint8Array(d)); return; }
         try { t.sentry.consume(Array.from(d instanceof ArrayBuffer ? new Uint8Array(d) : d)); }
-        catch(e) { t.term.write(typeof d === 'string' ? d : new Uint8Array(d)); }
+        catch (e) { t.term.write(typeof d === 'string' ? d : new Uint8Array(d)); }
       });
       t.sock.on('ssh:error', (m) => { if (t === ct()) setSshStatus('ERR: ' + m); t.term.write('\r\n*** ' + m + ' ***\r\n'); });
       t.sock.on('ssh:xfer', ({ op, name, ok, dest, data, error }) => {
@@ -2873,14 +5164,14 @@
 
     (async function initSession() {
       let saved = '';
-      try { saved = sessionStorage.getItem('dobis_tok') || ''; } catch {}
+      try { saved = sessionStorage.getItem('dobis_tok') || ''; } catch { }
       if (saved) {
         token = saved;
-        try { wsshSecret = sessionStorage.getItem('dobis_wssh') || ''; } catch {}
+        try { wsshSecret = sessionStorage.getItem('dobis_wssh') || ''; } catch { }
         try {
           const r = await fetch(API + '/auth/touch', { method: 'POST', headers: H() });
           if (r.ok) { const j = await r.json(); sessionExp = Date.now() + (j.expiresInSec || 600) * 1000; _lastTouch = Date.now(); showApp(); return; }
-        } catch {}
+        } catch { }
       }
       showLogin();
     })();
@@ -2889,7 +5180,7 @@
     /* 모바일 iOS 키보드 대응 — visualViewport 기준으로 .screen 위치/높이 동적 조정.
        iOS는 input focus 시 visualViewport.offsetTop 이 생겨 fixed 요소도 밀림.
        .screen top/height 를 직접 맞춰 header가 잘리지 않도록 하고, 키보드 위에 딱 붙게 함. */
-    (function() {
+    (function () {
       if (!window.visualViewport) return;
       const screen = document.querySelector('.screen');
       if (!screen) return;
@@ -2899,9 +5190,9 @@
         const vt = window.visualViewport.offsetTop;
         const vh = window.visualViewport.height;
         // top+bottom 방식: 두 값 모두 transition 가능 → 키보드 등장 시 자연스러운 슬라이드
-        screen.style.left   = '0';
-        screen.style.right  = '0';
-        screen.style.top    = vt + 'px';
+        screen.style.left = '0';
+        screen.style.right = '0';
+        screen.style.top = vt + 'px';
         screen.style.bottom = Math.max(0, window.innerHeight - vt - vh) + 'px';
         screen.style.height = '';
         // 키보드가 올라오면 bottom 이 0보다 커짐 — 150px 이상이면 키보드 열린 것으로 판단
@@ -2918,9 +5209,10 @@
       const inp = document.getElementById('dobisInput');
       if (inp) {
         inp.addEventListener('focus', () => { if (isMobile()) screen.classList.add('kbd-open'); });
-        inp.addEventListener('blur',  () => { setTimeout(() => { if (!inp.matches(':focus')) screen.classList.remove('kbd-open'); }, 200); });
+        inp.addEventListener('blur', () => { setTimeout(() => { if (!inp.matches(':focus')) screen.classList.remove('kbd-open'); }, 200); });
       }
     })();
   </script>
 </body>
+
 </html>
