@@ -3202,7 +3202,9 @@
     function showApp() {
       document.getElementById('toolbar').classList.remove('hidden');
       document.getElementById('loginView').classList.add('hidden');
-      loadSettings(); showView('home');
+      loadSettings();
+      let _lv; try { _lv = localStorage.getItem('dobisLastView'); } catch (e) { }
+      showView(['home', 'registry', 'ssh', 'dobis'].includes(_lv) ? _lv : 'home');   // 새로고침 시 마지막 뷰로
       ensureSocket();   // 로그인 시점에 /dobis 연결 → waker 가 워커 기동(로그인 중 LIVE)
       pollHealth(); if (!window._hp) window._hp = setInterval(pollHealth, 5000);
       if (!window._clk) window._clk = setInterval(tickClock, 1000);
@@ -3377,12 +3379,13 @@
     const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis' };
     function showView(v) {
       touchSession();   // 페이지 이동 = 활동 → 세션 갱신
+      try { localStorage.setItem('dobisLastView', v); } catch (e) { }   // 새로고침 시 마지막 뷰 복원용
       for (const [k, id] of Object.entries(VIEWS)) document.getElementById(id).classList.toggle('hidden', k !== v);
       for (const [k, id] of Object.entries(TABS)) document.getElementById(id).classList.toggle('on', k === v);
       if (v === 'home') loadHome();
       if (v === 'registry') load();
       if (v === 'ssh') { ensureSshTabs(); const _t = ct(); if (_t && _t.fit) requestAnimationFrame(() => { try { _t.fit.fit(); if (_t.sshOn) _t.sock && _t.sock.emit('ssh:resize', { cols: _t.term.cols, rows: _t.term.rows }); } catch { } }); }
-      if (v === 'dobis') { ensureSocket(); setChatName(); requestAnimationFrame(() => { const i = document.getElementById('dobisInput'); if (i) i.focus(); }); }
+      if (v === 'dobis') { ensureSocket(); _restoreDraft(); setChatName(); requestAnimationFrame(() => { const i = document.getElementById('dobisInput'); if (i) i.focus(); }); }
     }
 
     // ===== 배경 =====
@@ -3532,7 +3535,41 @@
       });
       return lines.join('\n');
     }
-    function dobisNewChat() {
+    // ===== 대화 초안 자동저장(localStorage) — 새로고침 복구용. '새 채팅' 전엔 보존, 새 채팅 시 클리어 =====
+    const DRAFT_KEY = 'dobisChatDraft';
+    let _restoring = false;
+    function _saveDraft() {
+      if (_restoring) return;
+      try {
+        if (!document.querySelector('#dobisLog .dobis-msg')) { localStorage.removeItem(DRAFT_KEY); return; }
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ md: buildChatMd(chatTitle || ''), title: chatTitle, ts: Date.now() }));
+      } catch (e) { }
+    }
+    function _restoreDraft() {
+      const log = document.getElementById('dobisLog');
+      if (!log || log.querySelector('.dobis-msg')) return false;   // 이미 내용 있으면 복원 안 함
+      let d; try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return false; }
+      if (!d || !d.md) return false;
+      _restoring = true;
+      try {
+        const body = d.md.replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
+        const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
+        let m, any = false;
+        while ((m = re.exec(body)) !== null) {
+          const txt = m[2].replace(/\s+$/, ''); if (!txt) continue; any = true;
+          dobisAppend(m[1] === 'YOU' ? 'you' : 'bot', txt);
+        }
+        if (any) { chatTitle = d.title || ''; setChatName(); log.scrollTop = log.scrollHeight; }
+        return any;
+      } finally { _restoring = false; }
+    }
+    async function dobisNewChat() {
+      // 미저장 대화가 있으면 저장 여부를 한 번 묻는다(저장은 그때그때 사용자 결정)
+      if (document.querySelector('#dobisLog .dobis-msg') && !chatTitle) {
+        const yes = await dlgConfirm('지금 대화를 저장할까요?\n(취소 = 저장하지 않고 새 채팅)', '새 채팅');
+        if (yes) { await dobisSaveChat(); }
+      }
+      try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }   // 초안 비움
       setDobisBusy(false); stopDobisTimers(); dobisStatus('');   // 진행 중이면 소켓 끊기로 취소
       if (dobisSock) { try { dobisSock.disconnect(); } catch { } dobisSock = null; }
       dobisSession = newSessionId(); chatTitle = '';
@@ -4084,6 +4121,7 @@
         d.dataset.raw = text;
       }
       log.appendChild(d); log.scrollTop = log.scrollHeight;
+      if (role === 'you') _saveDraft();   // 유저 발화 즉시 초안 저장(새로고침 복구)
       return d;
     }
     function setBotBubble(bubble, text, live) {
@@ -4396,7 +4434,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.dice) appendDiceCard(streamBubble, d.dice); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.dice) appendDiceCard(streamBubble, d.dice); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
@@ -4680,6 +4718,34 @@
       if (cur > 0) { localStorage.setItem('dobisMusicVolPrev', cur); musicVol(0); }
       else { const prev = parseFloat(localStorage.getItem('dobisMusicVolPrev')) || 0.8; musicVol(prev * 100); }
     }
+    // ── iOS/Safari 오디오 자동재생 잠금 해제 ──
+    // iOS 는 사용자 제스처 없이는 오디오 재생을 막는다. 첫 탭에서 #musicAudio 를 무음으로 잠깐 play→pause 해
+    // 요소를 '언락'해두면, 이후 DOBIS 의 [music:play] 같은 프로그램 재생이 허용된다(한 번 언락되면 세션 내 유지).
+    let _audioUnlocked = false;
+    function _silentWavURL() {
+      const sr = 8000, n = 8, buf = new ArrayBuffer(44 + n), v = new DataView(buf);
+      const ws = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+      ws(0, 'RIFF'); v.setUint32(4, 36 + n, true); ws(8, 'WAVE'); ws(12, 'fmt ');
+      v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, sr, true); v.setUint32(28, sr, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+      ws(36, 'data'); v.setUint32(40, n, true);
+      for (let i = 0; i < n; i++) v.setUint8(44 + i, 128);   // 8bit 무음 = 128
+      let bin = ''; const b = new Uint8Array(buf); for (let i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]);
+      return 'data:audio/wav;base64,' + btoa(bin);
+    }
+    function _unlockAudio() {
+      if (_audioUnlocked) return;
+      const a = document.getElementById('musicAudio'); if (!a) return;
+      if (a.dataset.src || !a.paused) { _audioUnlocked = true; return; }   // 이미 곡 있음/재생중 → 실재생으로 언락됨
+      try {
+        a.src = _silentWavURL(); a.muted = true;
+        const p = a.play();
+        const done = () => { try { a.pause(); } catch (e) { } a.muted = false; a.removeAttribute('src'); try { a.load(); } catch (e) { } _audioUnlocked = true; };
+        if (p && p.then) p.then(done).catch(() => { a.muted = false; });
+        else done();
+      } catch (e) { a.muted = false; }
+    }
+    ['pointerdown', 'touchend', 'keydown', 'click'].forEach(ev => document.addEventListener(ev, _unlockAudio, { passive: true }));
     function handleMusic(m) {
       if (!m || !m.action) return;
       const a = document.getElementById('musicAudio');
