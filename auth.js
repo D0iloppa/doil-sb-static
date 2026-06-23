@@ -189,4 +189,4 @@ router.delete('/admins/:username', requireRoot, async (req, res) => {
   } catch (e) { console.error('[auth] delete admin:', e.message); res.status(502).json({ error: 'auth backend error' }); }
 });
 
-module.exports = { router, requireToken, requireRoot, validToken, seedFromEnv };
+module.exports = { router, requireToken, requireRoot, validToken, tokenInfo, seedFromEnv };

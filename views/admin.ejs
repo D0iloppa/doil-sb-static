@@ -6,6 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="robots" content="noindex,nofollow" />
   <title>VOID//OS · ADMIN</title>
+  <link rel="icon" type="image/svg+xml" href="/admin-icons/void-soft-icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin-icons/void-soft-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/admin-icons/void-soft-192.png" />
+  <link rel="apple-touch-icon" href="/admin-icons/void-soft-180.png" />
+  <link rel="manifest" href="/void-admin.webmanifest" />
+  <meta name="theme-color" content="#03150c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VOID ADMIN" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css" />
   <style>
     /* Nerd Font (MesloLGS NF) — oh-my-zsh/Powerline 글리프 렌더용 */
@@ -605,16 +615,12 @@
       color: rgba(255,255,255,.85);
     }
     .drec-live:empty::before { content: '⋯ 전사 대기 중'; color: var(--dim); }
-    .drec-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-    .drec-btn {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 12px; border-radius: 5px; cursor: pointer;
-      background: rgba(77,255,143,.1); border: 1px solid rgba(77,255,143,.4); color: var(--grn);
-      font: inherit; font-size: .86em;
-    }
-    .drec-btn:hover { background: rgba(77,255,143,.2); }
-    .drec-btn.stop { background: rgba(255,77,77,.1); border-color: rgba(255,77,77,.5); color: #ff8a8a; }
-    .drec-btn[disabled] { opacity: .4; cursor: default; }
+    .drec-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 2px; }
+    /* 헤더의 [ 입력 ]/[ X ] 와 동일한 .cmd 브래킷 텍스트 idiom 으로 통일(모바일 일관성) */
+    .drec-act { font-size: .9em; }
+    .drec-act.stop { color: #ff8a8a; }
+    .drec-act.stop:hover { color: #ffd0d0; text-shadow: 0 0 8px #ff6b6b; }
+    .drec-act.off { opacity: .4; pointer-events: none; }
     .drec-minutes {
       margin-top: 4px; padding: 8px 10px; border-top: 1px dashed var(--dim);
       font-size: .9em; line-height: 1.6; white-space: pre-wrap;
@@ -1309,21 +1315,65 @@
     .chatlist {
       flex: 0 0 auto;
       max-height: 38%;
-      overflow: auto;
+      overflow-y: auto;
       border: 1px solid var(--dim);
       border-radius: 6px;
       padding: 6px 8px;
       margin-bottom: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
     }
+    .chatlist::-webkit-scrollbar { width: 4px; }
+    .chatlist::-webkit-scrollbar-track { background: transparent; }
+    .chatlist::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
 
-    .chatlist .row {
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       padding: 4px 2px;
       cursor: pointer;
+      min-width: 0;
+      border-radius: 3px;
     }
-
-    .chatlist .row:hover {
-      color: #d6ffe8;
+    .chat-item:hover .ci-name { color: #d6ffe8; }
+    .ci-name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .ci-time {
+      flex: 0 0 auto;
+      font-size: .72em;
+      opacity: .5;
+      white-space: nowrap;
+    }
+    .ci-btns {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 3px;
+      opacity: 0;
+      transition: opacity .12s;
+    }
+    .chat-item:hover .ci-btns { opacity: 1; }
+    .ci-btn {
+      cursor: pointer;
+      padding: 0 4px;
+      border-radius: 3px;
+      font-size: .85em;
+    }
+    .ci-btn:hover { color: var(--grn); }
+    .ci-btn.del:hover { color: #ff6060; }
+    .chat-more-btn {
+      text-align: center;
+      opacity: .6;
+      cursor: pointer;
+      font-size: .8em;
+      padding: 4px 0;
+    }
+    .chat-more-btn:hover { opacity: 1; }
 
     .modelchips {
       margin-left: 4px;
@@ -1524,30 +1574,109 @@
 
     .dobis-img-preview {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
       margin: 4px 0;
-      padding: 4px 8px;
-      background: rgba(77, 255, 143, .07);
-      border: 1px solid rgba(77, 255, 143, .25);
+      padding: 4px 6px;
+      background: rgba(77, 255, 143, .05);
+      border: 1px solid rgba(77, 255, 143, .2);
       border-radius: 4px;
-      font-size: .78em;
-      color: var(--dim);
     }
 
-    .dobis-img-preview img {
-      height: 36px;
-      width: 36px;
+    .img-thumb-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      width: 56px;
+    }
+
+    .img-thumb-item img {
+      width: 56px;
+      height: 52px;
       object-fit: cover;
-      border-radius: 3px;
+      border-radius: 4px;
       border: 1px solid var(--dim);
+      display: block;
     }
 
-    .dobis-img-preview .rm {
+    .img-thumb-item .thumb-icon {
+      font-size: 1.6em;
+      line-height: 52px;
+      width: 56px;
+      height: 52px;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid var(--dim);
+      background: rgba(77, 255, 143, .06);
+      display: block;
+    }
+
+    .img-thumb-item .thumb-name {
+      font-size: .65em;
+      color: var(--dim);
+      text-align: center;
+      width: 56px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    .img-thumb-item .thumb-rm {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ff4444;
+      color: #fff;
+      font-size: .6em;
+      line-height: 16px;
+      text-align: center;
       cursor: pointer;
-      color: #ff6b6b;
-      margin-left: auto;
-      padding: 0 4px;
+      z-index: 2;
+      opacity: .85;
+    }
+
+    .img-thumb-item .thumb-rm:hover { opacity: 1; }
+
+    .img-thumb-item .thumb-prog-wrap {
+      position: absolute;
+      bottom: 18px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(0,0,0,.4);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .img-thumb-item .thumb-prog {
+      height: 100%;
+      background: var(--grn);
+      transition: width .1s;
+    }
+
+    .dobis-bubble.drag-over {
+      border-color: var(--grn) !important;
+      box-shadow: 0 0 0 2px rgba(77, 255, 143, .3) inset;
+    }
+
+    .drag-over-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13, 26, 13, .82);
+      color: var(--grn);
+      font-size: 1.1em;
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 6px;
     }
 
     /* ── 캐릭챗 ── */
@@ -1795,6 +1924,27 @@
       padding: 0 4px;
     }
 
+    /* ── 블록 마크다운 ── */
+    .dobis-msg.bot h1, .dobis-msg.bot h2, .dobis-msg.bot h3 {
+      color: #4dff8f;
+      font-weight: 700;
+      margin: 10px 0 4px;
+      line-height: 1.3;
+    }
+    .dobis-msg.bot h1 { font-size: 1.15em; border-bottom: 1px solid rgba(77,255,143,.25); padding-bottom: 3px; }
+    .dobis-msg.bot h2 { font-size: 1.05em; }
+    .dobis-msg.bot h3 { font-size: .97em; color: rgba(77,255,143,.85); }
+    .dobis-msg.bot hr {
+      border: none;
+      border-top: 1px solid rgba(77,255,143,.2);
+      margin: 8px 0;
+    }
+    .dobis-msg.bot ul, .dobis-msg.bot ol {
+      margin: 4px 0 4px 1.2em;
+      padding: 0;
+    }
+    .dobis-msg.bot li { margin: 2px 0; }
+
     /* 펜스드 코드블록 (```) */
     .code-block {
       position: relative;
@@ -1902,7 +2052,7 @@
       flex-wrap: nowrap;
       gap: 6px;
       margin-top: 8px;
-      align-items: center;
+      align-items: flex-end;
     }
 
     .dobis-input-icons {
@@ -1910,6 +2060,8 @@
       display: flex;
       gap: 4px;
       flex: 0 0 auto;
+      align-self: flex-start;
+      padding-top: 6px;
     }
 
     .dobis-input-menu {
@@ -1985,12 +2137,66 @@
       opacity: 1;
     }
 
+    .dobis-chip.mode-chip {
+      background: rgba(77, 255, 143, .18);
+      border-color: rgba(77, 255, 143, .55);
+      font-family: ui-monospace, monospace;
+    }
+
     #dobisInput {
       flex: 1 1 auto;
       min-width: 0;
       border: 1px solid var(--dim);
       border-radius: 6px;
       padding: 6px 9px;
+      resize: none;
+      min-height: 34px;
+      max-height: calc(4 * 1.45em + 14px);
+      overflow-y: auto;
+      line-height: 1.45;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: inherit;
+      /* 터미널 테마 */
+      background: #040e04;
+      color: var(--grn);
+      caret-color: var(--grn);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    #dobisInput::placeholder {
+      color: rgba(77, 255, 143, .28);
+    }
+
+    #dobisInput:focus {
+      outline: none;
+      border-color: rgba(77, 255, 143, .55);
+    }
+
+    #dobisInput::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #dobisInput::-webkit-scrollbar-thumb {
+      background: rgba(77, 255, 143, .25);
+      border-radius: 2px;
+    }
+
+    /* 코드 블록 모드 — ``` 감지 시 활성 */
+    #dobisInput.code-mode {
+      background: #020a02;
+      border-color: rgba(77, 255, 143, .6);
+      border-style: dashed;
+      border-radius: 4px;
+      color: #9bffb8;
+    }
+
+    .code-mode-label {
+      font-size: .7em;
+      color: rgba(77, 255, 143, .55);
+      font-family: ui-monospace, monospace;
+      padding: 0 2px 2px;
+      letter-spacing: .05em;
     }
 
     .dobis-send {
@@ -2002,12 +2208,13 @@
 
     .dobis-stop {
       flex: 0 0 auto;
+      align-self: flex-end;
       cursor: pointer;
       border: 1px solid #ff6b6b;
       color: #ff9b9b;
       border-radius: 6px;
-      padding: 5px 10px;
-      font-size: .85em;
+      padding: 6px 14px;
+      font-size: inherit;
     }
 
     .dobis-stop:hover {
@@ -2016,7 +2223,7 @@
     }
 
     #dobisInput:disabled {
-      opacity: .45;
+      opacity: .4;
       cursor: not-allowed;
     }
 
@@ -2684,6 +2891,7 @@
       #dobisInput {
         flex: 1 1 auto;
         min-width: 0;
+        max-height: calc(3 * 1.45em + 14px);
       }
 
       /* 로그인·SSH 폼: 세로 스택(라벨/입력 한 줄씩) */
@@ -2755,6 +2963,13 @@
         color: #04140a;
         background: var(--grn);
         border-radius: 4px;
+      }
+    }
+
+    /* 모바일: 입력 버튼 패딩 축소 — 너비만 줄임, 높이/font-size는 PC와 동일 유지 */
+    @media (max-width: 820px) {
+      .dobis-send, .dobis-stop {
+        padding: 6px 8px;
       }
     }
 
@@ -2916,6 +3131,7 @@
               <span class="cmd navtab" id="tabSsh" onclick="showView('ssh')">[ SSH ]</span>
               <span class="cmd navtab" id="tabDobis" onclick="showView('dobis')">[ 🤖 DOBIS ]</span>
               <span class="cmd navtab" id="tabGeo" onclick="openGeoWindow()">[ 🗺️ GEO ]</span>
+              <span class="cmd navtab" id="tabTimes" onclick="openTimesWindow()">[ 📰 TIMES ]</span>
               <label class="navtab music-cb" title="음악 패널 토글"><input type="checkbox" id="musicToggleCb"
                   onchange="toggleMusicPanel()"> 🎵&#xFE0E;</label>
               <span class="spacer"></span>
@@ -2974,7 +3190,7 @@
                 <div class="home-tile"><span class="muted">TIME</span><b id="homeClock">—</b></div>
               </div>
               <div class="home-rate">
-                <div class="home-rate-head"><span class="muted">RATE LIMIT · 5H 윈도우</span><span id="rateAcct">계정
+                <div class="home-rate-head"><span class="muted">5H 윈도우 잔여</span><span id="rateAcct">계정
                     —</span></div>
                 <div id="rateBar" class="rate-bar">□□□□□□□□□□□□□□□□□□□□</div>
                 <div id="rateInfo" class="muted">DOBIS 대화 시 갱신</div>
@@ -2990,6 +3206,14 @@
                     class="app-label">GEO</span></div>
                 <a class="app-card" href="https://doil.me/" target="_blank" rel="noreferrer" title="홈페이지 새 탭"><span
                     class="app-ico">🌐</span><span class="app-label">홈페이지</span></a>
+                <a class="app-card" href="https://doybrary.doil.me/" target="_blank" rel="noreferrer" title="Doybrary 도서관"><span
+                    class="app-ico">📚</span><span class="app-label">Doybrary</span></a>
+                <div class="app-card" onclick="openTimesWindow()" title="Doiltimes"><span
+                    class="app-ico">📰</span><span class="app-label">Doiltimes</span></div>
+                <div class="app-card" onclick="window.open('https://www.notion.so/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','doyclopedia','width=1280,height=860,noopener')" title="DOYCLOPEDIA 지식베이스 (팝업)"><span
+                    class="app-ico">📖</span><span class="app-label">DOYCLOPEDIA</span></div>
+                <a class="app-card" href="https://agy.doil.me/" target="_blank" rel="noreferrer" title="로컬 안티그라비티 프록시"><span
+                    class="app-ico">🛸</span><span class="app-label">agy</span></a>
               </div>
             </div>
 
@@ -3084,13 +3308,10 @@
                 <div id="chatList" class="chatlist hidden"></div>
                 <div class="dobis-log" id="dobisLog"></div>
                 <div id="domojiPicker" class="domoji-picker hidden"></div>
-                <div id="dobisImgPreview" class="dobis-img-preview hidden">
-                  <img id="dobisImgThumb" src="" alt="첨부 이미지" />
-                  <span id="dobisImgName"></span>
-                  <span class="rm" onclick="clearImgAttach()" title="첨부 취소">✕</span>
-                </div>
-                <input type="file" id="dobisImgInput" accept="image/*" style="display:none"
-                  onchange="onImgAttach(this)" />
+                <div id="dobisImgPreview" class="dobis-img-preview hidden"></div>
+                <input type="file" id="dobisImgInput"
+                  accept="image/*,application/pdf,video/*,.zip,.7z,.rar,.gz,.tar"
+                  multiple style="display:none" onchange="onImgAttach(this)" />
                 <div id="dobisChips" class="dobis-chips"></div>
                 <div class="dobis-input-row">
                   <div class="dobis-input-icons">
@@ -3098,13 +3319,13 @@
                     <div id="dobisInputMenu" class="dobis-input-menu hidden">
                       <div class="dim-item" onclick="toggleDomojiPicker(); toggleInputMenu(true)">🙂 도모지</div>
                       <div class="dim-item"
-                        onclick="document.getElementById('dobisImgInput').click(); toggleInputMenu(true)">📷 이미지 첨부
+                        onclick="document.getElementById('dobisImgInput').click(); toggleInputMenu(true)">📎 파일 첨부
                       </div>
                       <div class="dim-item" id="dimSearch" onclick="dobisToggleSearch()">🌐 인터넷 검색</div>
                     </div>
                   </div>
-                  <input id="dobisInput" placeholder="메시지를 입력하세요… (/help)" autocomplete="one-time-code"
-                    onkeydown="if(event.key==='Enter')dobisSend()" />
+                  <textarea id="dobisInput" rows="1" placeholder="메시지를 입력하세요… (/help)"
+                    autocomplete="off" spellcheck="false"></textarea>
                   <span class="cmd dobis-send" onclick="dobisSend()">[ 입력 ]</span>
                   <span class="cmd dobis-stop hidden" onclick="dobisCancel()">[ X ]</span>
                 </div>
@@ -3125,6 +3346,24 @@
                 </div>
               </div>
             </div>
+            <!-- DoilTimes 앱 윈도우 — doil.me/times/ iframe -->
+            <div id="timesWindow" class="appwin hidden">
+              <div class="appwin-bar" id="timesBar">
+                <span class="appwin-title">📰 DoilTimes</span>
+                <span class="appwin-btns">
+                  <span class="awb tint" id="timesTintBtn" onclick="timesTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb" onclick="timesMin()" title="최소화">_</span>
+                  <span class="awb" onclick="timesMax()" title="전체화면 / 복원">▢</span>
+                  <span class="awb close" onclick="timesClose()" title="닫기">✕</span>
+                </span>
+              </div>
+              <div class="appwin-body">
+                <iframe id="timesFrame" class="geo-frame" title="DoilTimes"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <div class="appwin-scan" aria-hidden="true"></div>
+              </div>
+            </div>
+
             <!-- GEO 앱 윈도우 — doil.me/geo/ iframe(CSP frame-ancestors 'self'). 드래그/전체화면/최소화/닫기/틴트 -->
             <div id="geoWindow" class="appwin hidden">
               <div class="appwin-bar" id="geoBar">
@@ -3324,6 +3563,42 @@
     function logout() { showLogin(); }
 
     // ===== GEO 앱 윈도우 (Windows 식 창: 드래그/전체화면/최소화/닫기/CRT 틴트) =====
+    function openTimesWindow() {
+      touchSession();
+      const w = document.getElementById('timesWindow'), f = document.getElementById('timesFrame');
+      if (f && !f.getAttribute('src')) f.src = '/times/';
+      w.classList.remove('hidden');
+      const t = document.getElementById('tabTimes'); if (t) t.classList.add('on');
+    }
+    function timesMin() { document.getElementById('timesWindow').classList.add('hidden'); }
+    function timesMax() { document.getElementById('timesWindow').classList.toggle('win-max'); }
+    function timesClose() {
+      const w = document.getElementById('timesWindow'), f = document.getElementById('timesFrame');
+      w.classList.add('hidden'); w.classList.remove('win-max');
+      if (f) { f.src = 'about:blank'; f.removeAttribute('src'); }
+      const t = document.getElementById('tabTimes'); if (t) t.classList.remove('on');
+    }
+    function timesTint() {
+      const w = document.getElementById('timesWindow'), b = document.getElementById('timesTintBtn');
+      const on = w.classList.toggle('tinted'); if (b) b.classList.toggle('on', on);
+    }
+    (function timesDrag() {
+      const w = document.getElementById('timesWindow'), bar = document.getElementById('timesBar');
+      if (!w || !bar) return;
+      let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
+      bar.addEventListener('mousedown', (e) => {
+        if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
+        on = true; sx = e.clientX; sy = e.clientY; ol = w.offsetLeft; ot = w.offsetTop;
+        w.style.left = ol + 'px'; w.style.top = ot + 'px'; e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!on) return;
+        w.style.left = (ol + e.clientX - sx) + 'px';
+        w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
+      });
+      window.addEventListener('mouseup', () => { on = false; });
+    })();
+
     function openGeoWindow() {
       touchSession();
       const w = document.getElementById('geoWindow'), f = document.getElementById('geoFrame');
@@ -3430,6 +3705,13 @@
         drecRenderMinutes(card, m.minutes);
       } catch (err) { card.querySelector('.drec-state').textContent = '⚠️ 회의록 조회 실패'; }
     }
+    // 두 레코더 동시 사용 시 지원 mimeType 명시(미설정 시 브라우저별 기본이 비표준일 수 있음)
+    function _drecPickMime() {
+      const cands = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+      for (const m of cands) if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(m)) return m;
+      return '';
+    }
+    const DREC_SLICE_MS = 3000;   // 미리보기 전사 조각 주기(3초) — dRec Record 페이지와 동일
     function appendDrecCard(bubble, drec) {
       if (!bubble || !drec) return;
       if (drec.action === 'minutes') { drecShowMinutes(bubble, drec.id); return; }
@@ -3438,33 +3720,35 @@
       const card = document.createElement('div'); card.className = 'drec-card';
       card.innerHTML =
         '<div class="drec-head"><span class="drec-dot"></span>'
-        + '<span class="drec-state">● 녹음중</span>'
+        + '<span class="drec-state">녹음중</span>'
         + '<span class="drec-time">00:00</span></div>'
         + '<div class="drec-live"></div>'
         + '<div class="drec-btns">'
-        + '<button class="drec-btn pause">⏸ 일시정지</button>'
-        + '<button class="drec-btn stop">⏹ 종료</button></div>';
+        + '<span class="cmd drec-act drec-pause">[ 일시정지 ]</span>'
+        + '<span class="cmd drec-act stop drec-stop">[ 종료 ]</span></div>';
       bubble.appendChild(card);
       const ui = {
         card, elState: card.querySelector('.drec-state'), elTime: card.querySelector('.drec-time'),
-        elLive: card.querySelector('.drec-live'), btnPause: card.querySelector('.pause'), btnStop: card.querySelector('.stop'),
+        elLive: card.querySelector('.drec-live'), btnPause: card.querySelector('.drec-pause'), btnStop: card.querySelector('.drec-stop'),
       };
       drecStart(drec.title || '', ui).catch(err => {
-        ui.elState.textContent = '⚠️ ' + (err.message || '녹음 실패'); card.classList.add('done');
-        ui.btnPause.disabled = true; ui.btnStop.disabled = true; _drecActive = null;
+        ui.elState.textContent = '녹음 실패: ' + (err.message || ''); card.classList.add('done');
+        ui.btnPause.classList.add('off'); ui.btnStop.classList.add('off'); _drecActive = null;
       });
     }
     async function drecStart(title, ui) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mime = _drecPickMime();
+      const recOpt = mime ? { mimeType: mime } : undefined;
       const sess = await drecApi('/api/sessions', { method: 'POST', form: (function () { const f = new FormData(); f.append('title', title); return f; })() });
       const meetingId = sess.id;
-      const st = { meetingId, stream, paused: false, stopped: false, seq: 0, t0: Date.now(), elapsedBefore: 0, fullChunks: [] };
+      // 저장용 연속 녹음(원본 스트림) + 미리보기 전사(클론 스트림) — 두 레코더를 같은 스트림에 물리면 데이터가 안 나와 클론 분리.
+      const sliceStream = new MediaStream(stream.getAudioTracks().map(t => t.clone()));
+      const st = { meetingId, stream, sliceStream, paused: false, stopped: false, seq: 0, t0: Date.now(), elapsedBefore: 0, fullChunks: [], pending: [], lines: {} };
       _drecActive = st;
-      // 전체 연속 녹음(종료 시 /audio 업로드 → 화자분리/재생용)
-      const fullRec = new MediaRecorder(stream);
+      const fullRec = new MediaRecorder(stream, recOpt);
       fullRec.ondataavailable = e => { if (e.data && e.data.size) st.fullChunks.push(e.data); };
       fullRec.start(); st.fullRec = fullRec;
-      // 타이머
       st.timer = setInterval(() => {
         if (st.paused) return;
         const sec = Math.floor((st.elapsedBefore + (Date.now() - st.t0)) / 1000);
@@ -3472,67 +3756,73 @@
       }, 500);
       // 녹음/처리 동안 관리자 콘솔 세션 만료 방지(touchSession 자체가 10초 throttle)
       st.keepalive = setInterval(() => touchSession(), 30000);
-      // 60초 단위 미리보기 전사 루프 (현재 녹음중 텍스트 표출)
-      function previewCycle() {
-        if (st.stopped) return;
-        if (st.paused) { setTimeout(previewCycle, 1000); return; }
-        const parts = [];
-        let pr; try { pr = new MediaRecorder(stream); } catch (e) { return; }
-        pr.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
-        pr.onstop = async () => {
-          if (parts.length && !st.stopped) {
-            const blob = new Blob(parts, { type: pr.mimeType || 'audio/webm' });
-            const f = new FormData(); f.append('seq', String(st.seq++)); f.append('audio', blob, 'chunk.webm');
-            try {
-              const res = await drecApi('/api/sessions/' + meetingId + '/chunk', { method: 'POST', form: f });
-              if (res && res.text && res.text.trim()) {
-                ui.elLive.textContent += (ui.elLive.textContent ? '\n' : '') + res.text.trim();
-                ui.elLive.scrollTop = ui.elLive.scrollHeight;
-              }
-            } catch (e) { }
-          }
-          if (!st.stopped) previewCycle();
-        };
-        pr.start(); st.preview = pr;
-        setTimeout(() => { if (pr.state !== 'inactive') pr.stop(); }, 60000);
+      function renderLive() {
+        const body = Object.keys(st.lines).map(Number).sort((a, b) => a - b).map(k => st.lines[k]).filter(t => t && t.trim()).join('\n');
+        ui.elLive.textContent = (st.transErr ? '⚠ ' + st.transErr + '\n' : '') + body;
+        ui.elLive.scrollTop = ui.elLive.scrollHeight;
       }
-      previewCycle();
+      // 클론 스트림에서 3초마다 독립 webm 조각을 만들어 전사(저장 안 함). 응답 순서가 어긋나도 seq 로 정렬.
+      function startSlice() {
+        if (st.stopped || st.paused) return;
+        const parts = [];
+        let rec; try { rec = new MediaRecorder(sliceStream, recOpt); } catch (e) { return; }
+        rec.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); };
+        rec.onstop = () => {
+          const seq = st.seq++;
+          if (parts.length) {
+            const blob = new Blob(parts, { type: mime || 'audio/webm' });
+            const f = new FormData(); f.append('seq', String(seq)); f.append('audio', blob, 'chunk-' + seq + '.webm');
+            st.pending.push(drecApi('/api/sessions/' + meetingId + '/chunk', { method: 'POST', form: f })
+              .then(res => { if (res && res.text) { st.lines[seq] = res.text; renderLive(); } })
+              .catch(() => { if (!st.transErr) { st.transErr = '실시간 전사 서버 응답이 없어요(녹음은 계속 저장됩니다 — 종료 시 회의록 생성에서 재시도).'; renderLive(); } }));
+          }
+          if (!st.stopped && !st.paused) startSlice();
+        };
+        rec.start(); st.slice = rec;
+        st.sliceTimer = setTimeout(() => { if (rec.state !== 'inactive') rec.stop(); }, DREC_SLICE_MS);
+      }
+      startSlice();
       ui.btnPause.onclick = () => {
         if (st.stopped) return;
         st.paused = !st.paused;
         if (st.paused) {
-          try { fullRec.pause(); } catch (e) { }
+          clearTimeout(st.sliceTimer);
+          try { if (st.slice && st.slice.state !== 'inactive') st.slice.stop(); } catch (e) { }   // 일시정지 중에는 전사도 멈춤
+          try { if (fullRec.state === 'recording') fullRec.pause(); } catch (e) { }
           st.elapsedBefore += Date.now() - st.t0;
-          ui.card.classList.add('paused'); ui.elState.textContent = '⏸ 일시정지'; ui.btnPause.textContent = '▶ 재개';
+          ui.card.classList.add('paused'); ui.elState.textContent = '일시정지'; ui.btnPause.textContent = '[ 재개 ]';
         } else {
-          try { fullRec.resume(); } catch (e) { }
+          try { if (fullRec.state === 'paused') fullRec.resume(); } catch (e) { }
           st.t0 = Date.now();
-          ui.card.classList.remove('paused'); ui.elState.textContent = '● 녹음중'; ui.btnPause.textContent = '⏸ 일시정지';
+          ui.card.classList.remove('paused'); ui.elState.textContent = '녹음중'; ui.btnPause.textContent = '[ 일시정지 ]';
+          startSlice();
         }
       };
       ui.btnStop.onclick = async () => {
         if (st.stopped) return;
         st.stopped = true;
-        clearInterval(st.timer);
-        try { if (st.preview && st.preview.state !== 'inactive') st.preview.stop(); } catch (e) { }
-        ui.btnPause.disabled = true; ui.btnStop.disabled = true;
-        ui.card.classList.remove('paused'); ui.elState.textContent = '⏳ 회의록 정리 중…';
-        const flushed = new Promise(res => { fullRec.onstop = res; });
-        try { fullRec.stop(); } catch (e) { }
+        clearInterval(st.timer); clearTimeout(st.sliceTimer);
+        try { if (st.slice && st.slice.state !== 'inactive') st.slice.stop(); } catch (e) { }
+        ui.btnPause.classList.add('off'); ui.btnStop.classList.add('off');
+        ui.card.classList.remove('paused'); ui.elState.textContent = '회의록 정리 중…';
+        const flushed = new Promise(res => { fullRec.onstop = res; if (fullRec.state === 'inactive') res(); });
+        try { if (fullRec.state !== 'inactive') fullRec.stop(); } catch (e) { }
         await flushed;
-        try { stream.getTracks().forEach(t => t.stop()); } catch (e) { }
+        try { stream.getTracks().forEach(t => t.stop()); sliceStream.getTracks().forEach(t => t.stop()); } catch (e) { }
+        await new Promise(r => setTimeout(r, 200));
+        await Promise.allSettled(st.pending);   // 마지막 미리보기 조각 전사 마무리(이력 일관성)
         try {
-          const full = new Blob(st.fullChunks, { type: fullRec.mimeType || 'audio/webm' });
+          const full = new Blob(st.fullChunks, { type: mime || 'audio/webm' });
           if (full.size) {
             const f = new FormData(); f.append('audio', full, 'full.webm');
             await drecApi('/api/sessions/' + meetingId + '/audio', { method: 'POST', form: f });
           }
           touchSession();
           const r = await drecApi('/api/sessions/' + meetingId + '/finish', { method: 'POST' });
-          ui.card.classList.add('done'); ui.elState.textContent = '✅ 회의록 완료';
+          ui.card.classList.add('done'); ui.elState.textContent = '회의록 완료';
           drecRenderMinutes(ui.card, r.minutes);
         } catch (err) {
-          ui.elState.textContent = '⚠️ 정리 실패: ' + (err.message || '');
+          ui.elState.textContent = '정리 실패: ' + (err.message || '');
         } finally {
           clearInterval(st.keepalive); _drecActive = null;
         }
@@ -3573,7 +3863,6 @@
       const faceEl = span.querySelector('.face');
       const setFace = (v) => { const s = (String(v).length >= 3 ? 9 : 12); if (isD6) faceEl.innerHTML = _d6pips(v); else { faceEl.textContent = v; faceEl.setAttribute('font-size', s); } };
       function roll(finalVal, delay, onDone) {
-        if (_reduceMotion()) { setFace(finalVal); onDone && onDone(); return; }
         const dur = 560 + Math.floor(Math.random() * 200);
         setTimeout(() => {
           try {
@@ -3583,9 +3872,10 @@
               { transform: 'rotate(360deg) scale(1)', opacity: 1 }
             ], { duration: dur, easing: 'cubic-bezier(.2,.85,.25,1)' });
           } catch (e) { }
-          const iv = setInterval(() => { setFace(1 + Math.floor(Math.random() * sides)); }, 55);
+          const iv = setInterval(() => { try { setFace(1 + Math.floor(Math.random() * sides)); } catch (e) { clearInterval(iv); } }, 55);
           setTimeout(() => {
-            clearInterval(iv); setFace(finalVal);
+            clearInterval(iv);
+            try { setFace(finalVal); } catch (e) { }
             try { faceEl.animate([{ opacity: .2 }, { opacity: 1 }], { duration: 180 }); } catch (e) { }
             onDone && onDone();
           }, dur);
@@ -3618,10 +3908,8 @@
         if (rolled) return; rolled = true; wrap.classList.add('rolled');
         hint.textContent = '굴리는 중…';
         const results = []; let done = 0;
-        dice.forEach((d, i) => {
-          const v = 1 + Math.floor(Math.random() * sides); results.push(v);
-          d.roll(v, i * 90, () => { if (++done === n) finish(); });
-        });
+        // finish 를 forEach 앞에 선언 — _reduceMotion() 경로에서 onDone 이 동기 호출될 때
+        // const 가 아직 초기화되지 않아 ReferenceError(TDZ)가 발생하는 버그 방지
         const finish = () => {
           const total = results.reduce((a, b) => a + b, 0) + mod;
           const success = dc != null ? total >= dc : null;
@@ -3639,6 +3927,10 @@
           if (!dobisBusy) botSend(msg);
           else { _dobisQueue.push({ msg, hidden: true }); hint.textContent = t + ' · ⏳ 전송 대기'; }   // 생성 중 클릭 → 결과를 버리지 말고 큐에 담아 끝나면 전송
         };
+        dice.forEach((d, i) => {
+          const v = 1 + Math.floor(Math.random() * sides); results.push(v);
+          d.roll(v, i * 90, () => { if (++done === n) finish(); });
+        });
       };
       wrap.appendChild(head); wrap.appendChild(row); wrap.appendChild(hint);
       return wrap;
@@ -3789,6 +4081,8 @@
     // ===== DOBIS 챗봇 (소켓, 휘발성) =====
     let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, _dobisCancelled = false;
     let dobisBusy = false, _dobisT0 = 0, _dobisLen = 0, _dobisTick = null, _dobisWatch = null;
+    let _chatAllMsgs = [], _chatLoaded = 0;
+    const _CHAT_PAGE = 30;
     const _dobisQueue = [];  // {msg, img, hidden?} — busy 중 입력/생성된 메시지 큐(hidden=화면 비노출 메타, 예: 주사위 결과)
     const DOBIS_WATCH_MS = 210000;   // 응답 무소식 시 UI 가 영원히 매달리지 않도록 하는 백스톱(워커 180s 타임아웃보다 길게)
     let dobisSession = 'dob-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -3798,28 +4092,37 @@
     function setChatName() { const el = document.getElementById('chatName'); const t = chatTitle ? ('저장됨: ' + chatTitle) : '(미저장)'; el.textContent = t; el.title = t; }
     function buildChatMd(title) {
       const lines = ['# ' + title, '', '> DOBIS chat · ' + new Date().toLocaleString('ko-KR'), ''];
+      // 아직 DOM에 올라오지 않은 이전 대화(_chatAllMsgs 앞부분)를 먼저 추가 — tail만 로드된 채 저장해도 유실 방지
+      const loadedFrom = _chatAllMsgs.length - _chatLoaded;
+      if (loadedFrom > 0) {
+        _chatAllMsgs.slice(0, loadedFrom).forEach(msg => {
+          lines.push((msg.role === 'you' ? '**YOU:** ' : '**DOBIS:** ') + msg.text, '');
+        });
+      }
       document.querySelectorAll('#dobisLog .dobis-msg').forEach((m) => {
         const you = m.classList.contains('you');
-        const txt = you ? m.textContent.replace(/^YOU:\s?/, '') : (m.dataset.raw || '');
+        const txt = you ? m.textContent.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim() : (m.dataset.raw || '');
+        if (!txt || txt.startsWith('──')) return;   // 불러오기 헤더·빈 줄 스킵
         lines.push((you ? '**YOU:** ' : '**DOBIS:** ') + txt, '');
       });
       return lines.join('\n');
     }
     // ===== 대화 초안 자동저장(localStorage) — 새로고침 복구용. '새 채팅' 전엔 보존, 새 채팅 시 클리어 =====
-    const DRAFT_KEY = 'dobisChatDraft';
+    // username별 키 분리: 서브관리자끼리 초안이 섞이지 않도록. myName은 login() 완료 후 설정됨.
+    function getDraftKey() { return 'dobisChatDraft' + (myName ? '_' + myName : ''); }
     let _restoring = false;
     let _pendingRestoreMd = '';   // 복원 직후 다음 메시지에 1회 실어 워커 맥락 재주입(세션 유실 대비)
     function _saveDraft() {
       if (_restoring) return;
       try {
-        if (!document.querySelector('#dobisLog .dobis-msg')) { localStorage.removeItem(DRAFT_KEY); return; }
-        localStorage.setItem(DRAFT_KEY, JSON.stringify({ md: buildChatMd(chatTitle || ''), title: chatTitle, ts: Date.now() }));
+        if (!document.querySelector('#dobisLog .dobis-msg')) { localStorage.removeItem(getDraftKey()); return; }
+        localStorage.setItem(getDraftKey(), JSON.stringify({ md: buildChatMd(chatTitle || ''), title: chatTitle, ts: Date.now() }));
       } catch (e) { }
     }
     function _restoreDraft() {
       const log = document.getElementById('dobisLog');
       if (!log || log.querySelector('.dobis-msg')) return false;   // 이미 내용 있으면 복원 안 함
-      let d; try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return false; }
+      let d; try { d = JSON.parse(localStorage.getItem(getDraftKey()) || 'null'); } catch (e) { return false; }
       if (!d || !d.md) return false;
       _restoring = true;
       try {
@@ -3840,7 +4143,7 @@
         const yes = await dlgConfirm('지금 대화를 저장할까요?\n(취소 = 저장하지 않고 새 채팅)', '새 채팅');
         if (yes) { await dobisSaveChat(); }
       }
-      try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }   // 초안 비움
+      try { localStorage.removeItem(getDraftKey()); } catch (e) { }   // 초안 비움
       _pendingRestoreMd = '';   // 복원 대기 맥락도 폐기
       setDobisBusy(false); stopDobisTimers(); dobisStatus(''); _dobisCancelled = true;   // 진행 중 응답의 잔여 delta/done 무시
       // 워커 상주 claude 세션은 (model,game,think) 키라 브라우저가 sid 만 바꿔선 맥락이 안 끊긴다.
@@ -3848,6 +4151,7 @@
       const _s = ensureSocket();
       try { _s && _s.emit('newchat', { sessionId: dobisSession }); } catch (e) { }
       dobisSession = newSessionId(); chatTitle = ''; streamBubble = null;
+      _chatAllMsgs = []; _chatLoaded = 0;
       document.getElementById('dobisLog').innerHTML = '';
       document.getElementById('chatList').classList.add('hidden');
       hideDomoji(); setChatName();
@@ -3900,10 +4204,24 @@
     function dobisListChats() {
       const box = document.getElementById('chatList');
       if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
+      const spin = document.createElement('span'); spin.className = 'muted';
+      spin.textContent = '⣾'; box.innerHTML = ''; box.appendChild(spin);
+      box.classList.remove('hidden');
+      const f = '⣾⣽⣻⢿⡿⣟⣯⣷';
+      box._spinIv = setInterval(() => { spin.textContent = f[(f.indexOf(spin.textContent) + 1) % f.length]; }, 80);
       ensureSocket().emit('chat:list', {});
-      box.innerHTML = '<span class="muted">불러오는 중…</span>'; box.classList.remove('hidden');
     }
-    function dobisLoadChat(slug) { ensureSocket().emit('chat:load', { slug }); document.getElementById('chatList').classList.add('hidden'); }
+    function dobisLoadChat(slug) {
+      ensureSocket().emit('chat:load', { slug });
+      document.getElementById('chatList').classList.add('hidden');
+      const log = document.getElementById('dobisLog');
+      log.innerHTML = '';
+      const spin = document.createElement('div'); spin.className = 'dobis-msg bot'; spin.id = '_chatLoadSpin';
+      spin.textContent = 'DOBIS: ⣾ 불러오는 중…';
+      log.appendChild(spin);
+      const f = '⣾⣽⣻⢿⡿⣟⣯⣷'; let si = 0;
+      spin._iv = setInterval(() => { si = (si + 1) % f.length; spin.textContent = 'DOBIS: ' + f[si] + ' 불러오는 중…'; }, 80);
+    }
     const EMO_NAMES = ['neutral', 'happy', 'laughing', 'wink', 'sad', 'angry', 'surprised', 'confused', 'thinking', 'love', 'cool', 'thumbsup', 'sleepy', 'worried', 'facepalm', 'celebrate'];
     const EMO_RE = new RegExp(':(' + EMO_NAMES.join('|') + '):', 'g');
     function escHtml(s) { return (s || '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
@@ -4283,6 +4601,48 @@
       }
       if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
     }
+    function appendBlockMd(frag, text) {
+      const lines = text.split('\n');
+      let i = 0;
+      while (i < lines.length) {
+        const raw = lines[i];
+        const t = raw.trim();
+        // 빈 줄
+        if (!t) { frag.appendChild(document.createTextNode('\n')); i++; continue; }
+        // --- 구분선
+        if (/^-{3,}$/.test(t)) { frag.appendChild(document.createElement('hr')); i++; continue; }
+        // 제목 #, ##, ###
+        const hm = t.match(/^(#{1,3})\s+(.+)$/);
+        if (hm) {
+          const h = document.createElement('h' + hm[1].length);
+          appendInlineMd(h, hm[2]); frag.appendChild(h); i++; continue;
+        }
+        // 순서 없는 목록
+        if (/^[-*]\s/.test(t)) {
+          const ul = document.createElement('ul');
+          while (i < lines.length && /^\s*[-*]\s/.test(lines[i])) {
+            const li = document.createElement('li');
+            appendInlineMd(li, lines[i].trim().replace(/^[-*]\s+/, ''));
+            ul.appendChild(li); i++;
+          }
+          frag.appendChild(ul); continue;
+        }
+        // 순서 있는 목록
+        if (/^\d+\.\s/.test(t)) {
+          const ol = document.createElement('ol');
+          while (i < lines.length && /^\s*\d+\.\s/.test(lines[i])) {
+            const li = document.createElement('li');
+            appendInlineMd(li, lines[i].trim().replace(/^\d+\.\s+/, ''));
+            ol.appendChild(li); i++;
+          }
+          frag.appendChild(ol); continue;
+        }
+        // 일반 텍스트
+        appendInlineMd(frag, raw);
+        frag.appendChild(document.createTextNode('\n'));
+        i++;
+      }
+    }
     function dobisChoose(text) {
       const inp = document.getElementById('dobisInput');
       if (!inp) return;
@@ -4312,7 +4672,7 @@
     function renderBotText(text, imgCache) {
       const frag = document.createDocumentFragment();
       text = text.replace('🎨 이미지 생성 중…', '\x00IMGGEN_PLACEHOLDER\x00');
-      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER\x00)/g;
+      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[link:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER\x00)/g;
       text.split(TOKEN_RE).forEach(p => {
         if (!p) return;
         if (p === '\x00IMGGEN_PLACEHOLDER\x00') {
@@ -4358,6 +4718,17 @@
           const sp = document.createElement('span');
           sp.className = 'cc-speech'; appendInlineMd(sp, p.slice(ci + 1, -4));   // 대사 내부 마크다운 렌더
           frag.appendChild(lbl); frag.appendChild(sp);
+        } else if (p.startsWith('[link:')) {
+          // 생성한 HTML 샘플/파일 링크 → 클릭하면 새 탭으로 열리는 버튼. [link:URL] 또는 [link:URL|라벨]
+          const body = p.slice(6, -1);
+          const bar = body.indexOf('|');
+          const url = (bar < 0 ? body : body.slice(0, bar)).trim();
+          const label = (bar < 0 ? '' : body.slice(bar + 1)).trim();
+          const card = document.createElement('div'); card.className = 'dl-card';
+          const a = document.createElement('a');
+          a.className = 'dl-btn'; a.href = url; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = label ? ('🔗 ' + label) : '🔗 링크 열기';
+          card.appendChild(a); frag.appendChild(card);
         } else if (/^\[img:[^\]]+\]$/.test(p)) {
           const url = p.slice(5, -1);
           // 이미 로드된 같은 src 이미지는 재사용(스트리밍 중 재생성→빈이미지 깜빡임·스크롤 요동 방지)
@@ -4370,7 +4741,7 @@
           }
           frag.appendChild(img);
         } else {
-          appendInlineMd(frag, p);
+          appendBlockMd(frag, p);
         }
       });
       return frag;
@@ -4534,18 +4905,22 @@
       const next = _dobisQueue.shift();
       const qLeft = _dobisQueue.length;
       touchSession();
-      if (next.img) {
-        const d = dobisAppend('you', next.msg || '(이미지)');
-        const thumb = document.createElement('img');
-        thumb.src = 'data:' + next.img.type + ';base64,' + next.img.data;
-        thumb.className = 'dobis-img'; thumb.style.maxHeight = '120px';
-        d.appendChild(thumb);
+      const imgFiles = (next.files || []).filter(f => f.kind === 'image');
+      if (next.files && next.files.length) {
+        const d = dobisAppend('you', next.msg || '');
+        imgFiles.forEach(f => {
+          const thumb = document.createElement('img');
+          thumb.src = 'data:' + f.type + ';base64,' + f.data;
+          thumb.className = 'dobis-img'; thumb.style.maxHeight = '120px';
+          d.appendChild(thumb);
+        });
+        if (!next.msg && !imgFiles.length) d.textContent = '(' + next.files.map(f => f.name).join(', ') + ')';
         document.getElementById('dobisLog').scrollTop = 1e9;
       } else if (!next.hidden) {
         dobisAppend('you', next.msg);   // hidden(주사위 결과 등 메타)은 화면에 노출하지 않는다
       }
       dobisStatus(qLeft > 0 ? `▶ 큐 전송 (${qLeft}개 남음)` : '▶ 큐 전송');
-      botSend(next.msg || '(이미지를 첨부했습니다)', next.img || null);
+      botSend(next.msg || '(파일을 첨부했습니다)', next.files || null);
     }
     function dobisStatus(t) { const e = document.getElementById('dobisStatus'); if (e) e.textContent = t || ''; }
     function stopDobisTimers() { if (_dobisTick) { clearInterval(_dobisTick); _dobisTick = null; } if (_dobisWatch) { clearTimeout(_dobisWatch); _dobisWatch = null; } }
@@ -4716,31 +5091,137 @@
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
       dobisSock.on('chat:loaded', (d) => { if (!d || d.error) return flash('불러오기 실패', false); loadChatMd(d.slug, d.md); });
+      dobisSock.on('chat:renamed', (d) => {
+        if (d && d.error) return flash('이름 변경 실패: ' + d.error, false);
+        flash('이름 변경됨: ' + d.new, true);
+        if (chatTitle === d.old) { chatTitle = d.new; setChatName(); }
+        dobisListChats();
+      });
+      dobisSock.on('chat:deleted', (d) => {
+        if (d && d.error) return flash('삭제 실패: ' + d.error, false);
+        flash('삭제됨: ' + d.slug, true);
+        if (chatTitle === d.slug) { chatTitle = ''; setChatName(); }
+      });
       return dobisSock;
     }
     function renderChatList(items) {
       const box = document.getElementById('chatList');
-      if (!items.length) { box.innerHTML = '<span class="muted">저장된 채팅 없음</span>'; return; }
+      if (box._spinIv) { clearInterval(box._spinIv); box._spinIv = null; }
       box.innerHTML = '';
-      items.forEach((it) => { const r = document.createElement('div'); r.className = 'row'; r.textContent = '📄 ' + it.slug; r.onclick = () => dobisLoadChat(it.slug); box.appendChild(r); });
+      if (!items.length) { box.innerHTML = '<span class="muted">저장된 채팅 없음</span>'; return; }
+      items.forEach((it) => {
+        const r = document.createElement('div'); r.className = 'chat-item';
+        const name = document.createElement('span'); name.className = 'ci-name'; name.textContent = '📄 ' + it.slug;
+        const time = document.createElement('span'); time.className = 'ci-time';
+        if (it.mtime) {
+          const dt = new Date(it.mtime * 1000);
+          const mo = String(dt.getMonth() + 1).padStart(2, '0'), dy = String(dt.getDate()).padStart(2, '0');
+          const hh = String(dt.getHours()).padStart(2, '0'), mm = String(dt.getMinutes()).padStart(2, '0');
+          time.textContent = mo + '/' + dy + ' ' + hh + ':' + mm;
+        }
+        const btns = document.createElement('span'); btns.className = 'ci-btns';
+        const ren = document.createElement('span'); ren.className = 'ci-btn'; ren.textContent = '✎'; ren.title = '이름 변경';
+        ren.onclick = (e) => { e.stopPropagation(); dobisRenameChat(it.slug, name, r); };
+        const del = document.createElement('span'); del.className = 'ci-btn del'; del.textContent = '✕'; del.title = '삭제';
+        del.onclick = (e) => { e.stopPropagation(); dobisDeleteChat(it.slug, r); };
+        btns.appendChild(ren); btns.appendChild(del);
+        r.appendChild(name); r.appendChild(time); r.appendChild(btns);
+        r.onclick = () => dobisLoadChat(it.slug);
+        box.appendChild(r);
+      });
+    }
+    async function dobisRenameChat(oldSlug, nameEl, rowEl) {
+      const newTitle = await dlgPrompt('새 이름을 입력하세요', oldSlug, '채팅 이름 변경');
+      if (!newTitle || newTitle === oldSlug) return;
+      ensureSocket().emit('chat:rename', { old: oldSlug, new: newTitle });
+    }
+    async function dobisDeleteChat(slug, rowEl) {
+      const ok = await dlgConfirm('"' + slug + '" 채팅을 삭제할까요?', '채팅 삭제');
+      if (!ok) return;
+      ensureSocket().emit('chat:delete', { slug });
+      if (rowEl) rowEl.remove();
+    }
+    // 메시지 엘리먼트 생성(dobisAppend 와 동일하나 log 에 직접 append 하지 않음)
+    function _makeMsgEl(role, text) {
+      const d = document.createElement('div');
+      d.className = 'dobis-msg ' + (role === 'you' ? 'you' : 'bot');
+      if (role === 'you') {
+        d.appendChild(document.createTextNode('YOU: ' + text));
+        const cp = document.createElement('span'); cp.className = 'msg-copy'; cp.textContent = '⧉'; cp.title = '복사';
+        cp.onclick = () => copyToClip(text, cp, '⧉');
+        d.appendChild(cp);
+      } else {
+        d.appendChild(document.createTextNode('DOBIS: '));
+        d.appendChild(renderBotText(stripEmo(text)));
+        d.dataset.raw = text;
+      }
+      return d;
+    }
+    // 초기 로드: tail(_CHAT_PAGE 개) 렌더 후 "전체 불러오기" 버튼 표시
+    function _loadChatPage(log) {
+      const total = _chatAllMsgs.length;
+      const count = Math.min(_CHAT_PAGE, total);
+      const start = total - count;
+      _chatAllMsgs.slice(start).forEach(msg => log.appendChild(_makeMsgEl(msg.role, msg.text)));
+      _chatLoaded = count;
+      if (total > count) {
+        const b = document.createElement('div'); b.id = '_chatMoreBtn'; b.className = 'chat-more-btn';
+        b.textContent = '▲ 이전 대화 전체 불러오기 (' + (total - count) + '개)';
+        b.onclick = () => _loadAllChat(log);
+        log.insertBefore(b, log.children[1]);   // 헤더 다음
+      }
+    }
+    // 전체 불러오기: 스피너 표시 → rAF 후 한 번에 렌더 → restore_md 갱신
+    function _loadAllChat(log) {
+      const btn = document.getElementById('_chatMoreBtn');
+      if (!btn) return;
+      btn.textContent = '⣾ 불러오는 중…'; btn.onclick = null;
+      const spinChars = '⣾⣽⣻⢿⡿⣟⣯⣷'; let si = 0;
+      const spinIv = setInterval(() => { si = (si + 1) % spinChars.length; btn.textContent = spinChars[si] + ' 불러오는 중…'; }, 80);
+      requestAnimationFrame(() => setTimeout(() => {
+        clearInterval(spinIv);
+        const total = _chatAllMsgs.length;
+        const remaining = total - _chatLoaded;
+        if (remaining > 0) {
+          const msgs = _chatAllMsgs.slice(0, total - _chatLoaded);
+          const frag = document.createDocumentFragment();
+          msgs.forEach(msg => frag.appendChild(_makeMsgEl(msg.role, msg.text)));
+          const oldH = log.scrollHeight, oldT = log.scrollTop;
+          log.insertBefore(frag, btn.nextSibling);   // 버튼 바로 뒤에 오래된 것들 삽입
+          log.scrollTop = oldT + (log.scrollHeight - oldH);
+          _chatLoaded = total;
+        }
+        btn.remove();
+        // DOM에 전체 대화가 올라왔으니 다음 turn restore_md에 반영
+        _pendingRestoreMd = buildChatMd(chatTitle || '');
+      }, 16));
     }
     function loadChatMd(slug, md) {
+      const prev = document.getElementById('_chatLoadSpin');
+      if (prev && prev._iv) { clearInterval(prev._iv); }
       const log = document.getElementById('dobisLog'); log.innerHTML = '';
-      const h = document.createElement('div'); h.className = 'dobis-msg you'; h.style.opacity = '.55'; h.textContent = '── 불러온 대화: ' + slug + ' ──'; log.appendChild(h);
-      // 헤더/타임스탬프 제거 후 **YOU:**/**DOBIS:** 블록으로 분해 → 각각 정상 렌더(태그·이미지·마크다운 복원)
+      chatTitle = slug; setChatName();
       const body = (md || '').replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
       const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
-      let m, any = false;
+      _chatAllMsgs = []; _chatLoaded = 0;
+      let m;
       while ((m = re.exec(body)) !== null) {
         const txt = m[2].replace(/\s+$/, '');
-        if (!txt) continue;
-        any = true;
-        dobisAppend(m[1] === 'YOU' ? 'you' : 'bot', txt);   // bot 은 renderBotText 거쳐 태그/이미지 복원
+        if (txt) _chatAllMsgs.push({ role: m[1] === 'YOU' ? 'you' : 'bot', text: txt });
       }
-      if (!any) { const d = document.createElement('div'); d.className = 'dobis-msg bot'; d.textContent = md || ''; log.appendChild(d); }
-      chatTitle = slug; setChatName(); log.scrollTop = log.scrollHeight;
+      if (!_chatAllMsgs.length) {
+        const d = document.createElement('div'); d.className = 'dobis-msg bot'; d.textContent = md || '';
+        log.appendChild(d); log.scrollTop = log.scrollHeight; return;
+      }
+      const h = document.createElement('div'); h.className = 'dobis-msg you'; h.style.opacity = '.55';
+      const total = _chatAllMsgs.length;
+      h.textContent = '── 불러온 대화: ' + slug + (total > _CHAT_PAGE ? ' (' + total + '개 메시지)' : '') + ' ──';
+      log.appendChild(h);
+      _loadChatPage(log);
+      log.scrollTop = log.scrollHeight;
     }
-    function botSend(message, img) {
+    function botSend(message, files) {
+      _chatAllMsgs = []; _chatLoaded = 0;   // 새 전송 시작 → 채팅 페이지네이션 비활성화
       _dobisCancelled = false;
       _aiSuggest = '';          // 전송하면 직전 AI 제안 해제 → 다음 done 까지 static 순환
       showDomoji('thinking');   // 생성 중 = 대화 활성 → 오버레이 ON
@@ -4758,7 +5239,9 @@
       }, 400);
       _dobisWatch = setTimeout(() => dobisFail('응답이 없어 중단했어요 (시간 초과)'), DOBIS_WATCH_MS);
       const payload = { message, model: dobisModel, hud: hudReq() };
-      if (img) { payload.image_b64 = img.data; payload.image_type = img.type; }
+      if (Array.isArray(files) && files.length) {
+        payload.files = files.map(f => ({ data: f.data, type: f.type, name: f.name, kind: f.kind }));
+      }
       payload.restore_md = _pendingRestoreMd || buildChatMd(chatTitle || '');   // 매 턴 현재 대화 동봉 — 워커 세션이 죽었을 때(idle정리/크래시/모드전환)만 자동 재주입
       _pendingRestoreMd = '';
       s.emit('dobis:msg', payload);
@@ -5169,27 +5652,134 @@
       }
       box.classList.toggle('hidden');
     }
-    // ===== 이미지 첨부 =====
-    let _pendingImg = null;  // { data: base64, type: 'image/jpeg', name: '...' }
+    // ===== 멀티파일 첨부 (이미지×10, PDF, 동영상/ZIP→shared) =====
+    const MAX_ATTACH = 10;
+    let _pendingImgs = [];  // [{ data, type, name, kind, progress }]  kind: image|pdf|file
+
+    function _kindOf(file) {
+      if (file.type.startsWith('image/')) return 'image';
+      if (file.type === 'application/pdf') return 'pdf';
+      return 'file';
+    }
+
+    function _iconOf(kind, name) {
+      if (kind === 'pdf') return '📄';
+      const ext = (name || '').split('.').pop().toLowerCase();
+      if (['zip','7z','rar','gz','tar'].includes(ext)) return '📦';
+      if (['mp4','mov','webm','avi','mkv','m4v'].includes(ext)) return '🎬';
+      return '📎';
+    }
+
+    function _renderImgPreviews() {
+      const wrap = document.getElementById('dobisImgPreview');
+      if (!wrap) return;
+      if (_pendingImgs.length === 0) { wrap.classList.add('hidden'); wrap.innerHTML = ''; return; }
+      wrap.classList.remove('hidden');
+      wrap.innerHTML = '';
+      _pendingImgs.forEach((f, i) => {
+        const item = document.createElement('div');
+        item.className = 'img-thumb-item';
+
+        if (f.kind === 'image' && f.data) {
+          const img = document.createElement('img');
+          img.src = 'data:' + f.type + ';base64,' + f.data;
+          item.appendChild(img);
+        } else {
+          const icon = document.createElement('span');
+          icon.className = 'thumb-icon';
+          icon.textContent = _iconOf(f.kind, f.name);
+          item.appendChild(icon);
+        }
+
+        if (f.progress != null && f.progress < 100) {
+          const pw = document.createElement('div'); pw.className = 'thumb-prog-wrap';
+          const pb = document.createElement('div'); pb.className = 'thumb-prog';
+          pb.style.width = f.progress + '%';
+          pw.appendChild(pb); item.appendChild(pw);
+        }
+
+        const label = document.createElement('span');
+        label.className = 'thumb-name';
+        const n = f.name || '';
+        label.textContent = n.length > 10 ? n.slice(0, 9) + '…' : n;
+        item.appendChild(label);
+
+        const rm = document.createElement('span');
+        rm.className = 'thumb-rm'; rm.textContent = '✕';
+        rm.onclick = () => { _pendingImgs.splice(i, 1); _renderImgPreviews(); };
+        item.appendChild(rm);
+
+        wrap.appendChild(item);
+      });
+    }
+
+    function _addPendingFiles(files) {
+      for (const file of files) {
+        if (_pendingImgs.length >= MAX_ATTACH) break;
+        const kind = _kindOf(file);
+        const idx = _pendingImgs.length;
+        _pendingImgs.push({ data: null, type: file.type || 'application/octet-stream', name: file.name, kind, progress: 0 });
+        _renderImgPreviews();
+        const reader = new FileReader();
+        reader.onprogress = e => {
+          if (e.lengthComputable && _pendingImgs[idx]) {
+            _pendingImgs[idx].progress = Math.round(e.loaded / e.total * 95);
+            _renderImgPreviews();
+          }
+        };
+        reader.onload = e => {
+          if (!_pendingImgs[idx]) return;
+          const dataUrl = e.target.result;
+          const comma = dataUrl.indexOf(',');
+          _pendingImgs[idx].data = dataUrl.slice(comma + 1);
+          _pendingImgs[idx].progress = 100;
+          _renderImgPreviews();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
     function onImgAttach(input) {
-      const file = input.files[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const dataUrl = e.target.result;
-        const comma = dataUrl.indexOf(',');
-        _pendingImg = { data: dataUrl.slice(comma + 1), type: file.type || 'image/jpeg', name: file.name };
-        document.getElementById('dobisImgThumb').src = dataUrl;
-        document.getElementById('dobisImgName').textContent = file.name;
-        document.getElementById('dobisImgPreview').classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
+      if (input.files && input.files.length) _addPendingFiles([...input.files]);
       input.value = '';
     }
+
     function clearImgAttach() {
-      _pendingImg = null;
-      document.getElementById('dobisImgPreview').classList.add('hidden');
-      document.getElementById('dobisImgThumb').src = '';
+      _pendingImgs = [];
+      _renderImgPreviews();
     }
+
+    // ── 드래그&드롭 ───────────────────────────────────────────────────────
+    (function initDragDrop() {
+      const area = document.getElementById('dobisView');
+      if (!area) return;
+      let _hint = null;
+      function showHint(on) {
+        const bubble = area.querySelector('.dobis-bubble');
+        if (!bubble) return;
+        bubble.classList.toggle('drag-over', on);
+        if (on && !_hint) {
+          _hint = document.createElement('div'); _hint.className = 'drag-over-hint';
+          _hint.textContent = '파일을 여기에 놓으세요 📎';
+          bubble.style.position = 'relative'; bubble.appendChild(_hint);
+        }
+        if (!on && _hint) { _hint.remove(); _hint = null; }
+      }
+      area.addEventListener('dragover', e => {
+        if ([...e.dataTransfer.types].includes('Files')) {
+          e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; showHint(true);
+        }
+      });
+      area.addEventListener('dragleave', e => {
+        if (!area.contains(e.relatedTarget)) showHint(false);
+      });
+      area.addEventListener('drop', e => {
+        showHint(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length) {
+          e.preventDefault(); _addPendingFiles([...e.dataTransfer.files]);
+        }
+      });
+    })();
     let _dobisSearchMode = false;
     let _inputMenuOpen = false;
 
@@ -5220,6 +5810,31 @@
       if (item) item.classList.toggle('on', _dobisSearchMode);
       _updateDobisChips();
     }
+    let _dobisCodeMode = false;
+    let _dobisListMode = false;
+
+    function _checkInputModes(val) {
+      const backticks = (val.match(/```/g) || []).length;
+      const newCode = backticks % 2 === 1;  // 홀수 = 코드블록 열림 상태
+      const newList = /^-\s/m.test(val);
+      if (newCode !== _dobisCodeMode || newList !== _dobisListMode) {
+        _dobisCodeMode = newCode; _dobisListMode = newList;
+        // textarea에 code-mode 클래스 반영
+        const ta = document.getElementById('dobisInput');
+        if (ta) ta.classList.toggle('code-mode', _dobisCodeMode);
+        // 레이블
+        let lbl = document.getElementById('codeModeLabel');
+        if (_dobisCodeMode) {
+          if (!lbl) {
+            lbl = document.createElement('div'); lbl.id = 'codeModeLabel'; lbl.className = 'code-mode-label';
+            lbl.textContent = '[ CODE BLOCK ]';
+            ta && ta.parentNode && ta.parentNode.insertBefore(lbl, ta);
+          }
+        } else if (lbl) { lbl.remove(); }
+        _updateDobisChips();
+      }
+    }
+
     function _updateDobisChips() {
       const wrap = document.getElementById('dobisChips');
       if (!wrap) return;
@@ -5229,40 +5844,58 @@
         c.innerHTML = '🌐 검색 모드 <span class="dobis-chip-rm" onclick="dobisToggleSearch()">×</span>';
         wrap.appendChild(c);
       }
+      if (_dobisCodeMode) {
+        const c = document.createElement('span'); c.className = 'dobis-chip mode-chip';
+        c.textContent = '{ } 코드 블록';
+        wrap.appendChild(c);
+      }
+      if (_dobisListMode) {
+        const c = document.createElement('span'); c.className = 'dobis-chip mode-chip';
+        c.textContent = '— 목록 모드';
+        wrap.appendChild(c);
+      }
     }
 
     function dobisSend() {
       const inp = document.getElementById('dobisInput');
       let msg = inp.value.trim();
-      if (!msg && !_pendingImg) return;
+      const readyFiles = _pendingImgs.filter(f => f.data);
+      if (!msg && readyFiles.length === 0) return;
       if (_dobisSearchMode && msg) msg = '[🌐 인터넷 검색 모드] ' + msg;
-      inp.value = '';
-      const img = _pendingImg; clearImgAttach();
+      inp.value = ''; if (window._autoResizeTextarea) window._autoResizeTextarea(inp);
+      inp.classList.remove('code-mode');
+      const _lbl = document.getElementById('codeModeLabel'); if (_lbl) _lbl.remove();
+      _dobisCodeMode = false; _dobisListMode = false;
+      const files = readyFiles; clearImgAttach();
+      const imgFiles = files.filter(f => f.kind === 'image');
+      const hasFiles = files.length > 0;
+      const labelMsg = msg || (hasFiles ? '(' + files.map(f => f.name).join(', ') + ')' : '');
       if (dobisBusy) {
-        // busy 중 → 큐에 적재, 상태바에 대기 수 표시
-        _dobisQueue.push({ msg, img });
+        _dobisQueue.push({ msg, files });
         dobisStatus(`⏳ 대기 중 (${_dobisQueue.length}개 큐)`);
-        // 채팅창에 희미하게 예약 표시
-        const d = dobisAppend('you', (msg || '(이미지)') + ' ⋯');
+        const d = dobisAppend('you', labelMsg + ' ⋯');
         d.style.opacity = '0.45';
-        if (img) {
+        imgFiles.forEach(f => {
           const thumb = document.createElement('img');
-          thumb.src = 'data:' + img.type + ';base64,' + img.data;
+          thumb.src = 'data:' + f.type + ';base64,' + f.data;
           thumb.className = 'dobis-img'; thumb.style.maxHeight = '60px'; thumb.style.opacity = '0.5';
           d.appendChild(thumb);
-        }
+        });
         document.getElementById('dobisLog').scrollTop = 1e9;
         return;
       }
-      if (img) {
+      if (hasFiles) {
         touchSession();
-        const d = dobisAppend('you', msg || '(이미지)');
-        const thumb = document.createElement('img');
-        thumb.src = 'data:' + img.type + ';base64,' + img.data;
-        thumb.className = 'dobis-img'; thumb.style.maxHeight = '120px';
-        d.appendChild(thumb);
+        const d = dobisAppend('you', msg || '');
+        imgFiles.forEach(f => {
+          const thumb = document.createElement('img');
+          thumb.src = 'data:' + f.type + ';base64,' + f.data;
+          thumb.className = 'dobis-img'; thumb.style.maxHeight = '120px';
+          d.appendChild(thumb);
+        });
+        if (!msg && !imgFiles.length) d.textContent = labelMsg;
         document.getElementById('dobisLog').scrollTop = 1e9;
-        botSend(msg || '(이미지를 첨부했습니다)', img);
+        botSend(msg || '(파일을 첨부했습니다)', files);
       } else {
         dobisSendMsg(msg);
       }
@@ -5336,12 +5969,18 @@
       if (!bar) return;
       const N = 20, fh = u && u.fiveHour;
       if (fh && fh.resetsAt) {
-        const reset = fh.resetsAt * 1000, start = reset - 5 * 3600 * 1000;
-        let frac = (Date.now() - start) / (5 * 3600 * 1000); frac = Math.max(0, Math.min(1, frac));
-        const filled = Math.round(frac * N);
+        const reset = fh.resetsAt * 1000;
+        // 남은 시간 기준 게이지 — claude CLI는 실사용량을 제공하지 않고 초기화 시각만 줌.
+        // 따라서 "5h 윈도우 내 남은 시간"을 표시(남을수록 게이지 높음).
+        let remain = Math.max(0, reset - Date.now());
+        let remFrac = Math.min(1, remain / (5 * 3600 * 1000));
+        const filled = Math.round(remFrac * N);
         bar.textContent = '■'.repeat(filled) + '□'.repeat(N - filled);
+        const mins = Math.floor(remain / 60000);
+        const h = Math.floor(mins / 60), m = mins % 60;
         const t = new Date(reset).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-        info.textContent = Math.round(frac * 100) + '% 경과 · ' + t + ' 초기화 · ' + (fh.status === 'allowed' ? 'OK' : '제한(' + fh.status + ')');
+        const st = fh.status === 'allowed' ? 'OK' : '제한(' + fh.status + ')';
+        info.textContent = '남은 시간 ' + h + 'h ' + m + 'm · ' + t + ' 초기화 · ' + st;
       } else {
         bar.textContent = '□'.repeat(N);
         info.textContent = 'DOBIS 대화 시 갱신 (5H 윈도우 정보)';
@@ -5615,14 +6254,46 @@
         el.placeholder = ((typeof s === 'string') ? s : s.label) + '   (→ 입력)';
       }
       setInterval(next, 4000);
-      // → 키: 입력창이 비어있고 추천이 떠 있으면 그 추천으로 완성
+
+      // ── textarea 이벤트 핸들러 ──────────────────────────────────────────
       const el = inp();
-      if (el) el.addEventListener('keydown', (e) => {
+      if (!el) return;
+
+      // auto-resize: 내용에 맞게 높이 자동 조절
+      function _autoResizeTextarea(ta) {
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, parseInt(getComputedStyle(ta).maxHeight) || 160) + 'px';
+      }
+      window._autoResizeTextarea = _autoResizeTextarea;
+
+      el.addEventListener('input', () => {
+        _autoResizeTextarea(el);
+        _checkInputModes(el.value);
+      });
+
+      el.addEventListener('keydown', (e) => {
+        // → 키: 비어있을 때 추천 완성
         if (e.key === 'ArrowRight' && !el.value && _suggestCurrent) {
           e.preventDefault();
-          el.value = _suggestCurrent;
-          el.placeholder = _SUGGEST_DEFAULT;
+          el.value = _suggestCurrent; el.placeholder = _SUGGEST_DEFAULT;
+          _autoResizeTextarea(el); return;
         }
+        // Enter: 전송 / Shift+Enter: 줄바꿈
+        if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+          e.preventDefault(); dobisSend(); return;
+        }
+      });
+
+      // paste: 이미지/파일 감지 → 첨부, 텍스트는 그대로 통과
+      el.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+        if (!items) return;
+        const fileItems = [...items].filter(it => it.kind === 'file');
+        if (!fileItems.length) return;
+        const files = fileItems.map(it => it.getAsFile()).filter(Boolean);
+        if (!files.length) return;
+        e.preventDefault();
+        _addPendingFiles(files);
       });
     })();
 

@@ -2,7 +2,7 @@
 // doil-sb 는 무상태 relay. 세션 기록은 워커 메모리에만. 워커 라이프사이클은 host waker 가 관리.
 const crypto = require('crypto');
 const express = require('express');
-const { validToken, requireToken } = require('./auth');
+const { validToken, requireToken, tokenInfo } = require('./auth');
 
 const WORKER_SECRET = process.env.DOBIS_WORKER_SECRET || '';
 
@@ -12,6 +12,7 @@ let lastUsage = null;       // 워커가 보고한 최신 사용량 {account,tot
 let lastStats = null;       // 워커가 보고한 최신 다마고치 상태 {lv,exp,expNeed,hp,mood}
 let lastShared = null;      // 워커가 보고한 최신 shared 사용량 {usedBytes,limitGB,files}
 const jobs = new Map();     // jid -> 브라우저 소켓
+const connectedSockets = new Map();  // socketId -> socket (chat 이벤트 응답 라우팅용)
 
 function registerDobis(io) {
   const nsp = io.of('/dobis');
@@ -30,26 +31,39 @@ function registerDobis(io) {
 
   nsp.on('connection', (socket) => {
     activeBrowsers++;
+    // 인증 토큰에서 username 추출 — 워커에 전달해 per-user 세션 키잉에 사용
+    const _tok = socket.handshake.auth && socket.handshake.auth.token;
+    socket._username = (tokenInfo(_tok, false) || {}).username || 'default';
+    connectedSockets.set(socket.id, socket);
+
     socket.emit('dobis:ready', { worker: !!workerSocket });
     if (lastStats) socket.emit('dobis:stats', lastStats);
     if (lastShared) socket.emit('dobis:shared', lastShared);
     socket.on('dobis:msg', (m = {}) => {
       const message = String((m && m.message) || '').trim();
-      if (!message && !m.image_b64) return;
+      const hasFiles = Array.isArray(m.files) && m.files.length > 0;
+      if (!message && !m.image_b64 && !hasFiles) return;
       if (!workerSocket) { socket.emit('dobis:status', 'offline'); return; }
       const jid = crypto.randomBytes(8).toString('hex');
       jobs.set(jid, socket);
-      const payload = { jid, sessionId: socket.id, model: m.model, message, hud: m.hud };
-      if (m.image_b64) { payload.image_b64 = m.image_b64; payload.image_type = m.image_type || 'image/jpeg'; }
+      const payload = { jid, sessionId: socket.id, username: socket._username, model: m.model, message, hud: m.hud };
+      if (hasFiles) payload.files = m.files;
+      if (m.image_b64) { payload.image_b64 = m.image_b64; payload.image_type = m.image_type || 'image/jpeg'; }  // 하위호환
       if (m.restore_md) payload.restore_md = String(m.restore_md).slice(-20000);   // 현재 대화 맥락(워커가 세션 유실 시만 사용) — 최근(tail) 우선: 긴 대화는 끝부분이 중요
       workerSocket.emit('job', payload);
     });
     // 진행 중 응답 중단 → 워커로 전달
-    socket.on('dobis:cancel', () => { if (workerSocket) workerSocket.emit('cancel', {}); });
-    // 채팅 저장/목록/불러오기 → 워커로 전달
-    ['chat:save', 'chat:list', 'chat:load', 'newchat', 'music:rename', 'music:reorder', 'fs:list', 'fs:read', 'fs:write', 'fs:upload'].forEach((ev) => socket.on(ev, (p) => { if (workerSocket) workerSocket.emit(ev, p); }));
+    socket.on('dobis:cancel', () => { if (workerSocket) workerSocket.emit('cancel', { sessionId: socket.id, username: socket._username }); });
+    // 채팅 저장/목록/불러오기 → 워커로 전달. _sid + username 을 포함해 응답이 요청 소켓으로만 돌아오게 함.
+    ['chat:save', 'chat:list', 'chat:load', 'chat:rename', 'chat:delete', 'newchat',
+     'music:rename', 'music:reorder', 'fs:list', 'fs:read', 'fs:write', 'fs:upload'].forEach((ev) => {
+      socket.on(ev, (p) => {
+        if (workerSocket) workerSocket.emit(ev, { ...(p || {}), _sid: socket.id, username: socket._username });
+      });
+    });
     socket.on('disconnect', () => {
       activeBrowsers = Math.max(0, activeBrowsers - 1);
+      connectedSockets.delete(socket.id);
       for (const [j, b] of jobs) if (b === socket) jobs.delete(j);
     });
   });
@@ -68,8 +82,15 @@ function registerDobis(io) {
     socket.on('err', ({ jid, message }) => { const b = jobs.get(jid); if (b) b.emit('dobis:error', message); jobs.delete(jid); });
     socket.on('yt-prog', (p) => { const b = jobs.get(p && p.jid); if (b) b.emit('dobis:yt-prog', p); });
     socket.on('queue', (p) => { nsp.emit('dobis:queue', p); });
-    // 채팅 저장/목록/불러오기 응답 → 브라우저로(단일 관리자 전제, 브로드캐스트)
-    ['chat:saved', 'chat:listed', 'chat:loaded', 'fs:listed', 'fs:read-done', 'fs:write-done', 'fs:upload-done'].forEach((ev) => socket.on(ev, (p) => nsp.emit(ev, p)));
+    // 채팅/FS 응답 → _sid 가 있으면 요청한 소켓에만, 없으면 브로드캐스트(이전 버전 하위호환)
+    ['chat:saved', 'chat:listed', 'chat:loaded', 'chat:renamed', 'chat:deleted',
+     'fs:listed', 'fs:read-done', 'fs:write-done', 'fs:upload-done'].forEach((ev) => {
+      socket.on(ev, (p) => {
+        const target = p && p._sid && connectedSockets.get(p._sid);
+        if (target) target.emit(ev, p);
+        else nsp.emit(ev, p);
+      });
+    });
     socket.on('disconnect', () => {
       if (workerSocket === socket) workerSocket = null;
       lastUsage = null;
