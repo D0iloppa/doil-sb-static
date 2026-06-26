@@ -13,6 +13,7 @@ let lastStats = null;       // 워커가 보고한 최신 다마고치 상태 {l
 let lastShared = null;      // 워커가 보고한 최신 shared 사용량 {usedBytes,limitGB,files}
 const jobs = new Map();     // jid -> 브라우저 소켓
 const connectedSockets = new Map();  // socketId -> socket (chat 이벤트 응답 라우팅용)
+const queryPending = new Map();      // qid -> { resolve, reject } (서버 내부 one-shot 쿼리)
 
 function registerDobis(io) {
   const nsp = io.of('/dobis');
@@ -77,6 +78,8 @@ function registerDobis(io) {
     socket.on('imggen-usage', (d) => { nsp.emit('dobis:imggen-usage', d); });
     socket.on('delta', ({ jid, text }) => { const b = jobs.get(jid); if (b) b.emit('dobis:delta', { text }); });
     socket.on('think-ping', ({ jid }) => { const b = jobs.get(jid); if (b) b.emit('dobis:think-ping', {}); });
+    socket.on('query-done', ({ qid, text }) => { const p = queryPending.get(qid); if (p) { queryPending.delete(qid); p.resolve(text); } });
+    socket.on('query-err', ({ qid, error }) => { const p = queryPending.get(qid); if (p) { queryPending.delete(qid); p.reject(new Error(error)); } });
     socket.on('music-update', () => { nsp.emit('dobis:music-update', {}); });
     socket.on('done', (p) => { const b = jobs.get(p && p.jid); if (b) { const { jid, ...rest } = p; b.emit('dobis:done', rest); } if (p && p.jid) jobs.delete(p.jid); });
     socket.on('err', ({ jid, message }) => { const b = jobs.get(jid); if (b) b.emit('dobis:error', message); jobs.delete(jid); });
@@ -122,4 +125,22 @@ statusRouter.post('/account', requireToken, express.json(), (req, res) => {
   res.json({ ok: true, index });
 });
 
-module.exports = { registerDobis, statusRouter };
+// 서버 내부에서 DOBIS worker에 one-shot 프롬프트를 보내고 텍스트 응답을 받는다.
+// worker.py의 @sio.on("query") 핸들러와 쌍을 이룬다.
+function dobisQuery(prompt, model = 'haiku', timeoutMs = 30000) {
+  return new Promise((resolve, reject) => {
+    if (!workerSocket) return reject(new Error('DOBIS 워커 오프라인'));
+    const qid = crypto.randomBytes(8).toString('hex');
+    const timer = setTimeout(() => {
+      queryPending.delete(qid);
+      reject(new Error('DOBIS query timeout'));
+    }, timeoutMs);
+    queryPending.set(qid, {
+      resolve: (text) => { clearTimeout(timer); resolve(text); },
+      reject: (err)  => { clearTimeout(timer); reject(err); },
+    });
+    workerSocket.emit('query', { qid, prompt, model });
+  });
+}
+
+module.exports = { registerDobis, statusRouter, dobisQuery };

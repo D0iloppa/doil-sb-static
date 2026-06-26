@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOYCLOPEDIA Graph</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── 테마 변수 ── */
+    :root[data-theme="dark"] {
+      --bg:          #0d0d1a;
+      --fg:          #e0e0f0;
+      --fg-dim:      rgba(200,200,230,0.4);
+      --ctrl-bg:     rgba(255,255,255,0.07);
+      --ctrl-border: rgba(255,255,255,0.16);
+      --ctrl-focus:  rgba(150,150,255,0.45);
+      --tip-bg:      rgba(12,12,28,0.93);
+      --tip-border:  rgba(255,255,255,0.1);
+      --btn-bg:      rgba(255,255,255,0.1);
+      --btn-hover:   rgba(255,255,255,0.18);
+      --scan-bg:     rgba(80,160,255,0.18);
+      --scan-hover:  rgba(80,160,255,0.30);
+      --link-dim:    rgba(200,200,255,0.07);
+    }
+    :root[data-theme="light"] {
+      --bg:          #f0f0f5;
+      --fg:          #1a1a2e;
+      --fg-dim:      rgba(30,30,60,0.4);
+      --ctrl-bg:     rgba(0,0,0,0.06);
+      --ctrl-border: rgba(0,0,0,0.18);
+      --ctrl-focus:  rgba(80,80,200,0.45);
+      --tip-bg:      rgba(240,240,250,0.96);
+      --tip-border:  rgba(0,0,0,0.12);
+      --btn-bg:      rgba(0,0,0,0.08);
+      --btn-hover:   rgba(0,0,0,0.14);
+      --scan-bg:     rgba(30,100,220,0.12);
+      --scan-hover:  rgba(30,100,220,0.22);
+      --link-dim:    rgba(20,20,60,0.07);
+    }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--fg); font-family: 'Segoe UI', system-ui, sans-serif; transition: background 0.25s, color 0.25s; }
+
+    #graph-container { position: absolute; inset: 0; }
+
+    /* ── 컨트롤 패널 ── */
+    #controls {
+      position: absolute; top: 12px; left: 12px; z-index: 100;
+      display: flex; flex-direction: column; gap: 8px;
+      pointer-events: auto;
+    }
+
+    #search {
+      width: 210px;
+      background: var(--ctrl-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 8px; color: var(--fg); padding: 7px 12px; font-size: 13px;
+      transition: border-color 0.2s;
+    }
+    #search::placeholder { color: var(--fg-dim); }
+    #search:focus { outline: none; border-color: var(--ctrl-focus); }
+
+    .ctrl-row { display: flex; gap: 6px; align-items: center; }
+
+    .btn {
+      background: var(--btn-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 7px; color: var(--fg); padding: 5px 11px; font-size: 12px;
+      cursor: pointer; transition: background 0.15s; user-select: none; white-space: nowrap;
+    }
+    .btn:hover { background: var(--btn-hover); }
+
+    #scan-btn {
+      background: var(--scan-bg); border-color: rgba(80,160,255,0.3);
+    }
+    #scan-btn:hover { background: var(--scan-hover); }
+    #scan-btn:disabled { opacity: 0.5; cursor: default; }
+
+    #stats { font-size: 11px; color: var(--fg-dim); padding-left: 2px; }
+
+    /* ── 범례 ── */
+    #legend {
+      position: absolute; bottom: 12px; left: 12px; z-index: 100;
+      display: flex; flex-direction: column; gap: 5px;
+      max-height: calc(100vh - 160px); overflow-y: auto; pointer-events: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(120,120,160,0.35) transparent;
+    }
+    #legend::-webkit-scrollbar { width: 3px; }
+    #legend::-webkit-scrollbar-track { background: transparent; }
+    #legend::-webkit-scrollbar-thumb { background: rgba(120,120,160,0.35); border-radius: 2px; }
+    #legend::-webkit-scrollbar-thumb:hover { background: rgba(120,120,160,0.6); }
+    .legend-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 11px; color: var(--fg-dim); cursor: pointer;
+      transition: color 0.15s; user-select: none; white-space: nowrap;
+    }
+    .legend-item:hover { color: var(--fg); }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── 툴팁 ── */
+    #tooltip {
+      position: absolute; z-index: 200;
+      background: var(--tip-bg); border: 1px solid var(--tip-border);
+      border-radius: 10px; padding: 9px 13px; font-size: 13px;
+      pointer-events: none; display: none; max-width: 250px;
+      backdrop-filter: blur(8px);
+    }
+    .tt-title  { font-weight: 600; line-height: 1.4; margin-bottom: 3px; }
+    .tt-group  { font-size: 11px; color: var(--fg-dim); }
+
+    /* ── 힌트 ── */
+    #hint {
+      position: absolute; bottom: 12px; right: 12px; z-index: 100;
+      font-size: 10px; color: var(--fg-dim); text-align: right; line-height: 1.8;
+      pointer-events: none;
+    }
+
+    /* ── 오버레이 (로딩/에러) ── */
+    #overlay {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; z-index: 300;
+      background: var(--bg);
+    }
+    #overlay-msg { font-size: 15px; color: var(--fg-dim); }
+    #overlay-sub { font-size: 12px; color: var(--fg-dim); opacity: 0.6; }
+    .spinner {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid var(--ctrl-border);
+      border-top-color: rgba(120,160,255,0.8);
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── 스캔 진행 토스트 ── */
+    #scan-toast {
+      position: absolute; top: 12px; right: 12px; z-index: 400;
+      background: var(--tip-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 9px; padding: 9px 14px; font-size: 12px; color: var(--fg);
+      display: none; max-width: 220px; backdrop-filter: blur(8px);
+    }
+  </style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="spinner"></div>
+  <div id="overlay-msg">그래프 불러오는 중…</div>
+  <div id="overlay-sub" id="overlay-sub"></div>
+</div>
+
+<div id="controls">
+  <input id="search" type="text" placeholder="페이지 검색…" autocomplete="off" />
+  <div class="ctrl-row">
+    <button class="btn" id="theme-btn" title="테마 전환">☀</button>
+    <button class="btn" id="fit-btn" title="전체 보기">⊞</button>
+    <button class="btn" id="scan-btn">⟳ Scan</button>
+  </div>
+  <span id="stats"></span>
+</div>
+
+<div id="legend"></div>
+<div id="tooltip"><div class="tt-title" id="tt-title"></div><div class="tt-group" id="tt-group"></div></div>
+<div id="hint">클릭 → Notion 열기<br>드래그 · 스크롤 줌</div>
+<div id="scan-toast"></div>
+
+<div id="graph-container"></div>
+
+<script src="https://unpkg.com/force-graph@1.47.1/dist/force-graph.min.js"></script>
+<script>
+(function () {
+  /* ── 서버 주입 값 ── */
+  const ROOT_CTX = '<%= rootContext %>';
+  const ROOT_ID  = '<%= rootId || "" %>';  // 비어있으면 /graph (라이브 모드)
+
+  const DATA_URL = ROOT_ID
+    ? (ROOT_CTX + '/graph/data/' + ROOT_ID)
+    : (ROOT_CTX + '/graph/data');
+  const SCAN_URL = ROOT_CTX + '/graph/scan';
+
+  /* ── 색상 팔레트 ── */
+  const PALETTE_DARK  = ['#6c8ebf','#82b366','#d6a04a','#ae7cc9','#d44e4e','#4eb8d4','#c7826a','#5cb85c','#e07bb5','#70c4b4','#c9b44a','#8b7dd4'];
+  const PALETTE_LIGHT = ['#3565a8','#3d8c40','#b87a18','#7c4fa8','#b02020','#1a8fb0','#a0501a','#2e7d32','#c0407a','#1a8878','#9a7a10','#5040b0'];
+  let paletteIdx = 0;
+  const groupColorMap = {};
+
+  function isDark() { return document.documentElement.dataset.theme === 'dark'; }
+
+  function colorFor(group) {
+    if (group === 'root') return isDark() ? '#ffffff' : '#222244';
+    if (!groupColorMap[group]) {
+      const pal = isDark() ? PALETTE_DARK : PALETTE_LIGHT;
+      groupColorMap[group] = pal[paletteIdx++ % pal.length];
+    }
+    return groupColorMap[group];
+  }
+
+  /* ── DOM 참조 ── */
+  const overlay    = document.getElementById('overlay');
+  const overlayMsg = document.getElementById('overlay-msg');
+  const overlaySub = document.getElementById('overlay-sub');
+  const statsEl    = document.getElementById('stats');
+  const legendEl   = document.getElementById('legend');
+  const tooltip    = document.getElementById('tooltip');
+  const ttTitle    = document.getElementById('tt-title');
+  const ttGroup    = document.getElementById('tt-group');
+  const scanToast  = document.getElementById('scan-toast');
+  const scanBtn    = document.getElementById('scan-btn');
+  const themeBtn   = document.getElementById('theme-btn');
+  const fitBtn     = document.getElementById('fit-btn');
+
+  let graphInstance  = null;
+  let graphData      = null;
+  let highlightGroup = null;
+  let searchQ        = '';
+
+  /* ── 노드/링크 색상 계산 ── */
+  function nodeColorFn(n) {
+    const base = colorFor(n.group);
+    if (searchQ) {
+      return n.title.toLowerCase().includes(searchQ) ? '#ffdd44' : (isDark() ? 'rgba(70,70,90,0.25)' : 'rgba(160,160,180,0.35)');
+    }
+    if (highlightGroup && n.group !== highlightGroup && n.group !== 'root') {
+      return isDark() ? 'rgba(70,70,90,0.22)' : 'rgba(160,160,180,0.3)';
+    }
+    return base;
+  }
+
+  function linkColorFn(l) {
+    if (searchQ) {
+      const s = (l.source?.title||'').toLowerCase(); const t = (l.target?.title||'').toLowerCase();
+      return (s.includes(searchQ) && t.includes(searchQ)) ? 'rgba(255,220,80,0.35)' : (isDark() ? 'rgba(70,70,90,0.05)' : 'rgba(160,160,180,0.08)');
+    }
+    if (highlightGroup) {
+      const sg = l.source?.group; const tg = l.target?.group;
+      return (sg === highlightGroup || tg === highlightGroup) ? (isDark() ? 'rgba(200,200,255,0.2)' : 'rgba(40,40,120,0.18)') : (isDark() ? 'rgba(70,70,90,0.04)' : 'rgba(160,160,180,0.05)');
+    }
+    return isDark() ? 'rgba(200,200,255,0.08)' : 'rgba(40,40,120,0.1)';
+  }
+
+  function nodeValFn(n) {
+    if (n.group === 'root') return 8;
+    if (n.group === n.title) return 3.5;
+    return 1.8;
+  }
+
+  /* ── 범례 빌드 ── */
+  function buildLegend(nodes) {
+    legendEl.innerHTML = '';
+    paletteIdx = 0;
+    Object.keys(groupColorMap).forEach((k) => delete groupColorMap[k]);
+    const groups = [...new Set(nodes.map((n) => n.group))].filter((g) => g !== 'root');
+    groups.forEach((g) => {
+      colorFor(g);
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<div class="legend-dot" style="background:${groupColorMap[g]}"></div><span>${g || '기타'}</span>`;
+      item.addEventListener('click', () => {
+        highlightGroup = highlightGroup === g ? null : g;
+        applyColors();
+        document.querySelectorAll('.legend-item').forEach((el) => el.style.opacity = '0.4');
+        if (highlightGroup) item.style.opacity = '1';
+        else document.querySelectorAll('.legend-item').forEach((el) => el.style.opacity = '1');
+      });
+      legendEl.appendChild(item);
+    });
+  }
+
+  function applyColors() {
+    if (!graphInstance) return;
+    graphInstance.nodeColor(nodeColorFn).linkColor(linkColorFn);
+  }
+
+  /* ── 그래프 초기화 ── */
+  function initGraph(data) {
+    graphData = data;
+    overlay.style.display = 'none';
+    buildLegend(data.nodes);
+
+    const nodeCount = data.nodes.length;
+    const edgeCount = data.edges.length;
+    const scanned = data.scannedAt ? ' · ' + new Date(data.scannedAt).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+    statsEl.textContent = `${nodeCount}노드 · ${edgeCount}링크${scanned}`;
+
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    graphInstance = ForceGraph()(document.getElementById('graph-container'))
+      .width(W).height(H)
+      .backgroundColor(isDark() ? '#0d0d1a' : '#f0f0f5')
+      .nodeLabel('')
+      .nodeColor(nodeColorFn)
+      .nodeRelSize(5)
+      .nodeVal(nodeValFn)
+      .linkColor(linkColorFn)
+      .linkWidth(0.9)
+      .cooldownTicks(180)
+      .onEngineStop(() => {
+        graphInstance.zoomToFit(600, 60); // 레이아웃 안정화 후 전체 맞춤
+      })
+      .onNodeHover((node) => {
+        document.getElementById('graph-container').style.cursor = node ? 'pointer' : 'default';
+        if (node) {
+          ttTitle.textContent = node.title;
+          ttGroup.textContent = node.group !== 'root' ? '📁 ' + node.group : '';
+          tooltip.style.display = 'block';
+        } else {
+          tooltip.style.display = 'none';
+        }
+      })
+      .onNodeClick((node) => {
+        if (node.url) window.open(node.url, '_blank', 'noopener');
+      })
+      .graphData({
+        nodes: data.nodes.map((n) => ({ ...n })),
+        links: data.edges.map((e) => ({ source: e.source, target: e.target })),
+      });
+
+    window.addEventListener('resize', () => {
+      graphInstance.width(window.innerWidth).height(window.innerHeight);
+    });
+  }
+
+  /* ── 툴팁 위치 ── */
+  document.addEventListener('mousemove', (e) => {
+    if (tooltip.style.display === 'none') return;
+    const tw = tooltip.offsetWidth || 250;
+    const th = tooltip.offsetHeight || 60;
+    const ox = e.clientX + 18;
+    const oy = e.clientY + 14;
+    tooltip.style.left = (ox + tw > window.innerWidth  ? e.clientX - tw - 10 : ox) + 'px';
+    tooltip.style.top  = (oy + th > window.innerHeight ? e.clientY - th - 10 : oy) + 'px';
+  });
+
+  /* ── 검색 ── */
+  document.getElementById('search').addEventListener('input', (e) => {
+    searchQ = e.target.value.trim().toLowerCase();
+    applyColors();
+  });
+
+  /* ── 테마 토글 ── */
+  themeBtn.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    themeBtn.textContent = next === 'dark' ? '☀' : '🌙';
+    if (graphInstance) {
+      graphInstance.backgroundColor(next === 'dark' ? '#0d0d1a' : '#f0f0f5');
+      if (graphData) buildLegend(graphData.nodes);
+      applyColors();
+    }
+  });
+
+  /* ── 전체 맞춤 ── */
+  fitBtn.addEventListener('click', () => {
+    if (graphInstance) graphInstance.zoomToFit(400, 60);
+  });
+
+  /* ── Scan 버튼 (비동기 폴링) ── */
+  function showToast(msg, duration) {
+    scanToast.textContent = msg;
+    scanToast.style.display = 'block';
+    if (duration) setTimeout(() => { scanToast.style.display = 'none'; }, duration);
+  }
+
+  let scanPollTimer = null;
+
+  async function refreshGraphData() {
+    const dataRes = await fetch(DATA_URL);
+    if (!dataRes.ok) return;
+    const data = await dataRes.json();
+    if (!data.nodes) return;
+    buildLegend(data.nodes);
+    graphData = data;
+    const sc = data.scannedAt ? ' · ' + new Date(data.scannedAt).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '';
+    statsEl.textContent = `${data.nodes.length}노드 · ${data.edges.length}링크${sc}`;
+    if (graphInstance) {
+      graphInstance.graphData({ nodes: data.nodes.map((n) => ({ ...n })), links: data.edges.map((e) => ({ source: e.source, target: e.target })) });
+      setTimeout(() => graphInstance.zoomToFit(600, 60), 1200);
+    } else {
+      initGraph(data);
+    }
+  }
+
+  function startScanPoll() {
+    let elapsed = 0;
+    scanPollTimer = setInterval(async () => {
+      elapsed += 2;
+      try {
+        const res = await fetch(ROOT_CTX + '/graph/scan/status');
+        const st = await res.json();
+        if (st.running) {
+          showToast(`⟳ 스캔 중… (${elapsed}초 경과)`);
+        } else {
+          clearInterval(scanPollTimer);
+          scanBtn.disabled = false;
+          scanBtn.textContent = '⟳ Scan';
+          if (st.error) {
+            showToast('✗ 스캔 실패: ' + st.error, 5000);
+          } else if (st.result) {
+            showToast(`✓ ${st.result.nodes}노드 스캔 완료`, 4000);
+            await refreshGraphData();
+          }
+        }
+      } catch (e) {
+        clearInterval(scanPollTimer);
+        scanBtn.disabled = false;
+        scanBtn.textContent = '⟳ Scan';
+        showToast('✗ 상태 조회 실패', 4000);
+      }
+    }, 2000);
+  }
+
+  scanBtn.addEventListener('click', async () => {
+    if (scanBtn.disabled) return;
+    scanBtn.disabled = true;
+    scanBtn.textContent = '⟳ 시작 중…';
+    showToast('Notion 스캔 시작 중…');
+    try {
+      const res = await fetch(SCAN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rootId: ROOT_ID || undefined }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'scan failed');
+      if (result.status === 'running') {
+        showToast('이미 스캔 중입니다…');
+      } else {
+        scanBtn.textContent = '⟳ 스캔 중…';
+        showToast('⟳ 스캔 중…');
+        startScanPoll();
+        return;
+      }
+    } catch (err) {
+      showToast('✗ 스캔 실패: ' + err.message, 5000);
+    }
+    scanBtn.disabled = false;
+    scanBtn.textContent = '⟳ Scan';
+  });
+
+  /* ── 데이터 로드 ── */
+  function fetchData(retry) {
+    fetch(DATA_URL)
+      .then((r) => {
+        if (r.status === 202) {
+          if (retry) {
+            overlaySub.textContent = '5초 후 재시도…';
+            setTimeout(() => fetchData(false), 5000);
+          } else {
+            overlayMsg.textContent = '데이터 구성 중 — 새로고침 해주세요';
+            document.querySelector('.spinner').style.display = 'none';
+          }
+          return null;
+        }
+        if (r.status === 404) {
+          // /graph/:id 이고 아직 스캔 안 된 경우
+          overlay.style.display = 'none';
+          statsEl.textContent = '아직 스캔된 데이터가 없습니다.';
+          return null;
+        }
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((data) => { if (data) initGraph(data); })
+      .catch((err) => {
+        overlayMsg.textContent = '데이터 로딩 실패';
+        overlaySub.textContent = err.message;
+        document.querySelector('.spinner').style.display = 'none';
+      });
+  }
+
+  fetchData(true);
+})();
+</script>
+</body>
+</html>

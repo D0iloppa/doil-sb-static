@@ -597,33 +597,104 @@
       gap: 8px;
       max-width: 460px;
     }
-    .drec-head { display: flex; align-items: center; gap: 8px; }
+
+    .drec-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .drec-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #ff4d4d; box-shadow: 0 0 6px #ff4d4d;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff4d4d;
+      box-shadow: 0 0 6px #ff4d4d;
       animation: drec-blink 1s steps(2, start) infinite;
     }
-    .drec-card.paused .drec-dot { background: var(--dim); box-shadow: none; animation: none; }
-    .drec-card.done .drec-dot { background: var(--grn); box-shadow: 0 0 6px var(--grn); animation: none; }
-    @keyframes drec-blink { 50% { opacity: .25; } }
-    .drec-state { font-weight: 700; color: var(--grn); }
-    .drec-time { margin-left: auto; font-variant-numeric: tabular-nums; color: rgba(255,255,255,.85); letter-spacing: .5px; }
-    .drec-live {
-      min-height: 38px; max-height: 140px; overflow-y: auto;
-      padding: 6px 8px; border: 1px solid rgba(77,255,143,.2); border-radius: 5px;
-      background: rgba(77,255,143,.04); font-size: .88em; line-height: 1.5; white-space: pre-wrap;
-      color: rgba(255,255,255,.85);
+
+    .drec-card.paused .drec-dot {
+      background: var(--dim);
+      box-shadow: none;
+      animation: none;
     }
-    .drec-live:empty::before { content: '⋯ 전사 대기 중'; color: var(--dim); }
-    .drec-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 2px; }
+
+    .drec-card.done .drec-dot {
+      background: var(--grn);
+      box-shadow: 0 0 6px var(--grn);
+      animation: none;
+    }
+
+    @keyframes drec-blink {
+      50% {
+        opacity: .25;
+      }
+    }
+
+    .drec-state {
+      font-weight: 700;
+      color: var(--grn);
+    }
+
+    .drec-time {
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      color: rgba(255, 255, 255, .85);
+      letter-spacing: .5px;
+    }
+
+    .drec-live {
+      min-height: 38px;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 6px 8px;
+      border: 1px solid rgba(77, 255, 143, .2);
+      border-radius: 5px;
+      background: rgba(77, 255, 143, .04);
+      font-size: .88em;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      color: rgba(255, 255, 255, .85);
+    }
+
+    .drec-live:empty::before {
+      content: '⋯ 전사 대기 중';
+      color: var(--dim);
+    }
+
+    .drec-btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
     /* 헤더의 [ 입력 ]/[ X ] 와 동일한 .cmd 브래킷 텍스트 idiom 으로 통일(모바일 일관성) */
-    .drec-act { font-size: .9em; }
-    .drec-act.stop { color: #ff8a8a; }
-    .drec-act.stop:hover { color: #ffd0d0; text-shadow: 0 0 8px #ff6b6b; }
-    .drec-act.off { opacity: .4; pointer-events: none; }
+    .drec-act {
+      font-size: .9em;
+    }
+
+    .drec-act.stop {
+      color: #ff8a8a;
+    }
+
+    .drec-act.stop:hover {
+      color: #ffd0d0;
+      text-shadow: 0 0 8px #ff6b6b;
+    }
+
+    .drec-act.off {
+      opacity: .4;
+      pointer-events: none;
+    }
+
     .drec-minutes {
-      margin-top: 4px; padding: 8px 10px; border-top: 1px dashed var(--dim);
-      font-size: .9em; line-height: 1.6; white-space: pre-wrap;
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-top: 1px dashed var(--dim);
+      font-size: .9em;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
 
     /* ── 유튜브 큐 진행률 ── */
@@ -786,22 +857,35 @@
       flex-direction: column;
     }
 
-    /* 레지스트리·터미널 뷰포트 스크롤바 통일 */
+    /* 레지스트리·홈·터미널 뷰포트 스크롤바 통일 */
     #registryView,
+    #homeView,
     .xterm-viewport {
       scrollbar-width: thin;
       scrollbar-color: var(--dim) transparent;
     }
 
     #registryView::-webkit-scrollbar,
+    #homeView::-webkit-scrollbar,
     .xterm-viewport::-webkit-scrollbar {
-      width: 9px;
+      width: 5px;
+    }
+
+    #registryView::-webkit-scrollbar-track,
+    #homeView::-webkit-scrollbar-track {
+      background: transparent;
     }
 
     #registryView::-webkit-scrollbar-thumb,
+    #homeView::-webkit-scrollbar-thumb,
     .xterm-viewport::-webkit-scrollbar-thumb {
       background: var(--dim);
       border-radius: 4px;
+    }
+
+    #registryView::-webkit-scrollbar-thumb:hover,
+    #homeView::-webkit-scrollbar-thumb:hover {
+      background: var(--grn);
     }
 
     #registryView {
@@ -809,6 +893,14 @@
       min-height: 0;
       overflow: auto;
       padding-right: 4px;
+    }
+
+    #homeView {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     #sshView {
@@ -964,6 +1056,10 @@
       filter: saturate(.5) brightness(1.05) contrast(1.05) sepia(.42) hue-rotate(66deg);
     }
 
+    .appwin.tinted .paint-app {
+      filter: saturate(.5) brightness(1.05) contrast(1.05) sepia(.42) hue-rotate(66deg);
+    }
+
     .appwin-scan {
       position: absolute;
       inset: 0;
@@ -975,6 +1071,755 @@
 
     .appwin.tinted .appwin-scan {
       display: block;
+    }
+
+    /* ===== PAINT 앱 — Win98 스타일 그림판 ===== */
+    .paint-app {
+      display: flex;
+      flex-direction: column;
+      background: #c0c0c0;
+      font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, sans-serif;
+      font-size: 12px;
+      color: #000;
+      overflow: hidden;
+    }
+
+    .paint-menubar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      background: #c0c0c0;
+      border-bottom: 1px solid #808080;
+      padding: 2px 4px;
+      position: relative;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .paint-menu-item {
+      padding: 2px 8px;
+      cursor: default;
+      border: 1px solid transparent;
+    }
+
+    .paint-menu-item:hover,
+    .paint-menu-item.open {
+      background: #000080;
+      color: #fff;
+      border-color: #000080;
+    }
+
+    .paint-dropdown {
+      position: absolute;
+      top: 22px;
+      left: 4px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      box-shadow: 2px 2px 0 #000;
+      z-index: 100;
+      min-width: 160px;
+    }
+
+    .paint-dropdown.hidden {
+      display: none;
+    }
+
+    .paint-dd-item {
+      padding: 3px 20px;
+      cursor: default;
+      white-space: nowrap;
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .paint-dd-item:hover {
+      background: #000080;
+      color: #fff;
+    }
+
+    .paint-dd-kbd {
+      opacity: .6;
+      font-size: .9em;
+    }
+
+    .paint-dd-sep {
+      border-top: 1px solid #808080;
+      border-bottom: 1px solid #fff;
+      margin: 3px 0;
+    }
+
+    .paint-body {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .paint-tools {
+      flex: 0 0 64px;
+      background: #c0c0c0;
+      border-right: 2px solid;
+      border-color: #808080 #fff #fff #808080;
+      padding: 4px 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      overflow-y: auto;
+    }
+
+    .paint-tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .ptool {
+      width: 26px;
+      height: 26px;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      background: #c0c0c0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      font-size: 11px;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      color: #000;
+    }
+
+    .ptool svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      pointer-events: none;
+      position: static;
+      inset: auto;
+      filter: none;
+    }
+
+    .ptool:active,
+    .ptool.on {
+      border-color: #808080 #fff #fff #808080;
+      background: #b8b8b8;
+    }
+
+    .paint-size-lbl {
+      font-size: 9px;
+      color: #444;
+      text-align: center;
+      letter-spacing: .5px;
+      margin-top: 2px;
+    }
+
+    .paint-size-row {
+      display: flex;
+      gap: 2px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .psize {
+      border: 1px solid #808080;
+      background: #c0c0c0;
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      padding: 0;
+    }
+
+    .psize:hover {
+      background: #d4d4d4;
+    }
+
+    .paint-size-slider {
+      width: 56px;
+      margin: 2px 0;
+      accent-color: #000080;
+    }
+
+    .paint-color-box {
+      position: relative;
+      width: 44px;
+      height: 38px;
+      margin: 4px auto 2px;
+    }
+
+    .pcb-bg {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 28px;
+      height: 28px;
+      border: 2px solid;
+      border-color: #808080 #fff #fff #808080;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .pcb-fg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      background: #000;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .paint-canvas-wrap {
+      flex: 1 1 auto;
+      overflow: auto;
+      background: #1a1a1a;
+      position: relative;
+      cursor: crosshair;
+    }
+
+    .paint-canvas-stage {
+      padding: 40px;
+      min-width: max-content;
+      min-height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paint-canvas-frame {
+      position: relative;
+      display: inline-block;
+    }
+
+    .paint-canvas-inner {
+      position: relative;
+      display: inline-block;
+      /* 체커보드 — 투명 영역 시각화 */
+      background-color: #fff;
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%),
+        linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 8px 8px;
+      box-shadow: 0 0 0 1px #555, 4px 4px 12px rgba(0, 0, 0, .6);
+    }
+
+    /* 캔버스 리사이즈 핸들 */
+    .paint-resize-handle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border: 1px solid #555;
+      z-index: 200;
+      box-sizing: border-box;
+    }
+
+    .paint-resize-handle[data-dir=nw] {
+      top: -5px;
+      left: -5px;
+      cursor: nw-resize;
+    }
+
+    .paint-resize-handle[data-dir=n] {
+      top: -5px;
+      left: calc(50% - 4px);
+      cursor: n-resize;
+    }
+
+    .paint-resize-handle[data-dir=ne] {
+      top: -5px;
+      right: -5px;
+      cursor: ne-resize;
+    }
+
+    .paint-resize-handle[data-dir=e] {
+      top: calc(50% - 4px);
+      right: -5px;
+      cursor: e-resize;
+    }
+
+    .paint-resize-handle[data-dir=se] {
+      bottom: -5px;
+      right: -5px;
+      cursor: se-resize;
+    }
+
+    .paint-resize-handle[data-dir=s] {
+      bottom: -5px;
+      left: calc(50% - 4px);
+      cursor: s-resize;
+    }
+
+    .paint-resize-handle[data-dir=sw] {
+      bottom: -5px;
+      left: -5px;
+      cursor: sw-resize;
+    }
+
+    .paint-resize-handle[data-dir=w] {
+      top: calc(50% - 4px);
+      left: -5px;
+      cursor: w-resize;
+    }
+
+    .paint-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+    }
+
+    .paint-preview-canvas {
+      position: relative;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    .paint-layers {
+      flex: 0 0 140px;
+      background: #c0c0c0;
+      border-left: 2px solid;
+      border-color: #808080 #fff #fff #808080;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: flex-basis .15s;
+    }
+
+    .paint-layers.collapsed {
+      flex-basis: 20px !important;
+    }
+
+    .paint-layers.collapsed .paint-layer-list,
+    .paint-layers.collapsed .paint-layer-btns,
+    .paint-layers.collapsed .paint-layer-name,
+    .paint-layers.collapsed .paint-layer-thumb {
+      display: none;
+    }
+
+    .paint-panel-title {
+      background: #000080;
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 6px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .paint-panel-toggle {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 10px;
+      padding: 0 2px;
+      line-height: 1;
+    }
+
+    .paint-layer-list {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 2px;
+    }
+
+    .paint-layer-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 4px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 2px;
+    }
+
+    .paint-layer-item.active {
+      background: #000080;
+      color: #fff;
+      border-color: #000080;
+    }
+
+    .paint-layer-item:hover:not(.active) {
+      background: #b0b0c0;
+    }
+
+    .paint-layer-vis {
+      font-size: 12px;
+      cursor: pointer;
+      flex: 0 0 16px;
+      text-align: center;
+    }
+
+    .paint-layer-thumb {
+      width: 28px;
+      height: 20px;
+      border: 1px solid #808080;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='4' height='4' fill='%23ccc'/%3E%3Crect x='4' y='4' width='4' height='4' fill='%23ccc'/%3E%3C/svg%3E") repeat;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .paint-layer-thumb canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .paint-layer-name {
+      flex: 1;
+      font-size: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .paint-layer-btns {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 2px;
+      padding: 4px;
+      border-top: 1px solid #808080;
+    }
+
+    .plbtn {
+      flex: 1;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      background: #c0c0c0;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px;
+    }
+
+    .plbtn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    .paint-bottom {
+      flex: 0 0 auto;
+      border-top: 2px solid;
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    .paint-palette {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 3px 4px;
+      gap: 2px;
+      background: #c0c0c0;
+      border-bottom: 1px solid #808080;
+    }
+
+    .paint-swatch {
+      width: 18px;
+      height: 18px;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .paint-swatch:hover {
+      outline: 2px solid #000;
+    }
+
+    .paint-statusbar {
+      background: #c0c0c0;
+      font-size: 11px;
+      padding: 2px 6px;
+      color: #444;
+      border-top: 1px solid #808080;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .paint-statusbar .paint-status-text {
+      flex: 1;
+    }
+
+    .paint-zoom-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .paint-zoom-btn {
+      background: #c0c0c0;
+      border: 1px solid;
+      border-color: #fff #808080 #808080 #fff;
+      color: #000;
+      font-size: 11px;
+      padding: 0 5px;
+      height: 16px;
+      line-height: 14px;
+      cursor: pointer;
+    }
+
+    .paint-zoom-btn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    .paint-zoom-label {
+      font-size: 11px;
+      min-width: 34px;
+      text-align: center;
+      color: #444;
+    }
+
+    /* iPad: 터치 영역 넉넉하게 */
+    @media (pointer: coarse) {
+      .ptool {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+
+      .paint-swatch {
+        width: 24px;
+        height: 24px;
+      }
+
+      .paint-tools {
+        flex: 0 0 80px;
+      }
+    }
+
+    /* 텍스트 도구 인라인 입력 오버레이 */
+    .paint-text-input {
+      position: absolute;
+      background: transparent;
+      border: 1px dashed #000080;
+      outline: none;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      z-index: 150;
+      resize: none;
+      overflow: hidden;
+      padding: 0 2px;
+      line-height: 1.2;
+      white-space: nowrap;
+      min-width: 30px;
+    }
+
+    /* 도움말 모달 */
+    .paint-help-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paint-help-modal.hidden {
+      display: none;
+    }
+
+    .paint-help-win {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      box-shadow: 2px 2px 0 #000;
+      width: 380px;
+      max-height: 80%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 12px;
+    }
+
+    .paint-help-bar {
+      background: #000080;
+      color: #fff;
+      padding: 3px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .paint-help-body {
+      overflow-y: auto;
+      padding: 10px 14px;
+    }
+
+    .paint-help-body table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .paint-help-body th {
+      text-align: left;
+      padding: 6px 4px 2px;
+      border-bottom: 1px solid #808080;
+      font-weight: bold;
+      color: #000080;
+    }
+
+    .paint-help-body td {
+      padding: 2px 4px;
+      color: #000;
+    }
+
+    .paint-help-body td:first-child {
+      font-weight: bold;
+      white-space: nowrap;
+      padding-right: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    .paint-help-body tr:hover td {
+      background: #d4d8e8;
+    }
+
+    /* Win98 인앱 다이얼로그 */
+    .paint-dlg-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0, 0, 0, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paint-dlg-backdrop.hidden {
+      display: none;
+    }
+
+    .paint-dlg-win {
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      box-shadow: 2px 2px 0 #000;
+      min-width: 240px;
+      max-width: 360px;
+      font-family: 'MS Sans Serif', 'Arial', sans-serif;
+      font-size: 12px;
+    }
+
+    .paint-dlg-bar {
+      background: #000080;
+      color: #fff;
+      padding: 3px 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: bold;
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .paint-dlg-icon {
+      font-size: 13px;
+    }
+
+    .paint-dlg-xbtn {
+      margin-left: auto;
+      background: #c0c0c0;
+      color: #000;
+      border: 1px solid;
+      border-color: #fff #808080 #808080 #fff;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paint-dlg-xbtn:active {
+      border-color: #808080 #fff #fff #808080;
+    }
+
+    .paint-dlg-body {
+      padding: 12px 14px 10px;
+    }
+
+    .paint-dlg-msg {
+      margin-bottom: 10px;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .paint-dlg-input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 2px solid;
+      border-color: #808080 #fff #fff #808080;
+      background: #fff;
+      color: #000;
+      font-size: 12px;
+      padding: 3px 5px;
+      margin-bottom: 10px;
+    }
+
+    .paint-dlg-input.hidden {
+      display: none;
+    }
+
+    .paint-dlg-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .paint-dlg-btn {
+      background: #c0c0c0;
+      color: #000;
+      border: 2px solid;
+      border-color: #fff #808080 #808080 #fff;
+      padding: 4px 14px;
+      font-size: 12px;
+      min-width: 70px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .paint-dlg-btn:active {
+      border-color: #808080 #fff #fff #808080;
+      padding: 5px 13px 3px 15px;
+    }
+
+    .paint-dlg-btn:focus {
+      outline: 1px dotted #000;
+      outline-offset: -3px;
+    }
+
+    /* BG remove 허용 시 tolerance 슬라이더 행 */
+    .paint-bgrem-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .paint-bgrem-row input[type=range] {
+      flex: 1;
     }
 
     /* 명반(CHART) — 답변 버블 안 인라인 토글(dl-card 패턴 재활용) */
@@ -1323,9 +2168,19 @@
       scrollbar-width: thin;
       scrollbar-color: var(--dim) transparent;
     }
-    .chatlist::-webkit-scrollbar { width: 4px; }
-    .chatlist::-webkit-scrollbar-track { background: transparent; }
-    .chatlist::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+
+    .chatlist::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chatlist::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .chatlist::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 2px;
+    }
 
     .chat-item {
       display: flex;
@@ -1336,7 +2191,11 @@
       min-width: 0;
       border-radius: 3px;
     }
-    .chat-item:hover .ci-name { color: #d6ffe8; }
+
+    .chat-item:hover .ci-name {
+      color: #d6ffe8;
+    }
+
     .ci-name {
       flex: 1;
       min-width: 0;
@@ -1344,12 +2203,14 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .ci-time {
       flex: 0 0 auto;
       font-size: .72em;
       opacity: .5;
       white-space: nowrap;
     }
+
     .ci-btns {
       flex: 0 0 auto;
       display: flex;
@@ -1357,15 +2218,26 @@
       opacity: 0;
       transition: opacity .12s;
     }
-    .chat-item:hover .ci-btns { opacity: 1; }
+
+    .chat-item:hover .ci-btns {
+      opacity: 1;
+    }
+
     .ci-btn {
       cursor: pointer;
       padding: 0 4px;
       border-radius: 3px;
       font-size: .85em;
     }
-    .ci-btn:hover { color: var(--grn); }
-    .ci-btn.del:hover { color: #ff6060; }
+
+    .ci-btn:hover {
+      color: var(--grn);
+    }
+
+    .ci-btn.del:hover {
+      color: #ff6060;
+    }
+
     .chat-more-btn {
       text-align: center;
       opacity: .6;
@@ -1373,7 +2245,10 @@
       font-size: .8em;
       padding: 4px 0;
     }
-    .chat-more-btn:hover { opacity: 1; }
+
+    .chat-more-btn:hover {
+      opacity: 1;
+    }
 
     .modelchips {
       margin-left: 4px;
@@ -1641,7 +2516,9 @@
       opacity: .85;
     }
 
-    .img-thumb-item .thumb-rm:hover { opacity: 1; }
+    .img-thumb-item .thumb-rm:hover {
+      opacity: 1;
+    }
 
     .img-thumb-item .thumb-prog-wrap {
       position: absolute;
@@ -1649,7 +2526,7 @@
       left: 0;
       right: 0;
       height: 3px;
-      background: rgba(0,0,0,.4);
+      background: rgba(0, 0, 0, .4);
       border-radius: 2px;
       overflow: hidden;
     }
@@ -1763,6 +2640,26 @@
     .cc-status strong {
       color: rgba(77, 255, 143, .88);
       font-weight: 700;
+    }
+
+    /* 게이지 이모지: 고정폭 컨테이너(컬러 유지, overflow hidden으로 2ch 이모지 1칸으로 클램프) */
+    .cc-status .ge {
+      display: inline-block;
+      width: 1.4ch;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+
+    /* 게이지 바: 블록문자(██░░)를 대체하는 CSS 그라디언트 바 — 문자 폭 의존성 완전 제거 */
+    .cc-status .gauge-bar {
+      display: inline-block;
+      width: 4.5em;
+      height: 0.6em;
+      background: linear-gradient(to right, rgba(77, 255, 143, .85) var(--pct), rgba(77, 255, 143, .13) var(--pct));
+      border: 1px solid rgba(77, 255, 143, .35);
+      border-radius: 2px;
+      vertical-align: middle;
+      margin: 0 1px;
     }
 
     /* ── 타로 ── */
@@ -1925,25 +2822,45 @@
     }
 
     /* ── 블록 마크다운 ── */
-    .dobis-msg.bot h1, .dobis-msg.bot h2, .dobis-msg.bot h3 {
+    .dobis-msg.bot h1,
+    .dobis-msg.bot h2,
+    .dobis-msg.bot h3 {
       color: #4dff8f;
       font-weight: 700;
       margin: 10px 0 4px;
       line-height: 1.3;
     }
-    .dobis-msg.bot h1 { font-size: 1.15em; border-bottom: 1px solid rgba(77,255,143,.25); padding-bottom: 3px; }
-    .dobis-msg.bot h2 { font-size: 1.05em; }
-    .dobis-msg.bot h3 { font-size: .97em; color: rgba(77,255,143,.85); }
+
+    .dobis-msg.bot h1 {
+      font-size: 1.15em;
+      border-bottom: 1px solid rgba(77, 255, 143, .25);
+      padding-bottom: 3px;
+    }
+
+    .dobis-msg.bot h2 {
+      font-size: 1.05em;
+    }
+
+    .dobis-msg.bot h3 {
+      font-size: .97em;
+      color: rgba(77, 255, 143, .85);
+    }
+
     .dobis-msg.bot hr {
       border: none;
-      border-top: 1px solid rgba(77,255,143,.2);
+      border-top: 1px solid rgba(77, 255, 143, .2);
       margin: 8px 0;
     }
-    .dobis-msg.bot ul, .dobis-msg.bot ol {
+
+    .dobis-msg.bot ul,
+    .dobis-msg.bot ol {
       margin: 4px 0 4px 1.2em;
       padding: 0;
     }
-    .dobis-msg.bot li { margin: 2px 0; }
+
+    .dobis-msg.bot li {
+      margin: 2px 0;
+    }
 
     /* 펜스드 코드블록 (```) */
     .code-block {
@@ -1953,12 +2870,28 @@
       border-radius: 5px;
       padding: 9px 11px;
       margin: 8px 0;
-      overflow-x: auto;
+      overflow: auto;
+      max-height: 320px;
       font-family: ui-monospace, "Cascadia Mono", monospace;
       font-size: .8em;
       line-height: 1.5;
       color: #cfeede;
       white-space: pre;
+    }
+
+    .code-block::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .code-block::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .code-block::-webkit-scrollbar-thumb {
+      background: rgba(77, 255, 143, .35);
+      border-radius: 2px;
+    }
+    .code-block::-webkit-scrollbar-thumb:hover {
+      background: rgba(77, 255, 143, .65);
     }
 
     .code-block code {
@@ -2189,14 +3122,6 @@
       border-style: dashed;
       border-radius: 4px;
       color: #9bffb8;
-    }
-
-    .code-mode-label {
-      font-size: .7em;
-      color: rgba(77, 255, 143, .55);
-      font-family: ui-monospace, monospace;
-      padding: 0 2px 2px;
-      letter-spacing: .05em;
     }
 
     .dobis-send {
@@ -2609,6 +3534,55 @@
       padding: 4px 7px;
     }
 
+    /* 터미널 테마 카드 */
+    .theme-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .theme-card {
+      border: 1px solid var(--dim);
+      border-radius: 7px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s;
+    }
+
+    .theme-card:hover {
+      border-color: var(--grn);
+    }
+
+    .theme-card.active {
+      border-color: var(--hi);
+      box-shadow: 0 0 8px rgba(77, 255, 143, .3);
+    }
+
+    .theme-card-preview {
+      border-radius: 5px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .theme-card-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--grn);
+    }
+
+    .theme-card-desc {
+      font-size: 9px;
+      color: var(--dim);
+    }
+
     /* WORKS 서브툴바 */
     .subbar {
       display: flex;
@@ -2646,6 +3620,119 @@
       font-size: 1.05em;
     }
 
+    .home-tile--fx {
+      cursor: pointer;
+      border-color: var(--dim);
+      transition: border-color .15s, box-shadow .15s;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-tile--fx:hover {
+      border-color: var(--grn);
+      box-shadow: 0 0 8px rgba(77, 255, 143, .3);
+    }
+
+    .home-tile--fx pre {
+      font-size: 9px;
+      line-height: 1.3;
+      color: var(--grn);
+      margin-bottom: 4px;
+      font-family: var(--font);
+    }
+
+    .home-tile--fx .muted {
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    /* 환율 계산기 모달 */
+    .fx-modal-head {
+      color: var(--grn);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .fx-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .fx-row input {
+      flex: 1;
+      background: #000;
+      border: 1px solid var(--dim);
+      color: var(--grn);
+      padding: 5px 8px;
+      font-family: var(--font);
+      font-size: 13px;
+      border-radius: 4px;
+      outline: none;
+      min-width: 0;
+    }
+
+    .fx-row input:focus {
+      border-color: var(--grn);
+    }
+
+    .fx-row input[readonly] {
+      color: #b6ffd6;
+      background: #011a0a;
+    }
+
+    .fx-row select {
+      background: #000;
+      border: 1px solid var(--dim);
+      color: var(--grn);
+      padding: 5px 6px;
+      font-family: var(--font);
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      outline: none;
+      min-width: 90px;
+    }
+
+    .fx-row select:focus {
+      border-color: var(--grn);
+    }
+
+    .fx-swap-btn {
+      background: transparent;
+      border: 1px solid var(--dim);
+      color: var(--grn);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color .1s;
+    }
+
+    .fx-swap-btn:hover {
+      border-color: var(--grn);
+    }
+
+    .fx-note {
+      color: var(--dim);
+      font-size: 10px;
+      margin-top: 8px;
+    }
+
+    .fx-foot {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
     /* RATE LIMIT 타일 */
     .home-rate {
       border: 1px solid var(--dim);
@@ -2672,11 +3759,197 @@
       word-break: break-all;
     }
 
+    /* MARKET TICKER */
+    .home-market {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .home-market-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .home-market-head .mt-refresh {
+      background: transparent;
+      border: none;
+      color: var(--dim);
+      font-family: var(--font);
+      font-size: 10px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .home-market-head .mt-refresh:hover {
+      color: var(--grn);
+    }
+
+    .mt-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .mt-grid::-webkit-scrollbar {
+      height: 5px;
+    }
+
+    .mt-grid::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .mt-grid::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .mt-grid::-webkit-scrollbar-thumb:hover {
+      background: var(--grn);
+    }
+
+    .mt-item {
+      flex-shrink: 0;
+      min-width: 90px;
+      border: 1px solid #1A2A1A;
+      border-radius: 4px;
+      padding: 5px 7px;
+      cursor: pointer;
+      transition: border-color .1s, background .1s;
+    }
+
+    .mt-item:hover {
+      border-color: var(--grn);
+      background: rgba(77, 255, 143, .04);
+    }
+
+    .mt-sym {
+      font-size: 11px;
+      font-weight: 700;
+      color: #b6ffd6;
+      letter-spacing: 0.5px;
+    }
+
+    .mt-price {
+      font-size: 12px;
+      font-weight: 700;
+      margin: 2px 0 1px;
+    }
+
+    .mt-chg {
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .mt-up {
+      color: #00CC44;
+    }
+
+    .mt-down {
+      color: #FF3333;
+    }
+
+    .mt-loading {
+      color: var(--dim);
+      font-size: 10px;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    /* 관심종목 마켓 섹션 */
+    .home-wl {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+    }
+
+    .home-wl-head {
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .home-wl-empty {
+      color: var(--dim);
+      font-size: 10px;
+      padding: 4px 0;
+    }
+
+    .wl-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 5px;
+    }
+
+    .wl-item {
+      border: 1px solid #1A2A1A;
+      border-radius: 4px;
+      padding: 4px 7px;
+      cursor: pointer;
+      transition: border-color .1s;
+    }
+
+    .wl-item:hover {
+      border-color: var(--grn);
+    }
+
+    .wl-sym {
+      font-size: 10px;
+      font-weight: 700;
+      color: #b6ffd6;
+    }
+
+    .wl-name {
+      font-size: 9px;
+      color: var(--dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wl-price {
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
     /* 윈도우98 실행 아이콘풍 카드 */
     .home-actions {
+      flex: 1 1 0;
+      min-height: 0;
       display: flex;
       flex-wrap: wrap;
+      align-content: flex-start;
       gap: 14px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--dim) transparent;
+    }
+
+    .home-actions::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .home-actions::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .home-actions::-webkit-scrollbar-thumb {
+      background: var(--dim);
+      border-radius: 4px;
+    }
+
+    .home-actions::-webkit-scrollbar-thumb:hover {
+      background: var(--grn);
     }
 
     .app-card {
@@ -2968,7 +4241,9 @@
 
     /* 모바일: 입력 버튼 패딩 축소 — 너비만 줄임, 높이/font-size는 PC와 동일 유지 */
     @media (max-width: 820px) {
-      .dobis-send, .dobis-stop {
+
+      .dobis-send,
+      .dobis-stop {
         padding: 6px 8px;
       }
     }
@@ -3023,6 +4298,19 @@
       white-space: pre-wrap;
       margin-bottom: 14px;
       line-height: 1.55;
+    }
+
+    .cdlg-lbl {
+      display: block;
+      color: var(--dim);
+      font-size: .78em;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cdlg-lbl.hidden {
+      display: none;
     }
 
     .cdlg input[type=text] {
@@ -3081,7 +4369,10 @@
     <div class="cdlg">
       <div class="cdlg-title" id="cdlgTitle"></div>
       <div class="cdlg-msg" id="cdlgMsg"></div>
+      <label class="cdlg-lbl hidden" id="cdlgLbl1"></label>
       <input type="text" id="cdlgInput" class="hidden" autocomplete="off" />
+      <label class="cdlg-lbl hidden" id="cdlgLbl2"></label>
+      <input type="text" id="cdlgInput2" class="hidden" autocomplete="off" />
       <div class="cdlg-btns" id="cdlgBtns"></div>
     </div>
   </div>
@@ -3154,7 +4445,8 @@
                 <span class="mb-btn" onclick="musicStop()" title="정지">⏹&#xFE0E;</span>
                 <span class="mb-btn" id="mbShuffle" onclick="musicShuffle()" title="셔플" style="opacity:.4">⇌</span>
                 <span class="mb-btn" id="mbMute" onclick="musicMute()" title="음소거/해제">🔊&#xFE0E;</span>
-                <input type="range" id="mbVol" class="mb-vol" min="0" max="100" value="80" oninput="musicVol(this.value)" title="볼륨">
+                <input type="range" id="mbVol" class="mb-vol" min="0" max="100" value="80"
+                  oninput="musicVol(this.value)" title="볼륨">
                 <span class="mb-btn" onclick="openMusicList()" title="곡 목록">≣</span>
               </span>
               <audio id="musicAudio" preload="none" onended="musicNext()"></audio>
@@ -3188,12 +4480,23 @@
                 <div class="home-tile"><span class="muted">WORKS</span><b id="homeWorks">—</b></div>
                 <div class="home-tile"><span class="muted">SERVER</span><b id="homeUptime">—</b></div>
                 <div class="home-tile"><span class="muted">TIME</span><b id="homeClock">—</b></div>
+                <div class="home-tile home-tile--fx" onclick="openFxCalc()" title="환율 계산기">
+                  <span class="muted">FX CALC</span>
+                  <pre>╔══╗
+║÷×║
+║-+║
+╚══╝</pre>
+                </div>
               </div>
-              <div class="home-rate">
-                <div class="home-rate-head"><span class="muted">5H 윈도우 잔여</span><span id="rateAcct">계정
-                    —</span></div>
-                <div id="rateBar" class="rate-bar">□□□□□□□□□□□□□□□□□□□□</div>
-                <div id="rateInfo" class="muted">DOBIS 대화 시 갱신</div>
+              <!-- 마켓 스냅샷 -->
+              <div class="home-market">
+                <div class="home-market-head">
+                  <span class="muted">INDEX SNAPSHOT</span>
+                  <button class="mt-refresh" onclick="loadMarketTicker(true)" title="새로고침">[ REFRESH ]</button>
+                </div>
+                <div id="mtGrid" class="mt-grid">
+                  <div class="mt-loading">▐ LOADING...</div>
+                </div>
               </div>
               <div class="home-actions">
                 <div class="app-card" onclick="showView('registry')" title="프로젝트·소셜링크 관리"><span
@@ -3206,14 +4509,26 @@
                     class="app-label">GEO</span></div>
                 <a class="app-card" href="https://doil.me/" target="_blank" rel="noreferrer" title="홈페이지 새 탭"><span
                     class="app-ico">🌐</span><span class="app-label">홈페이지</span></a>
-                <a class="app-card" href="https://doybrary.doil.me/" target="_blank" rel="noreferrer" title="Doybrary 도서관"><span
-                    class="app-ico">📚</span><span class="app-label">Doybrary</span></a>
-                <div class="app-card" onclick="openTimesWindow()" title="Doiltimes"><span
-                    class="app-ico">📰</span><span class="app-label">Doiltimes</span></div>
-                <div class="app-card" onclick="window.open('https://www.notion.so/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','doyclopedia','width=1280,height=860,noopener')" title="DOYCLOPEDIA 지식베이스 (팝업)"><span
-                    class="app-ico">📖</span><span class="app-label">DOYCLOPEDIA</span></div>
-                <a class="app-card" href="https://agy.doil.me/" target="_blank" rel="noreferrer" title="로컬 안티그라비티 프록시"><span
-                    class="app-ico">🛸</span><span class="app-label">agy</span></a>
+                <a class="app-card" href="https://plane.doil.me/" target="_blank" rel="noreferrer"
+                  title="Plane 프로젝트 관리"><span class="app-ico">✈️</span><span class="app-label">PLANE</span></a>
+                <a class="app-card" href="https://jenkins.doil.me/" target="_blank" rel="noreferrer"
+                  title="Jenkins CI/CD"><span class="app-ico">🤵‍♂️</span><span class="app-label">JENKINS</span></a>
+                <div class="app-card" onclick="openTerminalWindow()" title="Bloomberg 스타일 주식 단말"><span
+                    class="app-ico">📈</span><span class="app-label">BLOOMBERG</span></div>
+                <div class="app-card" onclick="openTimesWindow()" title="Doiltimes"><span class="app-ico">📰</span><span
+                    class="app-label">Doiltimes</span></div>
+                <div class="app-card" onclick="openPaintWindow()" title="Win98 그림판 — 레이어 지원, iPad/Pencil"><span
+                    class="app-ico">🎨</span><span class="app-label">PAINT</span></div>
+                <div class="app-card" onclick="openSketchpadWindow()" title="Excalidraw 스케치패드 — 신규 캔버스 발행"><span
+                    class="app-ico">✏️</span><span class="app-label">SKETCH</span></div>
+                <a class="app-card" href="https://doybrary.doil.me/" target="_blank" rel="noreferrer"
+                  title="Doybrary 도서관"><span class="app-ico">📚</span><span class="app-label">Doybrary</span></a>
+                <div class="app-card"
+                  onclick="window.open('https://app.notion.com/p/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','doyclopedia','width=1280,height=860,noopener')"
+                  title="DOYCLOPEDIA 지식베이스 (팝업)"><span class="app-ico">📖</span><span
+                    class="app-label">DOYCLOPEDIA</span></div>
+                <a class="app-card" href="https://agy.doil.me/" target="_blank" rel="noreferrer"
+                  title="로컬 안티그라비티 프록시"><span class="app-ico">🛸</span><span class="app-label">agy</span></a>
               </div>
             </div>
 
@@ -3309,8 +4624,7 @@
                 <div class="dobis-log" id="dobisLog"></div>
                 <div id="domojiPicker" class="domoji-picker hidden"></div>
                 <div id="dobisImgPreview" class="dobis-img-preview hidden"></div>
-                <input type="file" id="dobisImgInput"
-                  accept="image/*,application/pdf,video/*,.zip,.7z,.rar,.gz,.tar"
+                <input type="file" id="dobisImgInput" accept="image/*,application/pdf,video/*,.zip,.7z,.rar,.gz,.tar"
                   multiple style="display:none" onchange="onImgAttach(this)" />
                 <div id="dobisChips" class="dobis-chips"></div>
                 <div class="dobis-input-row">
@@ -3324,8 +4638,8 @@
                       <div class="dim-item" id="dimSearch" onclick="dobisToggleSearch()">🌐 인터넷 검색</div>
                     </div>
                   </div>
-                  <textarea id="dobisInput" rows="1" placeholder="메시지를 입력하세요… (/help)"
-                    autocomplete="off" spellcheck="false"></textarea>
+                  <textarea id="dobisInput" rows="1" placeholder="메시지를 입력하세요… (/help)" autocomplete="off"
+                    spellcheck="false"></textarea>
                   <span class="cmd dobis-send" onclick="dobisSend()">[ 입력 ]</span>
                   <span class="cmd dobis-stop hidden" onclick="dobisCancel()">[ X ]</span>
                 </div>
@@ -3347,11 +4661,11 @@
               </div>
             </div>
             <!-- DoilTimes 앱 윈도우 — doil.me/times/ iframe -->
-            <div id="timesWindow" class="appwin hidden">
+            <div id="timesWindow" class="appwin hidden tinted win-max">
               <div class="appwin-bar" id="timesBar">
                 <span class="appwin-title">📰 DoilTimes</span>
                 <span class="appwin-btns">
-                  <span class="awb tint" id="timesTintBtn" onclick="timesTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb tint on" id="timesTintBtn" onclick="timesTint()" title="CRT 톤 틴트">◐</span>
                   <span class="awb" onclick="timesMin()" title="최소화">_</span>
                   <span class="awb" onclick="timesMax()" title="전체화면 / 복원">▢</span>
                   <span class="awb close" onclick="timesClose()" title="닫기">✕</span>
@@ -3365,11 +4679,11 @@
             </div>
 
             <!-- GEO 앱 윈도우 — doil.me/geo/ iframe(CSP frame-ancestors 'self'). 드래그/전체화면/최소화/닫기/틴트 -->
-            <div id="geoWindow" class="appwin hidden">
+            <div id="geoWindow" class="appwin hidden tinted win-max">
               <div class="appwin-bar" id="geoBar">
                 <span class="appwin-title">🗺️ GEO — 지리 학습</span>
                 <span class="appwin-btns">
-                  <span class="awb tint" id="geoTintBtn" onclick="geoTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb tint on" id="geoTintBtn" onclick="geoTint()" title="CRT 톤 틴트">◐</span>
                   <span class="awb" onclick="geoMin()" title="최소화">_</span>
                   <span class="awb" onclick="geoMax()" title="전체화면 / 복원">▢</span>
                   <span class="awb close" onclick="geoClose()" title="닫기">✕</span>
@@ -3380,6 +4694,449 @@
                   referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 <div class="appwin-scan" aria-hidden="true"></div>
               </div>
+            </div>
+
+            <!-- BLOOMBERG 앱 윈도우 — Bloomberg 스타일 주식 단말. /terminal/ iframe -->
+            <div id="terminalWindow" class="appwin hidden tinted win-max" style="left:5%;top:3%;width:88%;height:88%;">
+              <div class="appwin-bar" id="terminalBar">
+                <span class="appwin-title">📈 BLOOMBERG</span>
+                <span class="appwin-btns">
+                  <span class="awb tint on" id="terminalTintBtn" onclick="terminalTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb" onclick="terminalMin()" title="최소화">_</span>
+                  <span class="awb" onclick="terminalMax()" title="전체화면 / 복원">▢</span>
+                  <span class="awb close" onclick="terminalClose()" title="닫기">✕</span>
+                </span>
+              </div>
+              <div class="appwin-body">
+                <iframe id="terminalFrame" class="geo-frame" title="Bloomberg Terminal"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <div class="appwin-scan" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- PAINT 앱 윈도우 — Win98 스타일 그림판. 레이어 지원. iPad/Apple Pencil pointer events. -->
+            <div id="paintWindow" class="appwin hidden tinted win-max" style="left:5%;top:4%;width:90%;height:90%;">
+              <div class="appwin-bar" id="paintBar">
+                <span class="appwin-title">🎨 PAINT — Void Studio</span>
+                <span class="appwin-btns">
+                  <span class="awb tint on" id="paintTintBtn" onclick="paintTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb" onclick="paintMin()" title="최소화">_</span>
+                  <span class="awb" onclick="paintMax()" title="전체화면 / 복원">▢</span>
+                  <span class="awb close" onclick="paintClose()" title="닫기">✕</span>
+                </span>
+              </div>
+              <div class="appwin-body paint-app" id="paintApp">
+                <!-- Win98 메뉴바 -->
+                <div class="paint-menubar">
+                  <span class="paint-menu-item" onclick="paintFileMenu(this)">File</span>
+                  <span class="paint-menu-item" onclick="paintEditMenu(this)">Edit</span>
+                  <span class="paint-menu-item" onclick="paintImageMenu(this)">Image</span>
+                  <span class="paint-menu-item" onclick="paintHelpMenu(this)">Help</span>
+                  <div class="paint-dropdown hidden" id="paintDropdown">
+                    <div class="paint-dd-item" style="display:none" id="paintDdCopy"
+                      onclick="copySelectionToClipboard();closeDropdown()"><span>Copy</span><span
+                        class="paint-dd-kbd">Ctrl+C</span></div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdCut"
+                      onclick="copySelectionToClipboard().then(()=>paintDeleteSelection());closeDropdown()">
+                      <span>Cut</span><span class="paint-dd-kbd">Ctrl+X</span>
+                    </div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdDelete"
+                      onclick="paintDeleteSelection();closeDropdown()"><span>Delete</span><span
+                        class="paint-dd-kbd">Del</span></div>
+                    <div class="paint-dd-sep" style="display:none" id="paintDdEditSep"></div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdSelectAll"
+                      onclick="paintSelectAll();closeDropdown()"><span>Select All</span><span
+                        class="paint-dd-kbd">Ctrl+A</span></div>
+                    <div class="paint-dd-sep" style="display:none" id="paintDdEditSep2"></div>
+                    <div class="paint-dd-item" id="paintDdNew" onclick="paintNewCanvas()">New</div>
+                    <div class="paint-dd-sep"></div>
+                    <div class="paint-dd-item" id="paintDdSave" onclick="paintSaveServer()">Save to DOBIS</div>
+                    <div class="paint-dd-item" id="paintDdExport" onclick="paintExportPng()">Export PNG</div>
+                    <div class="paint-dd-sep"></div>
+                    <div class="paint-dd-item" id="paintDdClear" onclick="paintClearCanvas()">Clear Canvas</div>
+                    <div class="paint-dd-item" id="paintDdClearAll" onclick="paintClearAll()">Clear All Layers</div>
+                    <div class="paint-dd-sep" style="display:none" id="paintDdImgSep"></div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdCanvasSize" onclick="paintCanvasSize()">
+                      Canvas Size...</div>
+                    <div class="paint-dd-sep" style="display:none" id="paintDdFlipSep"></div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdFlipH" onclick="paintFlipH()">Flip
+                      Horizontal</div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdFlipV" onclick="paintFlipV()">Flip
+                      Vertical</div>
+                    <div class="paint-dd-sep" style="display:none" id="paintDdBgSep"></div>
+                    <div class="paint-dd-item" style="display:none" id="paintDdBgRemove" onclick="paintBgRemoveAuto()">
+                      Remove Background</div>
+                  </div>
+                </div>
+                <!-- 메인 레이아웃 -->
+                <div class="paint-body">
+                  <!-- 좌측 도구 팔레트 -->
+                  <div class="paint-tools" id="paintTools">
+                    <div class="paint-tool-grid">
+                      <!-- Row 1: Pencil | Brush -->
+                      <button class="ptool on" id="ptPencil" onclick="setPtool('pencil')" title="연필 (P)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M11,1 L15,5 L5,14 L2,14 L2,11 Z" fill="#ffd700" stroke="#000" stroke-width="1" />
+                          <path d="M11,1 L15,5 L13,6 L10,3 Z" fill="#aaa" stroke="#000" stroke-width="0.5" />
+                          <polygon points="2,11 5,14 3,16" fill="#000" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptBrush" onclick="setPtool('brush')" title="브러시 (B)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M13,1 L15,3 L7,11 L5,9 Z" fill="#c8a000" stroke="#000" stroke-width="0.5" />
+                          <line x1="13" y1="1" x2="16" y2="3" stroke="#888" stroke-width="1" />
+                          <ellipse cx="4" cy="12" rx="3" ry="3" fill="#0044cc" stroke="#000" stroke-width="0.5" />
+                          <line x1="5" y1="9" x2="7" y2="11" stroke="#000" stroke-width="1" />
+                        </svg>
+                      </button>
+                      <!-- Row 2: Eraser | Fill -->
+                      <button class="ptool" id="ptEraser" onclick="setPtool('eraser')" title="지우개 (E)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="2" y="5" width="12" height="8" fill="#ffb0b0" stroke="#000" stroke-width="1" />
+                          <rect x="2" y="9" width="12" height="4" fill="#e07070" stroke="#000" stroke-width="0.5" />
+                          <line x1="2" y1="9" x2="14" y2="9" stroke="#000" stroke-width="0.5" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptFill" onclick="setPtool('fill')" title="채우기 (F)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M5,1 L7,1 L13,8 L9,12 L3,6 Z" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                          <line x1="5" y1="1" x2="3" y2="3" stroke="#000" stroke-width="1" />
+                          <line x1="3" y1="3" x2="4" y2="4" stroke="#000" stroke-width="1" />
+                          <path d="M9,12 L12,15 Q15,15 14,12 Z" fill="#0044ff" stroke="#000" stroke-width="0.5" />
+                        </svg>
+                      </button>
+                      <!-- Row 3: Eyedrop | Spray -->
+                      <button class="ptool" id="ptEyedrop" onclick="setPtool('eyedrop')" title="색상 선택 (I)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M11,1 L14,4 L7,11 L4,9 Z" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                          <path d="M14,4 L16,2 L15,5 Z" fill="#808080" stroke="#000" stroke-width="0.5" />
+                          <path d="M4,9 L7,11 L3,14 L1,12 Z" fill="#000" />
+                          <rect x="1" y="13" width="3" height="2" fill="#ff3333" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptSpray" onclick="setPtool('spray')" title="스프레이 (S)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="1" y="7" width="7" height="7" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                          <rect x="8" y="5" width="5" height="4" rx="1" fill="#c0c0c0" stroke="#000" stroke-width="1" />
+                          <line x1="8" y1="9" x2="8" y2="11" stroke="#000" stroke-width="1" />
+                          <circle cx="11" cy="11" r="1" fill="#000" />
+                          <circle cx="13" cy="13" r="1" fill="#000" />
+                          <circle cx="10" cy="14" r="1" fill="#000" />
+                          <circle cx="14" cy="11" r="0.8" fill="#555" />
+                          <circle cx="12" cy="15" r="0.8" fill="#555" />
+                        </svg>
+                      </button>
+                      <!-- Row 4: Text | Line -->
+                      <button class="ptool" id="ptText" onclick="setPtool('text')" title="텍스트 (T)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <text x="1" y="13" font-family="serif" font-size="14" font-weight="bold" fill="#000"
+                            font-style="italic">A</text>
+                          <line x1="1" y1="14" x2="12" y2="14" stroke="#000" stroke-width="1" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptLine" onclick="setPtool('line')" title="선 (L)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="2" y1="14" x2="14" y2="2" stroke="#000" stroke-width="1.5" />
+                          <circle cx="2" cy="14" r="1.5" fill="#000" />
+                          <circle cx="14" cy="2" r="1.5" fill="#000" />
+                        </svg>
+                      </button>
+                      <!-- Row 5: Rect | Ellipse -->
+                      <button class="ptool" id="ptRect" onclick="setPtool('rect')" title="사각형 (R)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="2" y="3" width="12" height="10" fill="none" stroke="#000" stroke-width="1.5" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptEllipse" onclick="setPtool('ellipse')" title="타원 (O)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <ellipse cx="8" cy="8" rx="6" ry="5" fill="none" stroke="#000" stroke-width="1.5" />
+                        </svg>
+                      </button>
+                      <!-- Row 6: BgRemove | Select -->
+                      <button class="ptool" id="ptBgRemove" onclick="setPtool('bgremove')" title="배경 제거 (G)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <line x1="4" y1="12" x2="13" y2="3" stroke="#000" stroke-width="2" stroke-linecap="round" />
+                          <polygon points="2,14 2,11 5,12" fill="#000" />
+                          <line x1="13" y1="1" x2="15" y2="3" stroke="#ffd700" stroke-width="1" />
+                          <line x1="11" y1="1" x2="15" y2="1" stroke="#ffd700" stroke-width="1" />
+                          <line x1="13" y1="0" x2="13" y2="4" stroke="#ffd700" stroke-width="1" />
+                        </svg>
+                      </button>
+                      <button class="ptool" id="ptSelect" onclick="setPtool('select')" title="선택 (M)">
+                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="2" y="2" width="10" height="10" fill="none" stroke="#000" stroke-width="1"
+                            stroke-dasharray="3,2" />
+                          <line x1="10" y1="10" x2="14" y2="14" stroke="#000" stroke-width="1.5" />
+                          <polygon points="10,10 14,14 11,14 10,11" fill="#000" />
+                        </svg>
+                      </button>
+                    </div>
+                    <!-- 브러시 크기 -->
+                    <div class="paint-size-lbl">SIZE</div>
+                    <div class="paint-size-row">
+                      <button class="psize" onclick="setBrushSize(1)" title="1px">·</button>
+                      <button class="psize" onclick="setBrushSize(3)" title="3px">•</button>
+                      <button class="psize" onclick="setBrushSize(6)" title="6px">⬤</button>
+                      <button class="psize" onclick="setBrushSize(12)" title="12px">⬤</button>
+                    </div>
+                    <input type="range" id="paintSizeSlider" min="1" max="80" value="4" class="paint-size-slider"
+                      oninput="setBrushSize(+this.value)">
+                    <!-- 불투명도 -->
+                    <div class="paint-size-lbl">OPACITY</div>
+                    <input type="range" id="paintOpacity" min="1" max="100" value="100" class="paint-size-slider"
+                      oninput="setOpacity(+this.value)">
+                    <div class="paint-size-lbl" id="paintOpacityLbl" style="font-size:10px">100%</div>
+                  </div>
+
+                  <!-- 캔버스 영역 -->
+                  <div class="paint-canvas-wrap" id="paintCanvasWrap">
+                    <div class="paint-canvas-stage" id="paintCanvasStage">
+                      <div id="paintZoomHost" style="position:relative;display:inline-block">
+                        <div class="paint-canvas-frame" id="paintCanvasFrame" style="transform-origin:0 0">
+                          <div class="paint-canvas-inner" id="paintCanvasInner">
+                            <!-- 레이어 캔버스들 (JS가 동적으로 추가) -->
+                            <canvas id="paintPreview" class="paint-canvas paint-preview-canvas"></canvas>
+                          </div>
+                          <div class="paint-resize-handle" data-dir="nw"></div>
+                          <div class="paint-resize-handle" data-dir="n"></div>
+                          <div class="paint-resize-handle" data-dir="ne"></div>
+                          <div class="paint-resize-handle" data-dir="e"></div>
+                          <div class="paint-resize-handle" data-dir="se"></div>
+                          <div class="paint-resize-handle" data-dir="s"></div>
+                          <div class="paint-resize-handle" data-dir="sw"></div>
+                          <div class="paint-resize-handle" data-dir="w"></div>
+                        </div>
+                      </div><!-- /paintZoomHost -->
+                    </div>
+                  </div>
+
+                  <!-- 우측 레이어 패널 -->
+                  <div class="paint-layers" id="paintLayers">
+                    <div class="paint-panel-title" onclick="paintToggleLayers()" title="레이어 패널 접기/펼치기"
+                      style="cursor:pointer">
+                      <span id="paintLayersLabel">LAYERS</span>
+                      <button class="paint-panel-toggle" id="paintLayersToggle" title="접기">◀</button>
+                    </div>
+                    <div id="paintLayerList" class="paint-layer-list"></div>
+                    <div class="paint-layer-btns">
+                      <button class="plbtn" onclick="paintAddLayer()" title="레이어 추가">+</button>
+                      <button class="plbtn" onclick="paintDupLayer()" title="레이어 복제">⎘</button>
+                      <button class="plbtn" onclick="paintMergeDown()" title="아래 레이어와 합치기">⬇</button>
+                      <button class="plbtn" onclick="paintDelLayer()" title="레이어 삭제">🗑</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 하단 색상 팔레트 + 상태바 -->
+                <div class="paint-bottom">
+                  <div
+                    style="display:flex;align-items:center;background:#c0c0c0;border-bottom:1px solid #808080;padding:2px 4px;gap:4px">
+                    <div class="paint-color-box" style="flex-shrink:0">
+                      <div class="pcb-bg" id="pcBg" title="배경색 (우클릭)"></div>
+                      <div class="pcb-fg" id="pcFg" title="전경색 (클릭)"></div>
+                    </div>
+                    <div class="paint-palette" id="paintPalette" style="border:none;padding:0;margin:0"></div>
+                  </div>
+                  <div class="paint-statusbar">
+                    <span class="paint-status-text" id="paintStatus">Ready · 400×300</span>
+                    <div class="paint-zoom-ctrl">
+                      <button class="paint-zoom-btn" onclick="paintZoomOut()" title="축소 (Ctrl+-)">−</button>
+                      <span class="paint-zoom-label" id="paintZoomLabel">100%</span>
+                      <button class="paint-zoom-btn" onclick="paintZoomIn()" title="확대 (Ctrl++)">+</button>
+                      <button class="paint-zoom-btn" onclick="paintZoomReset()" title="100% 초기화">⊟</button>
+                      <button class="paint-zoom-btn" onclick="paintCenterView()" title="캔버스 중앙으로">⊕</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- 도움말 모달 -->
+                <div id="paintHelpModal" class="paint-help-modal hidden"
+                  onclick="if(event.target===this)paintCloseHelp()">
+                  <div class="paint-help-win">
+                    <div class="paint-help-bar">
+                      <span>❓ PAINT — 도움말 / 단축키</span>
+                      <button class="paint-dlg-xbtn" onclick="paintCloseHelp()">✕</button>
+                    </div>
+                    <div class="paint-help-body">
+                      <table>
+                        <tr>
+                          <th colspan="2">도구 선택</th>
+                        </tr>
+                        <tr>
+                          <td>P</td>
+                          <td>연필 (Pencil)</td>
+                        </tr>
+                        <tr>
+                          <td>B</td>
+                          <td>브러시 (Brush)</td>
+                        </tr>
+                        <tr>
+                          <td>E</td>
+                          <td>지우개 (Eraser)</td>
+                        </tr>
+                        <tr>
+                          <td>F</td>
+                          <td>채우기 (Fill)</td>
+                        </tr>
+                        <tr>
+                          <td>I</td>
+                          <td>색상 선택 (Eyedropper)</td>
+                        </tr>
+                        <tr>
+                          <td>S</td>
+                          <td>스프레이 (Spray)</td>
+                        </tr>
+                        <tr>
+                          <td>T</td>
+                          <td>텍스트 (Text)</td>
+                        </tr>
+                        <tr>
+                          <td>L</td>
+                          <td>선 (Line)</td>
+                        </tr>
+                        <tr>
+                          <td>R</td>
+                          <td>사각형 (Rectangle)</td>
+                        </tr>
+                        <tr>
+                          <td>O</td>
+                          <td>타원 (Ellipse)</td>
+                        </tr>
+                        <tr>
+                          <td>G</td>
+                          <td>배경 제거 (Remove BG)</td>
+                        </tr>
+                        <tr>
+                          <th colspan="2" style="padding-top:8px">편집</th>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+Z</td>
+                          <td>되돌리기 (Undo)</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+Y</td>
+                          <td>다시 실행 (Redo)</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+A</td>
+                          <td>전체 선택</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+C</td>
+                          <td>선택 영역 복사</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+X</td>
+                          <td>선택 영역 잘라내기</td>
+                        </tr>
+                        <tr>
+                          <td>Delete</td>
+                          <td>선택 영역 삭제</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+V</td>
+                          <td>이미지 붙여넣기</td>
+                        </tr>
+                        <tr>
+                          <th colspan="2" style="padding-top:8px">파일</th>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+S</td>
+                          <td>서버에 저장 (DOBIS)</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+E</td>
+                          <td>PNG 내보내기</td>
+                        </tr>
+                        <tr>
+                          <th colspan="2" style="padding-top:8px">보기 / 줌</th>
+                        </tr>
+                        <tr>
+                          <td>Ctrl++</td>
+                          <td>확대</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+-</td>
+                          <td>축소</td>
+                        </tr>
+                        <tr>
+                          <td>Ctrl+0</td>
+                          <td>100% 초기화</td>
+                        </tr>
+                        <tr>
+                          <th colspan="2" style="padding-top:8px">텍스트 도구</th>
+                        </tr>
+                        <tr>
+                          <td>Enter</td>
+                          <td>텍스트 확정 (커밋)</td>
+                        </tr>
+                        <tr>
+                          <td>Escape</td>
+                          <td>텍스트 취소</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <!-- Win98 스타일 인앱 다이얼로그 -->
+                <div id="paintDlgBackdrop" class="paint-dlg-backdrop hidden"
+                  onclick="if(event.target===this)_paintDlgClose(null)">
+                  <div class="paint-dlg-win" id="paintDlgWin">
+                    <div class="paint-dlg-bar" id="paintDlgBar">
+                      <span class="paint-dlg-icon">🖼</span>
+                      <span id="paintDlgTitle">확인</span>
+                      <button class="paint-dlg-xbtn" onclick="_paintDlgClose(null)">✕</button>
+                    </div>
+                    <div class="paint-dlg-body">
+                      <div class="paint-dlg-msg" id="paintDlgMsg"></div>
+                      <input id="paintDlgInput" class="paint-dlg-input hidden" type="text" />
+                      <div class="paint-dlg-btns" id="paintDlgBtns"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="appwin-scan" aria-hidden="true"></div>
+                <!-- 캔버스 크기 변경 전용 다이얼로그 -->
+                <div id="paintSizeDlgBackdrop" class="paint-dlg-backdrop hidden"
+                  onclick="if(event.target===this)_paintSizeDlgClose(null)">
+                  <div class="paint-dlg-win">
+                    <div class="paint-dlg-bar">
+                      <span class="paint-dlg-icon">🖼</span>
+                      <span>캔버스 크기</span>
+                      <button class="paint-dlg-xbtn" onclick="_paintSizeDlgClose(null)">✕</button>
+                    </div>
+                    <div class="paint-dlg-body">
+                      <div class="paint-dlg-msg">새 캔버스 크기를 입력하세요</div>
+                      <div style="display:flex;align-items:center;gap:4px;margin:8px 0;">
+                        <input id="paintSizeDlgW" type="number" min="1" max="4096"
+                          style="width:60px;font-family:inherit;font-size:12px;padding:2px 4px;border:2px inset #808080;" />
+                        <span style="font-size:12px;">×</span>
+                        <input id="paintSizeDlgH" type="number" min="1" max="4096"
+                          style="width:60px;font-family:inherit;font-size:12px;padding:2px 4px;border:2px inset #808080;" />
+                      </div>
+                      <div class="paint-dlg-btns">
+                        <button class="paint-dlg-btn" onclick="_paintSizeDlgClose(null)">취소</button>
+                        <button class="paint-dlg-btn" onclick="_paintSizeDlgClose(true)">확인</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SKETCHPAD 앱 윈도우 — Excalidraw 캔버스. 열 때마다 신규 UUID 발행, 닫기 시 src 초기화. -->
+          <div id="sketchpadWindow" class="appwin hidden win-max" style="left:5%;top:3%;width:88%;height:90%;">
+            <div class="appwin-bar" id="sketchpadBar">
+              <span class="appwin-title">✏️ SKETCHPAD</span>
+              <span class="appwin-btns">
+                <span class="awb tint" id="sketchpadTintBtn" onclick="sketchpadTint()" title="CRT 톤 틴트">◐</span>
+                <span class="awb" onclick="sketchpadMin()" title="최소화">_</span>
+                <span class="awb" onclick="sketchpadMax()" title="전체화면 / 복원">▢</span>
+                <span class="awb close" onclick="sketchpadClose()" title="닫기 (새 캔버스로 초기화)">✕</span>
+              </span>
+            </div>
+            <div class="appwin-body">
+              <iframe id="sketchpadFrame" style="width:100%;height:100%;border:none;" title="Sketchpad"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
             </div>
           </div>
 
@@ -3408,6 +5165,25 @@
               </div>
             </div>
           </div>
+          <!-- 환율 계산기 모달 -->
+          <div id="fxCalcModal" class="modal hidden" onclick="if(event.target===this)closeFxCalc()">
+            <div class="modal-box" style="min-width:min(340px,90%)">
+              <div class="fx-modal-head">&gt; 💱 CURRENCY CALCULATOR</div>
+              <div class="fx-row">
+                <input id="fxcAmt" type="number" value="1" min="0" step="any" />
+                <select id="fxcFrom"></select>
+              </div>
+              <div class="fx-row" style="justify-content:center;margin-bottom:8px">
+                <button class="fx-swap-btn" id="fxcSwap" title="통화 교환">⇅</button>
+              </div>
+              <div class="fx-row">
+                <input id="fxcResult" type="text" readonly placeholder="—" />
+                <select id="fxcTo"></select>
+              </div>
+              <div class="fx-note" id="fxcNote">환율 로딩 중...</div>
+              <div class="fx-foot"><span class="cmd" onclick="closeFxCalc()">[ 닫기 ]</span></div>
+            </div>
+          </div>
           <!-- 설정 모달 (⚙) — 메뉴 → 항목 -->
           <div id="settingsModal" class="modal hidden">
             <div class="modal-box">
@@ -3419,6 +5195,8 @@
                       변경</span></div>
                   <div class="cmd setmenu-item" onclick="setShow('account')">[ DOBIS 계정 ]<span class="muted"> — Claude
                       토큰 전환</span></div>
+                  <div class="cmd setmenu-item" onclick="setShow('theme')">[ 터미널 테마 ]<span class="muted"> — CRT 색상
+                      설정</span></div>
                 </div>
                 <div style="margin-top:12px"><span class="cmd" onclick="closeSettings()">[ 닫기 ]</span></div>
               </div>
@@ -3452,6 +5230,16 @@
                   </div>
                   <div style="margin-top:6px"><span class="cmd" onclick="addSubAdmin()">[ 서브관리자 추가 ]</span></div>
                   <div id="saMsg" class="muted" style="min-height:1.2em"></div>
+                </div>
+              </div>
+              <!-- 터미널 테마 -->
+              <div id="setTheme" class="hidden">
+                <div class="rec-head">&gt; 설정 · 터미널 테마</div>
+                <div class="muted" style="margin:6px 0 12px">터미널(doil.me/terminal/) 및 홈 워크스테이션 CRT 색상.</div>
+                <div class="theme-cards" id="themeCards"></div>
+                <div style="margin-top:10px">
+                  <span class="cmd" onclick="setShow('menu')">[ 뒤로 ]</span>
+                  <span class="cmd" onclick="closeSettings()">[ 닫기 ]</span>
                 </div>
               </div>
               <!-- DOBIS 계정 전환 -->
@@ -3567,7 +5355,7 @@
       touchSession();
       const w = document.getElementById('timesWindow'), f = document.getElementById('timesFrame');
       if (f && !f.getAttribute('src')) f.src = '/times/';
-      w.classList.remove('hidden');
+      w.classList.remove('hidden'); w.classList.add('win-max');
       const t = document.getElementById('tabTimes'); if (t) t.classList.add('on');
     }
     function timesMin() { document.getElementById('timesWindow').classList.add('hidden'); }
@@ -3599,11 +5387,50 @@
       window.addEventListener('mouseup', () => { on = false; });
     })();
 
+    function openTerminalWindow(symbol) {
+      touchSession();
+      const w = document.getElementById('terminalWindow'), f = document.getElementById('terminalFrame');
+      if (f && !f.getAttribute('src')) f.src = '/terminal/';
+      w.classList.remove('hidden'); w.classList.add('win-max');
+      if (symbol && f) {
+        const tryPost = () => { try { f.contentWindow.postMessage({ type: 'LOAD_SYMBOL', symbol }, '*'); } catch { } };
+        if (f.getAttribute('src') && f.contentDocument && f.contentDocument.readyState === 'complete') tryPost();
+        else f.addEventListener('load', tryPost, { once: true });
+      }
+    }
+    function terminalMin() { document.getElementById('terminalWindow').classList.add('hidden'); }
+    function terminalMax() { document.getElementById('terminalWindow').classList.toggle('win-max'); }
+    function terminalClose() {
+      const w = document.getElementById('terminalWindow'), f = document.getElementById('terminalFrame');
+      w.classList.add('hidden'); w.classList.remove('win-max');
+      if (f) { f.src = 'about:blank'; f.removeAttribute('src'); }
+    }
+    function terminalTint() {
+      const w = document.getElementById('terminalWindow'), b = document.getElementById('terminalTintBtn');
+      const on = w.classList.toggle('tinted'); if (b) b.classList.toggle('on', on);
+    }
+    (function terminalDrag() {
+      const w = document.getElementById('terminalWindow'), bar = document.getElementById('terminalBar');
+      if (!w || !bar) return;
+      let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
+      bar.addEventListener('mousedown', (e) => {
+        if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
+        on = true; sx = e.clientX; sy = e.clientY; ol = w.offsetLeft; ot = w.offsetTop;
+        w.style.left = ol + 'px'; w.style.top = ot + 'px'; e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!on) return;
+        w.style.left = (ol + e.clientX - sx) + 'px';
+        w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
+      });
+      window.addEventListener('mouseup', () => { on = false; });
+    })();
+
     function openGeoWindow() {
       touchSession();
       const w = document.getElementById('geoWindow'), f = document.getElementById('geoFrame');
       if (f && !f.getAttribute('src')) f.src = '/geo/';   // 처음 열 때만 로드(최소화/복원해도 상태 유지)
-      w.classList.remove('hidden');
+      w.classList.remove('hidden'); w.classList.add('win-max');
       const t = document.getElementById('tabGeo'); if (t) t.classList.add('on');
     }
     function geoMin() { document.getElementById('geoWindow').classList.add('hidden'); }   // 숨김(iframe 유지) — GEO 탭/카드로 복원
@@ -3633,6 +5460,1217 @@
         w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
       });
       window.addEventListener('mouseup', () => { on = false; });
+    })();
+
+    function openSketchpadWindow() {
+      touchSession();
+      const w = document.getElementById('sketchpadWindow'), f = document.getElementById('sketchpadFrame');
+      if (f && !f.getAttribute('src')) f.src = '/sb/sketchpad';  // 처음 열 때 신규 UUID로 redirect
+      w.classList.remove('hidden'); w.classList.add('win-max');
+    }
+    function sketchpadTint() {
+      const w = document.getElementById('sketchpadWindow'), b = document.getElementById('sketchpadTintBtn');
+      const on = w.classList.toggle('tinted'); if (b) b.classList.toggle('on', on);
+    }
+    function sketchpadMin() { document.getElementById('sketchpadWindow').classList.add('hidden'); }
+    function sketchpadMax() { document.getElementById('sketchpadWindow').classList.toggle('win-max'); }
+    function sketchpadClose() {
+      const w = document.getElementById('sketchpadWindow'), f = document.getElementById('sketchpadFrame');
+      w.classList.add('hidden'); w.classList.remove('win-max');
+      if (f) { f.src = 'about:blank'; f.removeAttribute('src'); }  // 다음 열기 시 새 UUID
+    }
+    (function sketchpadDrag() {
+      const w = document.getElementById('sketchpadWindow'), bar = document.getElementById('sketchpadBar');
+      if (!w || !bar) return;
+      let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
+      bar.addEventListener('mousedown', (e) => {
+        if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
+        on = true; sx = e.clientX; sy = e.clientY; ol = w.offsetLeft; ot = w.offsetTop;
+        w.style.left = ol + 'px'; w.style.top = ot + 'px'; e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!on) return;
+        w.style.left = (ol + e.clientX - sx) + 'px';
+        w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
+      });
+      window.addEventListener('mouseup', () => { on = false; });
+    })();
+
+    // ===== FX 계산기 ===== //
+    let fxCalcRates = null;
+    function openFxCalc() {
+      document.getElementById('fxCalcModal').classList.remove('hidden');
+      if (!fxCalcRates) {
+        fetch('/geo/data/rates.json')
+          .then(r => r.json())
+          .then(data => {
+            fxCalcRates = data;
+            fxCalcFillSelects();
+            document.getElementById('fxcNote').textContent = (data.date || '') + ' · open.er-api.com';
+            fxCalcCompute();
+          })
+          .catch(() => { document.getElementById('fxcNote').textContent = '환율 데이터 로딩 실패'; });
+      } else {
+        fxCalcCompute();
+      }
+    }
+    function closeFxCalc() {
+      document.getElementById('fxCalcModal').classList.add('hidden');
+    }
+    function fxCalcFillSelects() {
+      const rates = fxCalcRates && fxCalcRates.rates;
+      if (!rates) return;
+      const codes = Object.keys(rates).sort();
+      ['fxcFrom', 'fxcTo'].forEach((id, idx) => {
+        const sel = document.getElementById(id);
+        sel.innerHTML = codes.map(c => `<option value="${c}">${c}</option>`).join('');
+        sel.value = idx === 0 ? 'KRW' : 'USD';
+      });
+      ['fxcAmt', 'fxcFrom', 'fxcTo'].forEach(id => {
+        document.getElementById(id).addEventListener('input', fxCalcCompute);
+      });
+      document.getElementById('fxcSwap').onclick = function () {
+        const f = document.getElementById('fxcFrom'), t = document.getElementById('fxcTo');
+        const tmp = f.value; f.value = t.value; t.value = tmp;
+        fxCalcCompute();
+      };
+    }
+    function fxCalcCompute() {
+      const rates = fxCalcRates && fxCalcRates.rates;
+      if (!rates) return;
+      const amt = parseFloat(document.getElementById('fxcAmt').value);
+      const from = document.getElementById('fxcFrom').value;
+      const to = document.getElementById('fxcTo').value;
+      if (isNaN(amt) || !rates[from] || !rates[to]) {
+        document.getElementById('fxcResult').value = '';
+        return;
+      }
+      const result = amt * rates[to] / rates[from];
+      document.getElementById('fxcResult').value = result.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    }
+
+    // ===== PAINT 앱 윈도우 ===== //
+    (function initPaint() {
+      // ---- 상수 ----
+      const W98_PALETTE = [
+        '#000000', '#808080', '#800000', '#808000', '#008000', '#008080', '#000080', '#800080',
+        '#c0c0c0', '#ffffff', '#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff',
+        '#ff8040', '#804000', '#ffff80', '#008040', '#00ff80', '#0080ff', '#8000ff', '#ff0080',
+        '#804080', '#ff8080', '#ffd700', '#80ff00', '#80ffff', '#8080ff', '#ff80ff', '#400000',
+      ];
+      let CANVAS_W = 400, CANVAS_H = 300;
+      let PAINT_ZOOM = 1;
+      let paintHistory = [], paintHistIdx = -1;
+      let selection = null;
+      let selFloat = null;  // {imageData, x, y, w, h} — 떠있는 선택 영역
+      let selDrag = null;   // {mode:'move'|'resize', ...}
+
+      let tool = 'pencil';
+      let fgColor = '#000000', bgColor = '#ffffff';
+      let brushSize = 4;
+      let opacity = 1.0;
+      let layers = [];   // {id, name, canvas, ctx, visible, opacity}
+      let activeLayer = 0;
+      let drawing = false, lastX = 0, lastY = 0;
+      let shapeStart = null;
+      let layerIdSeq = 0;
+      let paintInited = false;
+      let sprayTimer = null, sprayPos = { x: 0, y: 0 };
+      let textOverlay = null;
+
+      // ---- 요소 ----
+      function el(id) { return document.getElementById(id); }
+
+      // ---- 초기화 ----
+      function initPaintApp() {
+        if (paintInited) return;
+        paintInited = true;
+
+        // 팔레트 생성
+        const palette = el('paintPalette');
+        W98_PALETTE.forEach(c => {
+          const sw = document.createElement('div');
+          sw.className = 'paint-swatch';
+          sw.style.background = c;
+          sw.title = c;
+          sw.addEventListener('click', () => setFg(c));
+          sw.addEventListener('contextmenu', e => { e.preventDefault(); setBg(c); });
+          palette.appendChild(sw);
+        });
+
+        // 미리보기 캔버스 크기
+        const preview = el('paintPreview');
+        preview.width = CANVAS_W; preview.height = CANVAS_H;
+        el('paintCanvasInner').style.width = CANVAS_W + 'px';
+        el('paintCanvasInner').style.height = CANVAS_H + 'px';
+
+        // 첫 레이어 추가
+        paintAddLayer();
+        renderLayerList();
+        updateColorBoxes();
+        el('paintStatus').textContent = 'Ready · ' + CANVAS_W + '×' + CANVAS_H;
+
+        // 이벤트 (pointer events — mouse + touch + Apple Pencil)
+        const wrap = el('paintCanvasWrap');
+        wrap.addEventListener('pointerdown', onPointerDown, { passive: false });
+        wrap.addEventListener('pointermove', onPointerMove, { passive: false });
+        wrap.addEventListener('pointerup', onPointerUp);
+        wrap.addEventListener('pointercancel', onPointerUp);
+        wrap.addEventListener('contextmenu', e => e.preventDefault());
+
+        // 드래그 — paintBar
+        initDrag(el('paintWindow'), el('paintBar'));
+
+        // 캔버스 리사이즈 핸들
+        initResizeHandles();
+
+        // Ctrl+휠 줌
+        el('paintCanvasWrap').addEventListener('wheel', function (e) {
+          if (!e.ctrlKey) return;
+          e.preventDefault();
+          setPaintZoom(e.deltaY < 0 ? PAINT_ZOOM * 1.15 : PAINT_ZOOM / 1.15);
+        }, { passive: false });
+
+        // 초기 줌 호스트 크기 설정
+        setPaintZoom(1);
+
+        // 초기 히스토리 저장 + 캔버스 중앙 배치
+        saveHistory();
+        centerCanvasView();
+
+        // 키보드 단축키 (포커스 독립)
+        document.addEventListener('keydown', paintKeydown);
+      }
+
+      function initDrag(win, bar) {
+        let ox = 0, oy = 0, sx = 0, sy = 0, on = false;
+        bar.addEventListener('mousedown', e => {
+          if (win.classList.contains('win-max') || e.target.closest('.awb')) return;
+          on = true; sx = e.clientX; sy = e.clientY; ox = win.offsetLeft; oy = win.offsetTop;
+          win.style.left = ox + 'px'; win.style.top = oy + 'px'; e.preventDefault();
+        });
+        window.addEventListener('mousemove', e => {
+          if (!on) return;
+          win.style.left = (ox + e.clientX - sx) + 'px';
+          win.style.top = Math.max(0, oy + e.clientY - sy) + 'px';
+        });
+        window.addEventListener('mouseup', () => { on = false; });
+      }
+
+      // ---- 줌 ----
+      function setPaintZoom(z) {
+        PAINT_ZOOM = Math.max(0.1, Math.min(8, z));
+        el('paintCanvasFrame').style.transform = 'scale(' + PAINT_ZOOM + ')';
+        const host = el('paintZoomHost');
+        host.style.width = (CANVAS_W + 20) * PAINT_ZOOM + 'px';
+        host.style.height = (CANVAS_H + 20) * PAINT_ZOOM + 'px';
+        el('paintZoomLabel').textContent = Math.round(PAINT_ZOOM * 100) + '%';
+      }
+      window.paintZoomIn = function () { setPaintZoom(PAINT_ZOOM * 1.25); };
+      window.paintZoomOut = function () { setPaintZoom(PAINT_ZOOM / 1.25); };
+      window.paintZoomReset = function () { setPaintZoom(1); };
+
+      // ---- 캔버스 중앙 정렬 ----
+      function centerCanvasView() {
+        const wrap = el('paintCanvasWrap');
+        const host = el('paintZoomHost');
+        const hostRect = host.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        wrap.scrollLeft += (hostRect.left + hostRect.width / 2) - (wrapRect.left + wrapRect.width / 2);
+        wrap.scrollTop += (hostRect.top + hostRect.height / 2) - (wrapRect.top + wrapRect.height / 2);
+      }
+      window.paintCenterView = function () { centerCanvasView(); };
+
+      // ---- 히스토리 (Undo/Redo) ----
+      const PAINT_MAX_HIST = 20;
+      function saveHistory() {
+        paintHistory = paintHistory.slice(0, paintHistIdx + 1);
+        paintHistory.push({
+          w: CANVAS_W, h: CANVAS_H,
+          data: layers.map(ly => ly.ctx.getImageData(0, 0, CANVAS_W, CANVAS_H)),
+        });
+        if (paintHistory.length > PAINT_MAX_HIST) paintHistory.shift();
+        else paintHistIdx++;
+      }
+      function _applyHistoryState(state) {
+        if (state.w !== CANVAS_W || state.h !== CANVAS_H) _doResizeCanvas(state.w, state.h);
+        const n = Math.min(state.data.length, layers.length);
+        for (let i = 0; i < n; i++) {
+          layers[i].ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+          layers[i].ctx.putImageData(state.data[i], 0, 0);
+        }
+        refreshLayerThumb();
+      }
+      window.paintUndo = function () {
+        if (paintHistIdx <= 0) { el('paintStatus').textContent = '더 이상 되돌릴 수 없음'; return; }
+        paintHistIdx--;
+        _applyHistoryState(paintHistory[paintHistIdx]);
+        el('paintStatus').textContent = '되돌리기 (' + paintHistIdx + '/' + (paintHistory.length - 1) + ')';
+      };
+      window.paintRedo = function () {
+        if (paintHistIdx >= paintHistory.length - 1) { el('paintStatus').textContent = '앞으로 되돌리기 없음'; return; }
+        paintHistIdx++;
+        _applyHistoryState(paintHistory[paintHistIdx]);
+        el('paintStatus').textContent = '다시 실행 (' + paintHistIdx + '/' + (paintHistory.length - 1) + ')';
+      };
+
+      // ---- 선택 영역 ----
+      function getSelectionHandles() {
+        if (!selection) return [];
+        const { x, y, w, h } = selection;
+        return [
+          { id: 'nw', x: x, y: y }, { id: 'n', x: x + w / 2, y: y }, { id: 'ne', x: x + w, y: y },
+          { id: 'e', x: x + w, y: y + h / 2 }, { id: 'se', x: x + w, y: y + h }, { id: 's', x: x + w / 2, y: y + h },
+          { id: 'sw', x: x, y: y + h }, { id: 'w', x: x, y: y + h / 2 },
+        ];
+      }
+      function getHandleAt(px, py) {
+        const r = 6;
+        return getSelectionHandles().find(h => Math.abs(px - h.x) <= r && Math.abs(py - h.y) <= r) || null;
+      }
+      function inSelection(px, py) {
+        if (!selection) return false;
+        return px >= selection.x && px <= selection.x + selection.w && py >= selection.y && py <= selection.y + selection.h;
+      }
+      function redrawPreview() {
+        const pctx = el('paintPreview').getContext('2d');
+        pctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+        if (selFloat) pctx.putImageData(selFloat.imageData, selFloat.x, selFloat.y);
+        if (!selection) return;
+        pctx.save();
+        pctx.lineWidth = 1;
+        pctx.setLineDash([4, 4]);
+        pctx.strokeStyle = '#000'; pctx.lineDashOffset = 0;
+        pctx.strokeRect(selection.x + 0.5, selection.y + 0.5, selection.w - 1, selection.h - 1);
+        pctx.strokeStyle = '#fff'; pctx.lineDashOffset = 4;
+        pctx.strokeRect(selection.x + 0.5, selection.y + 0.5, selection.w - 1, selection.h - 1);
+        pctx.setLineDash([]);
+        pctx.strokeStyle = '#000'; pctx.fillStyle = '#fff'; pctx.lineWidth = 1;
+        const hw = 4;
+        getSelectionHandles().forEach(h => { pctx.fillRect(h.x - hw, h.y - hw, hw * 2, hw * 2); pctx.strokeRect(h.x - hw, h.y - hw, hw * 2, hw * 2); });
+        pctx.restore();
+      }
+      function drawSelectionMarquee() { redrawPreview(); }
+      function commitFloatingSelection() {
+        if (!selFloat) return;
+        const ctx = activeCtx(); if (!ctx) return;
+        ctx.putImageData(selFloat.imageData, selFloat.x, selFloat.y);
+        selFloat = null;
+        refreshLayerThumb();
+      }
+      function clearSelection() {
+        commitFloatingSelection();
+        selDrag = null;
+        if (!selection) return;
+        selection = null;
+        el('paintPreview').getContext('2d').clearRect(0, 0, CANVAS_W, CANVAS_H);
+      }
+      function paintSelectAll() {
+        commitFloatingSelection();
+        selection = { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H };
+        redrawPreview();
+        el('paintStatus').textContent = '전체 선택됨 (' + CANVAS_W + '×' + CANVAS_H + ')';
+      }
+      function paintDeleteSelection() {
+        if (!selection) return;
+        saveHistory();
+        const ctx = activeCtx(); if (!ctx) return;
+        if (selFloat) { selFloat = null; }
+        else { ctx.clearRect(selection.x, selection.y, selection.w, selection.h); }
+        selection = null; selDrag = null;
+        el('paintPreview').getContext('2d').clearRect(0, 0, CANVAS_W, CANVAS_H);
+        refreshLayerThumb();
+        el('paintStatus').textContent = '선택 영역 삭제됨';
+      }
+      async function copySelectionToClipboard() {
+        const ctx = activeCtx(); if (!ctx) return;
+        const src = selection || { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H };
+        const tmp = document.createElement('canvas');
+        tmp.width = Math.max(1, src.w); tmp.height = Math.max(1, src.h);
+        const tctx = tmp.getContext('2d');
+        if (selFloat && selection) {
+          tctx.putImageData(selFloat.imageData, 0, 0);
+        } else {
+          tctx.drawImage(layers[activeLayer].canvas, src.x, src.y, src.w, src.h, 0, 0, src.w, src.h);
+        }
+        try {
+          const blob = await new Promise(r => tmp.toBlob(r, 'image/png'));
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          el('paintStatus').textContent = '클립보드에 복사됨 (' + Math.round(src.w) + '×' + Math.round(src.h) + ')';
+        } catch (err) {
+          el('paintStatus').textContent = '복사 실패: ' + err.message;
+        }
+      }
+
+      // ---- 클립보드 붙여넣기 ----
+      async function pasteFromClipboard() {
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            const imgType = item.types.find(t => t.startsWith('image/'));
+            if (!imgType) continue;
+            const blob = await item.getType(imgType);
+            const url = URL.createObjectURL(blob);
+            const img = new Image();
+            img.onload = () => {
+              saveHistory();
+              if (img.width > CANVAS_W || img.height > CANVAS_H) {
+                _doResizeCanvas(img.width, img.height);
+              }
+              const ctx = activeCtx(); if (!ctx) { URL.revokeObjectURL(url); return; }
+              ctx.drawImage(img, 0, 0);
+              URL.revokeObjectURL(url);
+              refreshLayerThumb();
+              el('paintStatus').textContent = '붙여넣기 완료 (' + img.width + '×' + img.height + ')';
+            };
+            img.src = url;
+            return;
+          }
+          el('paintStatus').textContent = '클립보드에 이미지가 없습니다';
+        } catch {
+          el('paintStatus').textContent = '클립보드 접근 실패 (브라우저 권한 필요)';
+        }
+      }
+
+      // ---- 레이어 패널 토글 ----
+      window.paintToggleLayers = function () {
+        const panel = el('paintLayers');
+        const btn = el('paintLayersToggle');
+        const collapsed = panel.classList.toggle('collapsed');
+        btn.textContent = collapsed ? '▶' : '◀';
+      };
+
+      // ---- 캔버스 리사이즈 ----
+      function _doResizeCanvas(newW, newH) {
+        newW = Math.max(32, Math.round(newW));
+        newH = Math.max(32, Math.round(newH));
+        if (newW === CANVAS_W && newH === CANVAS_H) return;
+        layers.forEach(ly => {
+          const tmp = document.createElement('canvas');
+          tmp.width = newW; tmp.height = newH;
+          tmp.getContext('2d').drawImage(ly.canvas, 0, 0);
+          ly.canvas.width = newW; ly.canvas.height = newH;
+          ly.ctx.drawImage(tmp, 0, 0);
+        });
+        const preview = el('paintPreview');
+        preview.width = newW; preview.height = newH;
+        CANVAS_W = newW; CANVAS_H = newH;
+        el('paintCanvasInner').style.width = newW + 'px';
+        el('paintCanvasInner').style.height = newH + 'px';
+        el('paintStatus').textContent = newW + '×' + newH;
+        setPaintZoom(PAINT_ZOOM);
+        refreshLayerThumb();
+      }
+      function resizeCanvas(newW, newH) {
+        saveHistory();
+        _doResizeCanvas(newW, newH);
+      }
+
+      function initResizeHandles() {
+        const frame = el('paintCanvasFrame');
+        document.querySelectorAll('.paint-resize-handle').forEach(handle => {
+          const dir = handle.dataset.dir;
+          let startX, startY, startW, startH, on = false;
+          handle.addEventListener('mousedown', e => {
+            e.stopPropagation(); e.preventDefault();
+            on = true; startX = e.clientX; startY = e.clientY;
+            startW = CANVAS_W; startH = CANVAS_H;
+            document.body.style.cursor = handle.style.cursor;
+            saveHistory();
+          });
+          window.addEventListener('mousemove', e => {
+            if (!on) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            let nw = startW, nh = startH;
+            if (dir.includes('e')) nw = startW + dx;
+            if (dir.includes('w')) nw = startW - dx;
+            if (dir.includes('s')) nh = startH + dy;
+            if (dir.includes('n')) nh = startH - dy;
+            _doResizeCanvas(nw, nh);
+          });
+          window.addEventListener('mouseup', () => {
+            if (on) { on = false; document.body.style.cursor = ''; }
+          });
+        });
+      }
+
+      // ---- 윈도우 제어 ----
+      window.openPaintWindow = function () {
+        touchSession();
+        el('paintWindow').classList.remove('hidden'); el('paintWindow').classList.add('win-max');
+        initPaintApp();
+      };
+      window.paintMin = function () { el('paintWindow').classList.add('hidden'); };
+      window.paintMax = function () { el('paintWindow').classList.toggle('win-max'); };
+      window.paintClose = function () {
+        el('paintWindow').classList.add('hidden');
+        el('paintWindow').classList.remove('win-max');
+      };
+      window.paintTint = function () {
+        const w = el('paintWindow'), b = el('paintTintBtn');
+        const on = w.classList.toggle('tinted'); if (b) b.classList.toggle('on', on);
+      };
+
+      // ---- 도구 선택 ----
+      window.setPtool = function (t) {
+        if (textOverlay) cancelTextOverlay();
+        if (sprayTimer) { clearInterval(sprayTimer); sprayTimer = null; drawing = false; }
+        tool = t;
+        document.querySelectorAll('.ptool').forEach(b => b.classList.remove('on'));
+        const ids = {
+          pencil: 'ptPencil', brush: 'ptBrush', eraser: 'ptEraser', fill: 'ptFill',
+          eyedrop: 'ptEyedrop', spray: 'ptSpray', text: 'ptText', line: 'ptLine', rect: 'ptRect', ellipse: 'ptEllipse', bgremove: 'ptBgRemove', select: 'ptSelect'
+        };
+        if (ids[t]) el(ids[t]).classList.add('on');
+        const wrap = el('paintCanvasWrap');
+        const cursors = { eyedrop: 'crosshair', fill: 'cell', eraser: 'cell', pencil: 'crosshair', brush: 'crosshair', bgremove: 'cell', spray: 'crosshair', text: 'text', select: 'crosshair' };
+        wrap.style.cursor = cursors[t] || 'crosshair';
+      };
+
+      window.setBrushSize = function (s) {
+        brushSize = s;
+        el('paintSizeSlider').value = s;
+      };
+
+      window.setOpacity = function (v) {
+        opacity = v / 100;
+        el('paintOpacityLbl').textContent = v + '%';
+      };
+
+      function setFg(c) {
+        fgColor = c;
+        updateColorBoxes();
+      }
+      function setBg(c) {
+        bgColor = c;
+        updateColorBoxes();
+      }
+      function updateColorBoxes() {
+        el('pcFg').style.background = fgColor;
+        el('pcBg').style.background = bgColor;
+      }
+      function openNativeColorPicker(initVal, onChange, anchorEl) {
+        const inp = document.createElement('input');
+        inp.type = 'color'; inp.value = initVal;
+        inp.style.cssText = 'position:fixed;opacity:0;pointer-events:none;width:0;height:0;';
+        const r = anchorEl.getBoundingClientRect();
+        inp.style.left = r.left + 'px';
+        inp.style.top = r.bottom + 'px';
+        document.body.appendChild(inp);
+        inp.addEventListener('input', () => onChange(inp.value));
+        inp.addEventListener('change', () => { document.body.removeChild(inp); });
+        inp.click();
+      }
+      el('pcFg') && el('pcFg').addEventListener('click', function () {
+        openNativeColorPicker(fgColor, setFg, this);
+      });
+      el('pcBg') && el('pcBg').addEventListener('click', function () {
+        openNativeColorPicker(bgColor, setBg, this);
+      });
+
+      // ---- 레이어 관리 ----
+      function makeLayer(name) {
+        const id = ++layerIdSeq;
+        const canvas = document.createElement('canvas');
+        canvas.width = CANVAS_W; canvas.height = CANVAS_H;
+        canvas.className = 'paint-canvas';
+        canvas.style.zIndex = id;
+        el('paintCanvasInner').insertBefore(canvas, el('paintPreview'));
+        const ctx = canvas.getContext('2d');
+        return { id, name: name || 'Layer ' + id, canvas, ctx, visible: true, opacity: 1.0 };
+      }
+
+      window.paintAddLayer = function () {
+        const layer = makeLayer();
+        layers.push(layer);
+        activeLayer = layers.length - 1;
+        renderLayerList();
+        el('paintStatus').textContent = 'Layer added: ' + layer.name;
+      };
+
+      window.paintDelLayer = function () {
+        if (layers.length <= 1) { el('paintStatus').textContent = 'Cannot delete the last layer.'; return; }
+        layers[activeLayer].canvas.remove();
+        layers.splice(activeLayer, 1);
+        activeLayer = Math.min(activeLayer, layers.length - 1);
+        renderLayerList();
+      };
+
+      window.paintDupLayer = function () {
+        const src = layers[activeLayer];
+        const dup = makeLayer(src.name + ' copy');
+        dup.ctx.drawImage(src.canvas, 0, 0);
+        layers.push(dup);
+        activeLayer = layers.length - 1;
+        renderLayerList();
+      };
+
+      window.paintMergeDown = function () {
+        if (activeLayer <= 0) { el('paintStatus').textContent = 'Nothing below to merge into.'; return; }
+        const top = layers[activeLayer], bot = layers[activeLayer - 1];
+        bot.ctx.globalAlpha = top.opacity;
+        bot.ctx.drawImage(top.canvas, 0, 0);
+        bot.ctx.globalAlpha = 1;
+        top.canvas.remove();
+        layers.splice(activeLayer, 1);
+        activeLayer = activeLayer - 1;
+        renderLayerList();
+      };
+
+      function renderLayerList() {
+        const list = el('paintLayerList');
+        list.innerHTML = '';
+        // 레이어는 위에서 아래 순서로 표시 (마지막 = 맨 위)
+        for (let i = layers.length - 1; i >= 0; i--) {
+          const ly = layers[i];
+          const div = document.createElement('div');
+          div.className = 'paint-layer-item' + (i === activeLayer ? ' active' : '');
+          div.dataset.idx = i;
+          div.onclick = () => { activeLayer = i; renderLayerList(); };
+
+          const vis = document.createElement('span');
+          vis.className = 'paint-layer-vis';
+          vis.textContent = ly.visible ? '👁' : '○';
+          vis.title = ly.visible ? '숨기기' : '표시';
+          vis.onclick = e => {
+            e.stopPropagation();
+            ly.visible = !ly.visible;
+            ly.canvas.style.display = ly.visible ? '' : 'none';
+            renderLayerList();
+          };
+
+          const thumb = document.createElement('div');
+          thumb.className = 'paint-layer-thumb';
+          const tc = document.createElement('canvas');
+          tc.width = 56; tc.height = 40;
+          const tx = tc.getContext('2d');
+          tx.drawImage(ly.canvas, 0, 0, 56, 40);
+          thumb.appendChild(tc);
+
+          const name = document.createElement('span');
+          name.className = 'paint-layer-name';
+          name.textContent = ly.name;
+          name.title = ly.name;
+          name.ondblclick = async e => {
+            e.stopPropagation();
+            const n = await paintDlg('prompt', '레이어 이름을 입력하세요', ly.name);
+            if (n !== null) { ly.name = n; renderLayerList(); }
+          };
+
+          div.appendChild(vis);
+          div.appendChild(thumb);
+          div.appendChild(name);
+          list.appendChild(div);
+        }
+      }
+
+      // ---- 좌표 변환 ----
+      function getCanvasPos(e) {
+        const inner = el('paintCanvasInner');
+        const rect = inner.getBoundingClientRect();
+        const scaleX = CANVAS_W / rect.width;
+        const scaleY = CANVAS_H / rect.height;
+        return {
+          x: (e.clientX - rect.left) * scaleX,
+          y: (e.clientY - rect.top) * scaleY,
+          pressure: e.pressure || 1.0,
+        };
+      }
+
+      // ---- 그리기 ----
+      function activeCtx() { return layers[activeLayer] ? layers[activeLayer].ctx : null; }
+
+      function applyStrokeStyle(ctx, isEraser) {
+        if (isEraser) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.globalAlpha = opacity;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.globalAlpha = opacity;
+          ctx.strokeStyle = fgColor;
+          ctx.fillStyle = fgColor;
+        }
+        ctx.lineWidth = brushSize;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+      }
+
+      function onPointerDown(e) {
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        if (pos.x < 0 || pos.x > CANVAS_W || pos.y < 0 || pos.y > CANVAS_H) return;
+        const ctx = activeCtx(); if (!ctx) return;
+
+        if (tool === 'eyedrop') { pickColor(pos.x, pos.y); return; }
+        if (tool === 'text') { showTextOverlay(pos.x, pos.y); return; }
+
+        // --- 선택 영역 인터랙션 ---
+        if (selection) {
+          const handle = getHandleAt(pos.x, pos.y);
+          if (handle) {
+            // 핸들 드래그 → resize
+            selDrag = { mode: 'resize', handle: handle.id, startSel: { ...selection }, startX: pos.x, startY: pos.y };
+            el('paintCanvasWrap').setPointerCapture(e.pointerId);
+            return;
+          }
+          if (inSelection(pos.x, pos.y)) {
+            // 선택 영역 내부 드래그 → move (float 생성)
+            if (!selFloat) {
+              saveHistory();
+              const imageData = ctx.getImageData(selection.x, selection.y, selection.w, selection.h);
+              ctx.clearRect(selection.x, selection.y, selection.w, selection.h);
+              selFloat = { imageData, x: selection.x, y: selection.y, w: selection.w, h: selection.h };
+            }
+            selDrag = { mode: 'move', startX: pos.x, startY: pos.y, startSelX: selection.x, startSelY: selection.y, startFloatX: selFloat.x, startFloatY: selFloat.y };
+            el('paintCanvasWrap').setPointerCapture(e.pointerId);
+            return;
+          }
+          // 선택 영역 밖 클릭 → commit + clear
+          clearSelection();
+        }
+
+        if (tool === 'select') {
+          // 새 선택 영역 시작
+          shapeStart = { x: pos.x, y: pos.y };
+          selection = { x: pos.x, y: pos.y, w: 0, h: 0 };
+          drawing = true;
+          return;
+        }
+
+        if (tool === 'spray') {
+          saveHistory(); drawing = true;
+          sprayPos = { x: pos.x, y: pos.y };
+          const sprayCtx = activeCtx();
+          doSpray(sprayCtx, pos.x, pos.y);
+          sprayTimer = setInterval(() => { doSpray(sprayCtx, sprayPos.x, sprayPos.y); refreshLayerThumb(); }, 30);
+          return;
+        }
+        if (tool === 'fill') {
+          saveHistory();
+          floodFill(ctx, Math.round(pos.x), Math.round(pos.y), fgColor);
+          refreshLayerThumb();
+          return;
+        }
+        if (tool === 'bgremove') {
+          saveHistory();
+          doBgRemoveClick(pos.x, pos.y);
+          return;
+        }
+
+        saveHistory();
+        drawing = true;
+        lastX = pos.x; lastY = pos.y;
+        shapeStart = { x: pos.x, y: pos.y };
+
+        if (tool === 'pencil' || tool === 'brush' || tool === 'eraser') {
+          applyStrokeStyle(ctx, tool === 'eraser');
+          ctx.beginPath();
+          ctx.moveTo(pos.x, pos.y);
+          ctx.arc(pos.x, pos.y, brushSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(pos.x, pos.y);
+        }
+      }
+
+      function onPointerMove(e) {
+        const pos = getCanvasPos(e);
+
+        // selDrag: move or resize
+        if (selDrag) {
+          e.preventDefault();
+          if (selDrag.mode === 'move') {
+            const dx = pos.x - selDrag.startX, dy = pos.y - selDrag.startY;
+            selection.x = selDrag.startSelX + dx;
+            selection.y = selDrag.startSelY + dy;
+            selFloat.x = selDrag.startFloatX + dx;
+            selFloat.y = selDrag.startFloatY + dy;
+            redrawPreview();
+            el('paintStatus').textContent = '선택: ' + Math.round(selection.x) + ', ' + Math.round(selection.y);
+          } else {
+            // resize
+            const { handle, startSel, startX, startY } = selDrag;
+            let { x, y, w, h } = startSel;
+            const dx = pos.x - startX, dy = pos.y - startY;
+            if (handle.includes('e')) w = Math.max(1, startSel.w + dx);
+            if (handle.includes('s')) h = Math.max(1, startSel.h + dy);
+            if (handle.includes('w')) { x = startSel.x + dx; w = Math.max(1, startSel.w - dx); }
+            if (handle.includes('n')) { y = startSel.y + dy; h = Math.max(1, startSel.h - dy); }
+            selection = { x, y, w, h };
+            redrawPreview();
+            el('paintStatus').textContent = '선택: ' + Math.round(w) + '×' + Math.round(h);
+          }
+          return;
+        }
+
+        if (!drawing) {
+          // 커서 힌트 (select 도구일 때 핸들/이동 커서)
+          if (tool === 'select' && selection) {
+            const h = getHandleAt(pos.x, pos.y);
+            const cursorMap = { nw: 'nw-resize', n: 'n-resize', ne: 'ne-resize', e: 'e-resize', se: 'se-resize', s: 's-resize', sw: 'sw-resize', w: 'w-resize' };
+            el('paintCanvasWrap').style.cursor = h ? (cursorMap[h.id] || 'crosshair') : (inSelection(pos.x, pos.y) ? 'move' : 'crosshair');
+          }
+          el('paintStatus').textContent = Math.round(pos.x) + ', ' + Math.round(pos.y) + ' · ' + CANVAS_W + '×' + CANVAS_H;
+          return;
+        }
+        e.preventDefault();
+        const ctx = activeCtx(); if (!ctx) return;
+
+        if (tool === 'select') {
+          const x = Math.min(shapeStart.x, pos.x), y = Math.min(shapeStart.y, pos.y);
+          const w = Math.abs(pos.x - shapeStart.x), h = Math.abs(pos.y - shapeStart.y);
+          selection = { x, y, w: Math.max(1, w), h: Math.max(1, h) };
+          redrawPreview();
+          el('paintStatus').textContent = '선택: ' + Math.round(w) + '×' + Math.round(h);
+          return;
+        }
+        if (tool === 'spray' && drawing) { sprayPos = { x: pos.x, y: pos.y }; return; }
+        if (tool === 'pencil' || tool === 'brush' || tool === 'eraser') {
+          const pressure = (tool === 'brush') ? (pos.pressure || 1) : 1;
+          ctx.lineWidth = brushSize * pressure;
+          ctx.lineTo(pos.x, pos.y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(pos.x, pos.y);
+          lastX = pos.x; lastY = pos.y;
+        } else if (tool === 'line' || tool === 'rect' || tool === 'ellipse') {
+          const prev = el('paintPreview').getContext('2d');
+          prev.clearRect(0, 0, CANVAS_W, CANVAS_H);
+          drawShape(prev, shapeStart.x, shapeStart.y, pos.x, pos.y);
+        }
+      }
+
+      function onPointerUp(e) {
+        if (selDrag) {
+          selDrag = null;
+          el('paintCanvasWrap').releasePointerCapture(e.pointerId);
+          redrawPreview();
+          return;
+        }
+        if (tool === 'spray' && drawing) {
+          clearInterval(sprayTimer); sprayTimer = null;
+          drawing = false;
+          refreshLayerThumb();
+          return;
+        }
+        if (!drawing) return;
+        drawing = false;
+        const pos = getCanvasPos(e);
+        const ctx = activeCtx(); if (!ctx) return;
+
+        if (tool === 'select') {
+          if (!selection || selection.w < 2 || selection.h < 2) {
+            selection = null;
+            el('paintPreview').getContext('2d').clearRect(0, 0, CANVAS_W, CANVAS_H);
+          } else {
+            redrawPreview();
+            el('paintStatus').textContent = '선택: ' + Math.round(selection.w) + '×' + Math.round(selection.h);
+          }
+          return;
+        }
+        if (tool === 'line' || tool === 'rect' || tool === 'ellipse') {
+          const prev = el('paintPreview').getContext('2d');
+          prev.clearRect(0, 0, CANVAS_W, CANVAS_H);
+          drawShape(ctx, shapeStart.x, shapeStart.y, pos.x, pos.y);
+        } else {
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = 'source-over';
+        }
+        refreshLayerThumb();
+      }
+
+      function drawShape(ctx, x1, y1, x2, y2) {
+        applyStrokeStyle(ctx, false);
+        ctx.beginPath();
+        if (tool === 'line') {
+          ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        } else if (tool === 'rect') {
+          ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+        } else if (tool === 'ellipse') {
+          const rx = Math.abs(x2 - x1) / 2, ry = Math.abs(y2 - y1) / 2;
+          const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
+          ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      // ---- 스프레이 (airbrush) ----
+      function doSpray(ctx, x, y) {
+        applyStrokeStyle(ctx, false);
+        const r = brushSize * 3;
+        for (let i = 0; i < 16; i++) {
+          const angle = Math.random() * 2 * Math.PI;
+          const d = Math.random() * r;
+          ctx.fillRect(Math.round(x + d * Math.cos(angle)), Math.round(y + d * Math.sin(angle)), 1, 1);
+        }
+      }
+
+      // ---- 텍스트 도구 ----
+      function showTextOverlay(canvasX, canvasY) {
+        if (textOverlay) commitTextOverlay();
+        const inp = document.createElement('textarea');
+        const fontSize = Math.max(10, brushSize * 3);
+        inp.rows = 1;
+        inp.className = 'paint-text-input';
+        inp.style.left = canvasX + 'px';
+        inp.style.top = canvasY + 'px';
+        inp.style.fontSize = fontSize + 'px';
+        inp.style.color = fgColor;
+        inp.style.height = (fontSize + 6) + 'px';
+        inp.style.width = '60px';
+        el('paintCanvasInner').appendChild(inp);
+        textOverlay = { el: inp, x: canvasX, y: canvasY, fontSize };
+        inp.focus();
+        inp.addEventListener('input', () => {
+          inp.style.width = 'auto';
+          inp.style.width = Math.max(60, inp.scrollWidth + 4) + 'px';
+          inp.style.height = 'auto';
+          inp.style.height = inp.scrollHeight + 'px';
+        });
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Escape') { cancelTextOverlay(); e.stopPropagation(); e.preventDefault(); }
+          else if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitTextOverlay(); }
+        }, true);
+        inp.addEventListener('blur', () => { setTimeout(() => { if (textOverlay && document.activeElement !== textOverlay.el) commitTextOverlay(); }, 150); });
+      }
+      function commitTextOverlay() {
+        if (!textOverlay) return;
+        const inp = textOverlay.el;
+        const text = inp.value;
+        const x = textOverlay.x;
+        const y = textOverlay.y;
+        const fontSize = textOverlay.fontSize;
+        inp.remove(); textOverlay = null;
+        if (!text.trim()) return;
+        saveHistory();
+        const ctx = activeCtx(); if (!ctx) return;
+        ctx.save();
+        ctx.font = fontSize + 'px "MS Sans Serif", Arial, sans-serif';
+        ctx.fillStyle = fgColor;
+        ctx.globalAlpha = opacity;
+        ctx.globalCompositeOperation = 'source-over';
+        text.split('\n').forEach((line, i) => ctx.fillText(line, x, y + fontSize * (i + 1)));
+        ctx.restore();
+        refreshLayerThumb();
+        el('paintStatus').textContent = '텍스트 입력 완료';
+      }
+      function cancelTextOverlay() {
+        if (!textOverlay) return;
+        textOverlay.el.remove(); textOverlay = null;
+      }
+
+      // ---- 색상 선택 (eyedrop) ----
+      function pickColor(x, y) {
+        // 모든 레이어 합성해서 픽셀 추출
+        const merged = document.createElement('canvas');
+        merged.width = CANVAS_W; merged.height = CANVAS_H;
+        const mctx = merged.getContext('2d');
+        layers.forEach(ly => { if (ly.visible) { mctx.globalAlpha = ly.opacity; mctx.drawImage(ly.canvas, 0, 0); } });
+        const d = mctx.getImageData(Math.round(x), Math.round(y), 1, 1).data;
+        const hex = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join('');
+        setFg(hex);
+        el('paintStatus').textContent = 'Picked: ' + hex;
+      }
+
+      // ---- 채우기 (flood fill) ----
+      function floodFill(ctx, startX, startY, fillColorHex) {
+        const imgData = ctx.getImageData(0, 0, CANVAS_W, CANVAS_H);
+        const data = imgData.data;
+        const idx = (y, x) => (y * CANVAS_W + x) * 4;
+        const target = data.slice(idx(startY, startX), idx(startY, startX) + 4);
+        const fill = hexToRgba(fillColorHex, opacity);
+        if (colorsMatch(target, fill)) return;
+        const stack = [[startX, startY]];
+        const visited = new Uint8Array(CANVAS_W * CANVAS_H);
+        while (stack.length) {
+          const [x, y] = stack.pop();
+          if (x < 0 || x >= CANVAS_W || y < 0 || y >= CANVAS_H) continue;
+          if (visited[y * CANVAS_W + x]) continue;
+          visited[y * CANVAS_W + x] = 1;
+          const i = idx(y, x);
+          if (!colorsMatch(data.slice(i, i + 4), target)) continue;
+          data[i] = fill[0]; data[i + 1] = fill[1]; data[i + 2] = fill[2]; data[i + 3] = fill[3];
+          stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }
+      function hexToRgba(hex, a) {
+        const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+        return [r, g, b, Math.round(a * 255)];
+      }
+      function colorsMatch(a, b, tol = 20) {
+        return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) + Math.abs(a[3] - b[3]) < tol;
+      }
+
+      // ---- 레이어 썸네일 갱신 ----
+      function refreshLayerThumb() {
+        // 약간 디바운스: 60ms
+        clearTimeout(refreshLayerThumb._t);
+        refreshLayerThumb._t = setTimeout(renderLayerList, 60);
+      }
+
+      // ---- 합성 캔버스 생성 (저장용) ----
+      function mergeToCanvas(bg) {
+        const out = document.createElement('canvas');
+        out.width = CANVAS_W; out.height = CANVAS_H;
+        const ctx = out.getContext('2d');
+        if (bg) { ctx.fillStyle = bgColor; ctx.fillRect(0, 0, CANVAS_W, CANVAS_H); }
+        layers.forEach(ly => {
+          if (!ly.visible) return;
+          ctx.globalAlpha = ly.opacity;
+          ctx.drawImage(ly.canvas, 0, 0);
+        });
+        ctx.globalAlpha = 1;
+        return out;
+      }
+
+      // ---- 메뉴 동작 ----
+      const EDIT_ITEMS = ['paintDdCopy', 'paintDdCut', 'paintDdDelete', 'paintDdEditSep', 'paintDdSelectAll', 'paintDdEditSep2'];
+      const FILE_ITEMS = ['paintDdNew', 'paintDdSave', 'paintDdExport', 'paintDdSep1', 'paintDdClear', 'paintDdClearAll'];
+      const IMG_ITEMS = ['paintDdImgSep', 'paintDdCanvasSize', 'paintDdFlipSep', 'paintDdFlipH', 'paintDdFlipV', 'paintDdBgSep', 'paintDdBgRemove'];
+      window.paintFileMenu = function (el2) { openDropdown(el2, FILE_ITEMS, [...EDIT_ITEMS, ...IMG_ITEMS]); };
+      window.paintEditMenu = function (el2) { openDropdown(el2, EDIT_ITEMS, [...FILE_ITEMS, ...IMG_ITEMS]); };
+      window.paintImageMenu = function (el2) { openDropdown(el2, IMG_ITEMS, [...FILE_ITEMS, ...EDIT_ITEMS]); };
+      let _paintSizeDlgResolve = null;
+      window._paintSizeDlgClose = function (ok) {
+        const backdrop = el('paintSizeDlgBackdrop');
+        backdrop.classList.add('hidden');
+        if (!_paintSizeDlgResolve) return;
+        if (ok) {
+          const w = parseInt(el('paintSizeDlgW').value, 10);
+          const h = parseInt(el('paintSizeDlgH').value, 10);
+          _paintSizeDlgResolve({ w, h });
+        } else {
+          _paintSizeDlgResolve(null);
+        }
+        _paintSizeDlgResolve = null;
+      };
+      // Enter key confirm in size dialog inputs
+      ['paintSizeDlgW', 'paintSizeDlgH'].forEach(id => {
+        document.addEventListener('DOMContentLoaded', () => {
+          const inp = el(id);
+          if (inp) inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') _paintSizeDlgClose(true); if (ev.key === 'Escape') _paintSizeDlgClose(null); });
+        });
+      });
+      window.paintCanvasSize = async function () {
+        closeDropdown();
+        el('paintSizeDlgW').value = CANVAS_W;
+        el('paintSizeDlgH').value = CANVAS_H;
+        el('paintSizeDlgBackdrop').classList.remove('hidden');
+        el('paintSizeDlgW').focus();
+        const result = await new Promise(r => { _paintSizeDlgResolve = r; });
+        if (!result) return;
+        const { w, h } = result;
+        if (!w || !h || w < 1 || h < 1 || w > 4096 || h > 4096) { await paintDlg('alert', '크기는 1~4096 사이여야 합니다.'); return; }
+        resizeCanvas(w, h);
+      };
+      window.paintHelpMenu = function () { closeDropdown(); el('paintHelpModal').classList.remove('hidden'); };
+      window.paintCloseHelp = function () { el('paintHelpModal').classList.add('hidden'); };
+
+      function openDropdown(menuEl, show, hide) {
+        const dd = el('paintDropdown');
+        dd.style.left = (menuEl.offsetLeft) + 'px';
+        document.querySelectorAll('.paint-menu-item').forEach(m => m.classList.remove('open'));
+        menuEl.classList.add('open');
+        // 항목 가시성 제어
+        if (show) show.forEach(id => { const e2 = el(id); if (e2) e2.style.display = ''; });
+        if (hide) hide.forEach(id => { const e2 = el(id); if (e2) e2.style.display = 'none'; });
+        dd.classList.remove('hidden');
+      }
+      function closeDropdown() {
+        el('paintDropdown').classList.add('hidden');
+        document.querySelectorAll('.paint-menu-item').forEach(m => m.classList.remove('open'));
+      }
+      window.closeDropdown = closeDropdown;
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.paint-menubar')) closeDropdown();
+      });
+
+      window.paintNewCanvas = async function () {
+        const ok = await paintDlg('confirm', '현재 레이어를 모두 지우고 새로 시작할까요?');
+        if (!ok) return;
+        layers.forEach(ly => ly.canvas.remove());
+        layers = []; activeLayer = 0;
+        paintHistory = []; paintHistIdx = -1;
+        clearSelection();
+        paintAddLayer();
+        saveHistory();
+        closeDropdown();
+      };
+
+      window.paintClearCanvas = function () {
+        saveHistory();
+        const ctx = activeCtx(); if (ctx) ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+        clearSelection();
+        refreshLayerThumb();
+        closeDropdown();
+      };
+
+      window.paintClearAll = async function () {
+        const ok = await paintDlg('confirm', '모든 레이어를 지울까요?');
+        if (!ok) return;
+        saveHistory();
+        clearSelection();
+        layers.forEach(ly => ly.ctx.clearRect(0, 0, CANVAS_W, CANVAS_H));
+        refreshLayerThumb();
+        closeDropdown();
+      };
+
+      window.paintExportPng = function () {
+        const out = mergeToCanvas(true);
+        const a = document.createElement('a');
+        a.download = 'paint_' + Date.now() + '.png';
+        a.href = out.toDataURL('image/png');
+        a.click();
+        closeDropdown();
+      };
+
+      window.paintSaveServer = async function () {
+        closeDropdown();
+        el('paintStatus').textContent = '저장 중...';
+        try {
+          const out = mergeToCanvas(true);
+          const dataUrl = out.toDataURL('image/png');
+          const token = localStorage.getItem('adminToken') || '';
+          const res = await fetch('/api/paint/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ dataUrl, filename: 'drawing' }),
+          });
+          const json = await res.json();
+          if (json.ok) el('paintStatus').textContent = '✓ 저장 완료: ' + json.filename;
+          else el('paintStatus').textContent = '저장 실패: ' + (json.error || '');
+        } catch (err) {
+          el('paintStatus').textContent = '저장 실패: ' + err.message;
+        }
+      };
+
+      window.paintFlipH = function () {
+        saveHistory();
+        const ctx = activeCtx(); if (!ctx) return;
+        const tmp = document.createElement('canvas'); tmp.width = CANVAS_W; tmp.height = CANVAS_H;
+        const t = tmp.getContext('2d');
+        t.translate(CANVAS_W, 0); t.scale(-1, 1); t.drawImage(layers[activeLayer].canvas, 0, 0);
+        ctx.clearRect(0, 0, CANVAS_W, CANVAS_H); ctx.drawImage(tmp, 0, 0);
+        refreshLayerThumb(); closeDropdown();
+      };
+
+      window.paintFlipV = function () {
+        saveHistory();
+        const ctx = activeCtx(); if (!ctx) return;
+        const tmp = document.createElement('canvas'); tmp.width = CANVAS_W; tmp.height = CANVAS_H;
+        const t = tmp.getContext('2d');
+        t.translate(0, CANVAS_H); t.scale(1, -1); t.drawImage(layers[activeLayer].canvas, 0, 0);
+        ctx.clearRect(0, 0, CANVAS_W, CANVAS_H); ctx.drawImage(tmp, 0, 0);
+        refreshLayerThumb(); closeDropdown();
+      };
+
+      // ---- Win98 인앱 다이얼로그 ----
+      let _paintDlgResolve = null;
+      function paintDlg(type, msg, defaultVal) {
+        const bd = el('paintDlgBackdrop');
+        const inp = el('paintDlgInput');
+        const btns = el('paintDlgBtns');
+        el('paintDlgMsg').textContent = msg;
+        el('paintDlgTitle').textContent = type === 'confirm' ? '확인' : type === 'prompt' ? '입력' : '알림';
+        if (type === 'prompt') { inp.classList.remove('hidden'); inp.value = defaultVal || ''; }
+        else { inp.classList.add('hidden'); }
+        btns.innerHTML = '';
+        if (type !== 'alert') {
+          const cancel = document.createElement('button');
+          cancel.className = 'paint-dlg-btn'; cancel.textContent = '취소';
+          cancel.onclick = () => _paintDlgClose(null);
+          btns.appendChild(cancel);
+        }
+        const ok = document.createElement('button');
+        ok.className = 'paint-dlg-btn'; ok.textContent = '확인';
+        ok.onclick = () => _paintDlgClose(type === 'prompt' ? inp.value : true);
+        btns.appendChild(ok);
+        bd.classList.remove('hidden');
+        if (type === 'prompt') setTimeout(() => { inp.focus(); inp.select(); }, 50);
+        inp.onkeydown = e => {
+          if (e.key === 'Enter') _paintDlgClose(type === 'prompt' ? inp.value : true);
+          if (e.key === 'Escape') _paintDlgClose(null);
+        };
+        return new Promise(r => { _paintDlgResolve = r; });
+      }
+      window._paintDlgClose = function (val) {
+        el('paintDlgBackdrop').classList.add('hidden');
+        if (_paintDlgResolve) { _paintDlgResolve(val); _paintDlgResolve = null; }
+      };
+
+      // ---- 배경 제거 (flood-fill → 투명화) ----
+      function _bgFloodFill(ctx, startX, startY, tolerance) {
+        const imgData = ctx.getImageData(0, 0, CANVAS_W, CANVAS_H);
+        const data = imgData.data;
+        const idx = (startY * CANVAS_W + startX) * 4;
+        const tr = data[idx], tg = data[idx + 1], tb = data[idx + 2], ta = data[idx + 3];
+        const match = (i) => {
+          const dr = data[i] - tr, dg = data[i + 1] - tg, db = data[i + 2] - tb, da = data[i + 3] - ta;
+          return Math.sqrt(dr * dr + dg * dg + db * db + da * da) <= tolerance;
+        };
+        const visited = new Uint8Array(CANVAS_W * CANVAS_H);
+        const stack = [startX + startY * CANVAS_W];
+        visited[startX + startY * CANVAS_W] = 1;
+        while (stack.length) {
+          const pos = stack.pop();
+          const x = pos % CANVAS_W, y = (pos / CANVAS_W) | 0;
+          const i = pos * 4;
+          data[i] = 0; data[i + 1] = 0; data[i + 2] = 0; data[i + 3] = 0;
+          const neighbors = [pos - 1, pos + 1, pos - CANVAS_W, pos + CANVAS_W];
+          for (const np of neighbors) {
+            if (np < 0 || np >= CANVAS_W * CANVAS_H) continue;
+            const nx = np % CANVAS_W;
+            if (Math.abs(nx - x) > 1) continue; // wrap-around guard
+            if (!visited[np] && match(np * 4)) { visited[np] = 1; stack.push(np); }
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      // 도구 클릭: 클릭 좌표 기준 flood-fill 배경제거
+      function doBgRemoveClick(px, py) {
+        const ctx = activeCtx(); if (!ctx) return;
+        _bgFloodFill(ctx, Math.round(px), Math.round(py), 60);
+        refreshLayerThumb();
+      }
+
+      // 메뉴 → 자동 배경제거 (4모서리 + tolerance 입력)
+      window.paintBgRemoveAuto = async function () {
+        closeDropdown();
+        const val = await paintDlg('prompt', '허용 오차(0–255, 기본 30):', '30');
+        if (val === null) return;
+        saveHistory();
+        const tol = Math.max(0, Math.min(255, parseInt(val, 10) || 30)) * 1.732; // RGB→RGBA dist
+        const ctx = activeCtx(); if (!ctx) return;
+        const corners = [[0, 0], [CANVAS_W - 1, 0], [0, CANVAS_H - 1], [CANVAS_W - 1, CANVAS_H - 1]];
+        for (const [cx, cy] of corners) _bgFloodFill(ctx, cx, cy, tol);
+        refreshLayerThumb();
+        el('paintStatus').textContent = '배경 제거 완료 (허용 오차 ' + (parseInt(val, 10) || 30) + ')';
+      };
+
+      // ---- 키보드 단축키 ----
+      function paintKeydown(e) {
+        if (!el('paintWindow') || el('paintWindow').classList.contains('hidden')) return;
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        const map = { p: 'pencil', b: 'brush', e: 'eraser', f: 'fill', i: 'eyedrop', s: 'spray', t: 'text', l: 'line', r: 'rect', o: 'ellipse', g: 'bgremove', m: 'select' };
+        if (map[e.key.toLowerCase()]) { setPtool(map[e.key.toLowerCase()]); e.preventDefault(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') { window.paintUndo(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'y') { window.paintRedo(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'a') { paintSelectAll(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'c') { copySelectionToClipboard(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'x') { copySelectionToClipboard().then(() => paintDeleteSelection()); e.preventDefault(); return; }
+        if (e.key === 'Delete') { paintDeleteSelection(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'v') { pasteFromClipboard(); e.preventDefault(); return; }
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') { paintSaveServer(); e.preventDefault(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') { paintExportPng(); e.preventDefault(); }
+        if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) { paintZoomIn(); e.preventDefault(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === '-') { paintZoomOut(); e.preventDefault(); }
+        if ((e.ctrlKey || e.metaKey) && e.key === '0') { paintZoomReset(); e.preventDefault(); }
+      }
     })();
 
     // ===== 명반(CHART) — 답변 버블 안 인라인 토글(dl-card 패턴) =====
@@ -4076,7 +7114,37 @@
         if (r.ok) { const { items } = await r.json(); const p = items.filter((i) => i.type === 'project').length, s = items.filter((i) => i.type === 'social').length; const w = document.getElementById('homeWorks'); if (w) w.textContent = p + ' projects · ' + s + ' social'; }
       } catch { }
       try { const h = await fetch('/api/health'); if (h.ok) { const u = document.getElementById('homeUptime'); if (u) u.textContent = fmtUptime((await h.json()).uptime); } } catch { }
+      loadMarketTicker();
     }
+
+    let _mtTimer = null;
+    async function loadMarketTicker(force = false) {
+      const grid = document.getElementById('mtGrid');
+      if (!grid) return;
+      if (!force && grid.children.length > 1) return; // already loaded
+      grid.innerHTML = '<div class="mt-loading">▐ LOADING...</div>';
+      try {
+        const r = await fetch('/api/stock/etf-snapshot');
+        if (!r.ok) throw new Error();
+        const { snapshot } = await r.json();
+        if (!snapshot || !snapshot.length) { grid.innerHTML = '<div class="mt-loading">데이터 없음</div>'; return; }
+        grid.innerHTML = snapshot.map(item => {
+          const up = item.changePct >= 0;
+          const cls = up ? 'mt-up' : 'mt-down';
+          const arr = up ? '▲' : '▼';
+          const price = item.price != null ? `$${Number(item.price).toFixed(2)}` : '--';
+          const chg = item.changePct != null ? `${arr} ${Math.abs(item.changePct).toFixed(2)}%` : '--';
+          return `<div class="mt-item" onclick="openTerminalWindow('${item.symbol}')" title="${item.name}">
+            <div class="mt-sym">${item.symbol}</div>
+            <div class="mt-price ${cls}">${price}</div>
+            <div class="mt-chg ${cls}">${chg}</div>
+          </div>`;
+        }).join('');
+      } catch { grid.innerHTML = '<div class="mt-loading">불러오기 실패</div>'; }
+      clearTimeout(_mtTimer);
+      _mtTimer = setTimeout(() => loadMarketTicker(true), 5 * 60 * 1000);
+    }
+
 
     // ===== DOBIS 챗봇 (소켓, 휘발성) =====
     let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, _dobisCancelled = false;
@@ -4156,19 +7224,30 @@
       document.getElementById('chatList').classList.add('hidden');
       hideDomoji(); setChatName();
     }
-    // ===== 커스텀 다이얼로그 (prompt / confirm / alert) =====
+    // ===== 커스텀 다이얼로그 (prompt / confirm / alert / prompt2) =====
     let _cdlgResolve = null;
-    function _cdlgShow({ title = '', msg = '', type = 'alert', defaultValue = '', placeholder = '' }) {
+    function _cdlgShow({ title = '', msg = '', type = 'alert', defaultValue = '', placeholder = '', defaultValue2 = '', placeholder2 = '', label1 = '', label2 = '' }) {
       document.getElementById('cdlgTitle').textContent = title;
       document.getElementById('cdlgMsg').textContent = msg;
       const inp = document.getElementById('cdlgInput');
+      const inp2 = document.getElementById('cdlgInput2');
+      const lbl1 = document.getElementById('cdlgLbl1');
+      const lbl2 = document.getElementById('cdlgLbl2');
       const btns = document.getElementById('cdlgBtns');
-      inp.className = type === 'prompt' ? '' : 'hidden';
-      if (type === 'prompt') { inp.value = defaultValue; inp.placeholder = placeholder || ''; }
+      const isPrompt = type === 'prompt' || type === 'prompt2';
+      const isPrompt2 = type === 'prompt2';
+      // 첫 번째 input
+      lbl1.textContent = label1; lbl1.className = (isPrompt && label1) ? 'cdlg-lbl' : 'cdlg-lbl hidden';
+      inp.className = isPrompt ? '' : 'hidden';
+      if (isPrompt) { inp.value = defaultValue; inp.placeholder = placeholder || ''; }
+      // 두 번째 input
+      lbl2.textContent = label2; lbl2.className = isPrompt2 ? 'cdlg-lbl' : 'cdlg-lbl hidden';
+      inp2.className = isPrompt2 ? '' : 'hidden';
+      if (isPrompt2) { inp2.value = defaultValue2; inp2.placeholder = placeholder2 || ''; }
       btns.innerHTML = '';
       const ok = document.createElement('span');
       ok.className = 'cmd ok'; ok.textContent = '[ 확인 ]';
-      ok.onclick = () => _cdlgClose(type === 'prompt' ? inp.value : true);
+      ok.onclick = () => _cdlgClose(isPrompt2 ? { v1: inp.value, v2: inp2.value } : (isPrompt ? inp.value : true));
       btns.appendChild(ok);
       if (type !== 'alert') {
         const cancel = document.createElement('span');
@@ -4177,8 +7256,15 @@
         btns.insertBefore(cancel, ok);
       }
       document.getElementById('cdlgBackdrop').classList.remove('hidden');
-      if (type === 'prompt') setTimeout(() => { inp.focus(); inp.select(); }, 50);
-      inp.onkeydown = e => { if (e.key === 'Enter') _cdlgClose(type === 'prompt' ? inp.value : true); if (e.key === 'Escape') _cdlgClose(null); };
+      if (isPrompt) setTimeout(() => { inp.focus(); inp.select(); }, 50);
+      const _onKey = e => {
+        if (e.key === 'Escape') { _cdlgClose(null); return; }
+        if (e.key === 'Enter' && !e.shiftKey) {
+          if (isPrompt2 && e.target === inp) { inp2.focus(); return; }   // 첫 필드 Enter → 두 번째로 이동
+          _cdlgClose(isPrompt2 ? { v1: inp.value, v2: inp2.value } : (isPrompt ? inp.value : true));
+        }
+      };
+      inp.onkeydown = _onKey; inp2.onkeydown = _onKey;
       return new Promise(r => { _cdlgResolve = r; });
     }
     function _cdlgClose(val) {
@@ -4190,6 +7276,9 @@
     function dlgPrompt(msg, defaultValue = '', title = '입력') { return _cdlgShow({ title, msg, type: 'prompt', defaultValue }); }
     function dlgConfirm(msg, title = '확인') { return _cdlgShow({ title, msg, type: 'confirm' }); }
     function dlgAlert(msg, title = '알림') { return _cdlgShow({ title, msg, type: 'alert' }); }
+    function dlgPrompt2(title, label1, val1, label2, val2) {
+      return _cdlgShow({ title, msg: '', type: 'prompt2', label1, defaultValue: val1, label2, defaultValue2: val2 });
+    }
 
     async function dobisSaveChat() {
       if (!document.querySelector('#dobisLog .dobis-msg')) { flash('저장할 대화가 없습니다', false); return; }
@@ -4578,10 +7667,38 @@
     function _ccStatus(raw) {
       const el = document.createElement('div');
       el.className = 'cc-status';
-      raw.trim().split(/(\*\*[^*]+\*\*)/g).forEach(p => {
-        const bm = p.match(/^\*\*([^*]+)\*\*$/);
-        if (bm) { const s = document.createElement('strong'); s.textContent = bm[1]; el.appendChild(s); }
-        else el.appendChild(document.createTextNode(p));
+      const GAUGE_RE = /[█░▓▒]/;
+      // 이모지와 블록문자열을 함께 토큰화
+      const TOKEN_RE = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})|([█░▓▒]+)/gu;
+      raw.trim().split('\n').forEach((line, idx, arr) => {
+        if (GAUGE_RE.test(line)) {
+          // 게이지 라인: 이모지→고정폭 span, 블록문자열→CSS 그라디언트 바 (문자 폭 의존성 제거)
+          TOKEN_RE.lastIndex = 0;
+          let last = 0, m;
+          while ((m = TOKEN_RE.exec(line)) !== null) {
+            if (m.index > last) el.appendChild(document.createTextNode(line.slice(last, m.index)));
+            if (m[1]) {
+              const sp = document.createElement('span'); sp.className = 'ge'; sp.textContent = m[1];
+              el.appendChild(sp);
+            } else {
+              const blocks = m[2];
+              const filled = (blocks.match(/[█▓▒]/g) || []).length;
+              const pct = Math.round(filled / blocks.length * 100);
+              const bar = document.createElement('span'); bar.className = 'gauge-bar';
+              bar.style.setProperty('--pct', pct + '%');
+              el.appendChild(bar);
+            }
+            last = TOKEN_RE.lastIndex;
+          }
+          if (last < line.length) el.appendChild(document.createTextNode(line.slice(last)));
+        } else {
+          line.split(/(\*\*[^*]+\*\*)/g).forEach(p => {
+            const bm = p.match(/^\*\*([^*]+)\*\*$/);
+            if (bm) { const s = document.createElement('strong'); s.textContent = bm[1]; el.appendChild(s); }
+            else el.appendChild(document.createTextNode(p));
+          });
+        }
+        if (idx < arr.length - 1) el.appendChild(document.createTextNode('\n'));
       });
       return el;
     }
@@ -5542,9 +8659,9 @@
           r.innerHTML = '<span class="mr-drag" title="드래그로 순서 변경">⠿</span>' +
             '<div class="mr-info"><span class="mr-name">♪ ' + _trackTitle(t) + '</span>' + (t.desc ? '<span class="mr-desc">' + t.desc + '</span>' : '') + '</div>' +
             '<a class="mr-dl" href="/music/' + encodeURIComponent(t.file) + '" download="' + t.file.replace(/"/g, '') + '" title="다운로드" onclick="event.stopPropagation()">⬇︎</a>';
-          // 제목 편집 버튼(파일명·따옴표 안전 위해 DOM으로 핸들러 부착)
-          const ed = document.createElement('span'); ed.className = 'mr-edit'; ed.title = '제목 편집'; ed.textContent = '✏︎';
-          ed.onclick = (e) => { e.stopPropagation(); musicRename(t.file, _trackTitle(t)); };
+          // 제목/설명 편집 버튼(파일명·따옴표 안전 위해 DOM으로 핸들러 부착)
+          const ed = document.createElement('span'); ed.className = 'mr-edit'; ed.title = '제목/설명 편집'; ed.textContent = '✏︎';
+          ed.onclick = (e) => { e.stopPropagation(); musicEdit(t.file, _trackTitle(t), t.desc || ''); };
           r.insertBefore(ed, r.querySelector('.mr-dl'));
           r.querySelector('.mr-drag').addEventListener('pointerdown', (e) => _musicDragStart(e, r));   // 드래그 순서변경
           r.onclick = () => { musicPlayTrack(t.file); closeMusicList(); };
@@ -5590,14 +8707,15 @@
         flash('순서 저장 중…', true);   // 워커가 music-update 로 목록 자동 갱신
       }
     }
-    async function musicRename(file, cur) {
-      const title = await dlgPrompt('곡 제목 변경', cur || '');
-      if (title == null) return;
-      const t = String(title).trim(); if (!t) return;
+    async function musicEdit(file, curTitle, curDesc) {
+      const result = await dlgPrompt2('곡 정보 편집', '제목', curTitle || '', '설명', curDesc || '');
+      if (result == null) return;
+      const t = String(result.v1 || '').trim(); if (!t) return;
+      const d = String(result.v2 || '').trim();
       const s = ensureSocket(); if (!s) { flash('연결이 필요해요 — 잠시 후 다시', false); return; }
       if (!_workerLive) { flash('DOBIS 워커 깨우는 중… 1~2초 뒤 다시 시도해줘 (LIVE 되면 OK)', false); return; }
-      s.emit('music:rename', { file, title: t });
-      flash('제목 변경 중…', true);   // 워커가 처리 후 music-update 로 목록 자동 새로고침
+      s.emit('music:rename', { file, title: t, desc: d });
+      flash('곡 정보 변경 중…', true);   // 워커가 처리 후 music-update 로 목록 자동 새로고침
     }
     async function musicNext() {
       if (!_musicOrder.length) { await loadMusicTracks(); _rebuildOrder(); }
@@ -5665,8 +8783,8 @@
     function _iconOf(kind, name) {
       if (kind === 'pdf') return '📄';
       const ext = (name || '').split('.').pop().toLowerCase();
-      if (['zip','7z','rar','gz','tar'].includes(ext)) return '📦';
-      if (['mp4','mov','webm','avi','mkv','m4v'].includes(ext)) return '🎬';
+      if (['zip', '7z', 'rar', 'gz', 'tar'].includes(ext)) return '📦';
+      if (['mp4', 'mov', 'webm', 'avi', 'mkv', 'm4v'].includes(ext)) return '🎬';
       return '📎';
     }
 
@@ -5822,15 +8940,7 @@
         // textarea에 code-mode 클래스 반영
         const ta = document.getElementById('dobisInput');
         if (ta) ta.classList.toggle('code-mode', _dobisCodeMode);
-        // 레이블
-        let lbl = document.getElementById('codeModeLabel');
-        if (_dobisCodeMode) {
-          if (!lbl) {
-            lbl = document.createElement('div'); lbl.id = 'codeModeLabel'; lbl.className = 'code-mode-label';
-            lbl.textContent = '[ CODE BLOCK ]';
-            ta && ta.parentNode && ta.parentNode.insertBefore(lbl, ta);
-          }
-        } else if (lbl) { lbl.remove(); }
+        const lbl = document.getElementById('codeModeLabel'); if (lbl) lbl.remove();
         _updateDobisChips();
       }
     }
@@ -5902,11 +9012,42 @@
     }
     function dobisSetModel(m) { if (dobisBusy) return; dobisSendMsg('/model ' + m); }
 
+    // ===== 터미널 테마 =====
+    const TERMINAL_THEMES = [
+      { id: 'green', label: 'GRN · BLACK-GREEN', desc: '기본 CRT 녹색', bg: '#000000', fg: '#4DFF8F', border: '#1a4d2e' },
+      { id: 'white', label: 'WHT · BLACK-WHITE', desc: '흑백 모노크롬', bg: '#000000', fg: '#D0D0D0', border: '#404040' },
+      { id: 'amber', label: 'AMB · BLACK-AMBER', desc: '클래식 앰버 CRT', bg: '#030200', fg: '#FFB400', border: '#3d2c00' },
+      { id: 'mono', label: 'INV · WHITE-BLACK', desc: '라이트 인버티드', bg: '#EEECE8', fg: '#1E1C1A', border: '#AAAAAA' },
+    ];
+
+    function renderThemeCards() {
+      const cur = localStorage.getItem('crt-theme') || 'green';
+      const container = document.getElementById('themeCards');
+      container.innerHTML = '';
+      TERMINAL_THEMES.forEach(({ id, label, desc, bg, fg, border }) => {
+        const card = document.createElement('div');
+        card.className = 'theme-card' + (id === cur ? ' active' : '');
+        card.innerHTML = `
+          <div class="theme-card-preview" style="background:${bg};border:1px solid ${border}">
+            <span style="color:${fg}">■</span>
+          </div>
+          <div class="theme-card-label">${label}</div>
+          <div class="theme-card-desc">${desc}</div>`;
+        card.onclick = () => {
+          localStorage.setItem('crt-theme', id);
+          renderThemeCards();
+        };
+        container.appendChild(card);
+      });
+    }
+
     // ===== 설정 모달 (⚙) — 관리자 ID/PW 변경 =====
     function setShow(which) {
       document.getElementById('setMenu').classList.toggle('hidden', which !== 'menu');
       document.getElementById('setAdmin').classList.toggle('hidden', which !== 'admin');
       document.getElementById('setAccount').classList.toggle('hidden', which !== 'account');
+      document.getElementById('setTheme').classList.toggle('hidden', which !== 'theme');
+      if (which === 'theme') renderThemeCards();
       if (which === 'admin') {
         document.getElementById('setMsg').textContent = '';
         const root = myRole === 'root';

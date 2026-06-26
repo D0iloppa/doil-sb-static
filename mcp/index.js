@@ -9,8 +9,10 @@ const {
 
 const { tools: planeTools } = require('./tools/plane.js');
 const { tools: mmTools } = require('./tools/mattermost.js');
+const { tools: stockTools } = require('./tools/stock.js');
+const { tools: jenkinsTools } = require('./tools/jenkins.js');
 
-const allTools = [...planeTools, ...mmTools];
+const allTools = [...planeTools, ...mmTools, ...stockTools, ...jenkinsTools];
 
 const server = new Server(
   { name: 'doil-mcp', version: '1.0.0' },

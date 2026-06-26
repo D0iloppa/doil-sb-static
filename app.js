@@ -355,6 +355,16 @@ pagesRouter.get('/admin-ssh', (req, res) => {
   res.render('ssh-popup', { layout: false });
 });
 
+// 스케치패드 — /sketchpad 접속 시 새 UUID 캔버스로 redirect
+pagesRouter.get('/sketchpad', (req, res) => {
+  const { randomUUID } = require('crypto');
+  res.redirect(`${req.rootContext}/sketchpad/${randomUUID()}`);
+});
+pagesRouter.get('/sketchpad/:id', (req, res) => {
+  const canvasId = req.params.id.replace(/[^a-z0-9_\-]/gi, '').slice(0, 80) || 'default';
+  res.render('sketchpad', { layout: false, canvasId, rootContext: req.rootContext });
+});
+
 // =========================
 // Router 마운트
 // =========================
@@ -364,12 +374,24 @@ const geoChatRouter = require('./routes/api/geoChat');
 const servicesRouter = require('./routes/api/services');
 const settingsRouter = require('./routes/api/settings');
 const { statusRouter: dobisStatusRouter } = require('./dobisBridge');
+const paintRouter = require('./routes/api/paint');
+const stockRouter = require('./routes/api/stock');
+const { router: collectRouter } = require('./routes/api/collect');
+const sketchpadRouter = require('./routes/api/sketchpad');
+const graphHookRouter = require('./routes/api/graphHook');
+const graphRouter = require('./routes/graph');
 app.use('/api/dev', devRouter);        // Plane → dev_context proxy
 app.use('/api/auth', authRouter);      // 공유 로그인(CHATBOT_ID/PW → 토큰)
 app.use('/api/geo/chat', geoChatRouter); // geo 챗봇(인증 + 작업 큐)
 app.use('/api/services', servicesRouter); // 홈페이지 서비스 일람(공개 읽기 + 관리자 CRUD)
 app.use('/api/settings', settingsRouter); // 관리자 콘솔 설정(배경 등)
 app.use('/api/dobis', dobisStatusRouter); // DOBIS 워커 상태(host waker 폴링)
+app.use('/api/paint', paintRouter);    // PAINT 앱 — dobis/shared 저장
+app.use('/api/stock', stockRouter);   // Bloomberg terminal — 주식 데이터 프록시
+app.use('/api/stock', collectRouter); // market 데이터 수집 (collect, collect/status)
+app.use('/api/sketchpad', sketchpadRouter); // 스케치패드 캔버스 저장/조회
+app.use('/api/graph', graphHookRouter);    // 그래프 Notion 버튼 웹훅
+app.use('/graph', graphRouter);            // DOYCLOPEDIA 그래프 뷰어 + 데이터 API
 app.use('/api', apiRouter);      // 기존 내부 API
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 
@@ -447,6 +469,11 @@ require('./db/appSettings').ensureSchema()
   .then(() => console.log('⚙  app_settings schema ready'))
   .catch((e) => console.error('[settings] ensureSchema failed:', e.message));
 
+// 스케치패드 테이블 보장
+require('./db/sketchpad').ensureSchema()
+  .then(() => console.log('🎨 sketchpad schema ready'))
+  .catch((e) => console.error('[sketchpad] ensureSchema failed:', e.message));
+
 // 관리자 계정 테이블 보장 + (비어있으면) env 에서 초기 시드
 require('./db/adminUsers').ensureSchema()
   .then(() => { console.log('👤 admin_users schema ready'); return require('./auth').seedFromEnv(); })
@@ -469,6 +496,13 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`   GET /api/health - Health check`);
   console.log(`   GET /api/info - API information`);
   console.log(`   GET /api/projects - Projects data`);
+
+  // market 데이터 수집 cron 시작 (평일 22:30 KST)
+  try {
+    require('./jobs/marketCollect').startCollectJob();
+  } catch (e) {
+    console.error('[market-collect] cron 등록 실패:', e.message);
+  }
 });
 
 module.exports = app;
