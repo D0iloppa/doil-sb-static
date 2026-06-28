@@ -4529,6 +4529,10 @@
                     class="app-label">DOYCLOPEDIA</span></div>
                 <a class="app-card" href="https://agy.doil.me/" target="_blank" rel="noreferrer"
                   title="로컬 안티그라비티 프록시"><span class="app-ico">🛸</span><span class="app-label">agy</span></a>
+                <div class="app-card"
+                  onclick="window.open('https://drec.doil.me/','drec','width=1280,height=860,noopener')"
+                  title="dRec 회의 녹취·회의록 (팝업)"><span class="app-ico">🎙️</span><span
+                    class="app-label">dRec</span></div>
               </div>
             </div>
 
@@ -4691,6 +4695,23 @@
               </div>
               <div class="appwin-body">
                 <iframe id="geoFrame" class="geo-frame" title="GEO 지리 학습"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <div class="appwin-scan" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- 자미두수 명반 윈도우 — DOBIS 자미두수 차트 iframe -->
+            <div id="jamiWindow" class="appwin hidden tinted win-max" style="left:5%;top:3%;width:88%;height:90%;">
+              <div class="appwin-bar" id="jamiBar">
+                <span class="appwin-title">🔮 자미두수 명반</span>
+                <span class="appwin-btns">
+                  <span class="awb" onclick="jamiMin()" title="최소화">_</span>
+                  <span class="awb" onclick="jamiMax()" title="전체화면 / 복원">▢</span>
+                  <span class="awb close" onclick="jamiClose()" title="닫기">✕</span>
+                </span>
+              </div>
+              <div class="appwin-body">
+                <iframe id="jamiFrame" class="geo-frame" title="자미두수 명반"
                   referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 <div class="appwin-scan" aria-hidden="true"></div>
               </div>
@@ -5250,6 +5271,7 @@
                 <div style="display:flex;gap:10px;margin:8px 0">
                   <span class="cmd setmenu-item" onclick="dobisSwitch(0)">[ 계정 #1 사용 ]</span>
                   <span class="cmd setmenu-item" onclick="dobisSwitch(1)">[ 계정 #2 사용 ]</span>
+                  <span class="cmd setmenu-item" onclick="dobisSwitch(2)">[ 계정 #3 사용 ]</span>
                 </div>
                 <div id="acctMsg" class="muted" style="min-height:1.2em"></div>
                 <div style="margin-top:8px">
@@ -5453,6 +5475,36 @@
         if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
         on = true; sx = e.clientX; sy = e.clientY; ol = w.offsetLeft; ot = w.offsetTop;
         w.style.left = ol + 'px'; w.style.top = ot + 'px'; e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!on) return;
+        w.style.left = (ol + e.clientX - sx) + 'px';
+        w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
+      });
+      window.addEventListener('mouseup', () => { on = false; });
+    })();
+
+    function openJamiWindow(url) {
+      touchSession();
+      const w = document.getElementById('jamiWindow'), f = document.getElementById('jamiFrame');
+      if (f) { try { const u = new URL(url); f.src = u.pathname + u.search + '&_t=' + Date.now(); } catch { f.src = url + '&_t=' + Date.now(); } }  // ponytail: 절대 URL → 상대 경로(same-origin 보장, frame-ancestors 'self' 매칭)
+      w.classList.remove('hidden'); w.classList.add('win-max');
+    }
+    function jamiMin() { document.getElementById('jamiWindow').classList.add('hidden'); }
+    function jamiMax() { document.getElementById('jamiWindow').classList.toggle('win-max'); }
+    function jamiClose() {
+      const w = document.getElementById('jamiWindow'), f = document.getElementById('jamiFrame');
+      w.classList.add('hidden'); w.classList.remove('win-max');
+      if (f) { f.src = 'about:blank'; f.removeAttribute('src'); }
+    }
+    (function jamiDrag() {
+      const w = document.getElementById('jamiWindow'), bar = document.getElementById('jamiBar');
+      if (!w || !bar) return;
+      let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
+      bar.addEventListener('mousedown', (e) => {
+        if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
+        on = true; sx = e.clientX; sy = e.clientY;
+        ol = w.offsetLeft; ot = w.offsetTop; e.preventDefault();
       });
       window.addEventListener('mousemove', (e) => {
         if (!on) return;
@@ -6675,33 +6727,44 @@
 
     // ===== 명반(CHART) — 답변 버블 안 인라인 토글(dl-card 패턴) =====
     const _CHART_LABEL = { saju: '사주팔자', ziwei: '자미두수', natal: '별자리' };
-    function appendChartCard(bubble, c) {   // dobis:done 의 chart {kind,url} → 버블에 [명반보기] 버튼 + 토글 이미지
+    function appendChartCard(bubble, c) {   // dobis:done 의 chart {kind,url} → 버블에 [명반보기] 버튼
       if (!bubble || !c || !c.kind || !c.url) return;
-      const card = document.createElement('div'); card.className = 'dl-card';
-      const btn = document.createElement('span'); btn.className = 'dl-btn';
-      const img = document.createElement('img'); img.className = 'chart-img hidden'; img.alt = (_CHART_LABEL[c.kind] || '') + ' 명반';
-      img.title = '클릭하면 원본을 새 탭에서 크게 봅니다';
-      img.onclick = () => window.open(c.url, '_blank', 'noopener');
+      bubble.querySelectorAll('.dl-ext[data-chart], .dl-card:not(.dl-ext)').forEach(n => n.remove());  // ponytail: dedup + inline [link:] 카드 정리
+      const card = document.createElement('div'); card.className = 'dl-card dl-ext'; card.dataset.chart = c.kind;
       const label = _CHART_LABEL[c.kind] || '명반';
-      const setLbl = () => { btn.textContent = (img.classList.contains('hidden') ? '🔮 ' + label + ' 명반보기' : '🔼 ' + label + ' 명반접기'); };
-      btn.onclick = () => {
-        if (img.classList.contains('hidden') && !img.getAttribute('src')) img.src = c.url;   // 첫 펼침에만 로드
-        img.classList.toggle('hidden'); setLbl();
-        document.getElementById('dobisLog').scrollTop = 1e9;
-      };
-      setLbl();
-      card.appendChild(btn);
-      // [Copy for AI Reading] — orrery 텍스트(있을 때만)를 클립보드로 복사
-      if (c.text) {
-        const cp = document.createElement('span'); cp.className = 'dl-btn add'; cp.textContent = '📋 Copy for AI Reading';
-        cp.onclick = async () => {
-          try { await navigator.clipboard.writeText(c.text); }
-          catch { const ta = document.createElement('textarea'); ta.value = c.text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
-          const o = cp.textContent; cp.textContent = '✓ 복사됨'; setTimeout(() => { cp.textContent = o; }, 1500);
+      const btn = document.createElement('span'); btn.className = 'dl-btn';
+
+      if (c.kind === 'ziwei') {
+        // 자미두수: iframe 팝업으로 명반 표시
+        btn.textContent = '🔮 ' + label + ' 명반보기';
+        btn.onclick = () => openJamiWindow(c.url);
+        card.appendChild(btn);
+      } else {
+        // 사주·별자리: 기존 이미지 토글
+        const img = document.createElement('img'); img.className = 'chart-img hidden'; img.alt = label + ' 명반';
+        img.title = '클릭하면 원본을 새 탭에서 크게 봅니다';
+        img.onclick = () => window.open(c.url, '_blank', 'noopener');
+        const setLbl = () => { btn.textContent = (img.classList.contains('hidden') ? '🔮 ' + label + ' 명반보기' : '🔼 ' + label + ' 명반접기'); };
+        btn.onclick = () => {
+          if (img.classList.contains('hidden') && !img.getAttribute('src')) img.src = c.url;
+          img.classList.toggle('hidden'); setLbl();
+          document.getElementById('dobisLog').scrollTop = 1e9;
         };
-        card.appendChild(cp);
+        setLbl();
+        card.appendChild(btn);
+        if (c.text) {
+          const cp = document.createElement('span'); cp.className = 'dl-btn add'; cp.textContent = '📋 Copy for AI Reading';
+          cp.onclick = async () => {
+            try { await navigator.clipboard.writeText(c.text); }
+            catch { const ta = document.createElement('textarea'); ta.value = c.text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+            const o = cp.textContent; cp.textContent = '✓ 복사됨'; setTimeout(() => { cp.textContent = o; }, 1500);
+          };
+          card.appendChild(cp);
+        }
+        bubble.prepend(card); bubble.prepend(img);
+        return;
       }
-      bubble.appendChild(card); bubble.appendChild(img);
+      bubble.append(card);
     }
 
     // ── dRec 회의 녹취 카드 (브라우저 마이크 → drec.doil.me REST 직결) ────────────
@@ -7769,12 +7832,14 @@
     function _makeChoices(body) {
       const wrap = document.createElement('div');
       wrap.className = 'dobis-choices';
+      let idx = 0;
       body.trim().split('\n').forEach(line => {
-        const m = line.trim().match(/^(\d+)[.)]\s*(.+)$/);
+        const m = line.trim().match(/^(?:(\d+)[.)]\s*|[-·*\.]+\s*)(.+)$/) || (line.trim() ? [null, null, line.trim()] : null);
         if (!m) return;
+        idx++;
         const btn = document.createElement('button');
         btn.className = 'dobis-choice-btn';
-        const cn = document.createElement('span'); cn.className = 'cn'; cn.textContent = m[1] + '.';
+        const cn = document.createElement('span'); cn.className = 'cn'; cn.textContent = (m[1] || idx) + '.';
         btn.appendChild(cn); btn.appendChild(document.createTextNode(m[2]));
         btn.onclick = () => {
           if (btn.disabled) return;
@@ -7896,16 +7961,16 @@
       const imgCache = {};
       bubble.querySelectorAll('img').forEach((im) => { const s = im.getAttribute('src'); if (s && !(s in imgCache)) imgCache[s] = im; });
       // dl-card 등 이미 붙은 자식은 유지하고 텍스트/이미지 노드만 교체
-      Array.from(bubble.childNodes).filter(n => !n.classList || !n.classList.contains('dl-card')).forEach(n => n.remove());
+      Array.from(bubble.childNodes).filter(n => !n.classList || !n.classList.contains('dl-ext')).forEach(n => n.remove());
       bubble.prepend(document.createTextNode('DOBIS: '));
       const rendered = renderBotText(stripEmo(text), imgCache);
       if (live) rendered.appendChild(document.createTextNode('▮'));
-      bubble.insertBefore(rendered, bubble.querySelector('.dl-card') || null);
+      bubble.insertBefore(rendered, bubble.querySelector('.dl-ext') || null);
       bubble.dataset.raw = text;
       if (nearBottom && log) log.scrollTop = log.scrollHeight;
     }
     function appendDlCard(bubble, dl) {
-      const card = document.createElement('div'); card.className = 'dl-card';
+      const card = document.createElement('div'); card.className = 'dl-card dl-ext';
       const a = document.createElement('a');
       a.className = 'dl-btn'; a.href = dl.url; a.download = dl.filename || dl.name || 'download';
       a.textContent = '⬇ ' + (dl.name || dl.filename || '다운로드');
@@ -7920,7 +7985,7 @@
     }
     // 캐릭챗 답변 말미 🎨 이미지 생성 pill — 클릭 시 (지시사항) 입력 펼침, [생성]으로 실행
     function appendImggenCard(bubble) {
-      const card = document.createElement('div'); card.className = 'dl-card';
+      const card = document.createElement('div'); card.className = 'dl-card dl-ext';
       const btn = document.createElement('span'); btn.className = 'dl-btn add'; btn.textContent = '🎨'; btn.title = '이미지 생성';
       const form = document.createElement('span'); form.className = 'imggen-form hidden';
       const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'imggen-prompt'; inp.placeholder = '(지시사항)';
@@ -8050,7 +8115,8 @@
     // 감정/HUD 태그 제거: 완성 [emo:NAME]·[hud]…[/hud] + 스트리밍 중 말미의 미완성 조각
     function stripEmo(t) {
       if (!t) return t;
-      return t.replace(/\[hud\][\s\S]*$/i, '')                                   // HUD 블록(완성/진행중) 전체
+      return t.replace(/\[hud\][\s\S]*?\[\/hud\]/gi, '')                         // 완성된 [hud]…[/hud] 블록(non-greedy — 이후 텍스트 보존)
+        .replace(/\[hud\][\s\S]*$/i, '')                                          // 미완성 [hud] (스트리밍 중) — 끝까지 제거
         .replace(/\s*\[emo:\w+\]\s*/g, '')                                       // 감정 태그
         .replace(/\s*\[(?:h(?:u(?:d)?)?|e(?:m(?:o(?::\w*)?)?)?)?$/, '')          // 말미 미완성 조각 [ [h [hu [hud [e [emo: …
         .replace(/\s+$/, '');
@@ -8152,8 +8218,6 @@
       dobisSock.on('dobis:delta', (d) => { if (_dobisCancelled) return; if (streamBubble) { stopTyper(); _streamFeed(stripEmo(d.text || '')); _dobisLen = (d.text || '').length; } });
       dobisSock.on('dobis:think-ping', () => {
         if (_dobisCancelled) return;
-        // 워커가 thinking 중임을 확인 → 브라우저 워치독 연장 + shining 효과 ON
-        if (_dobisWatch) { clearTimeout(_dobisWatch); _dobisWatch = setTimeout(() => dobisFail('응답이 없어 중단했어요 (시간 초과)'), DOBIS_WATCH_MS); }
         document.getElementById('dobisStatus').classList.add('thinking-on');
       });
       dobisSock.on('dobis:music-update', () => {
@@ -8203,7 +8267,7 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); dobisStatus('완료 · ' + ((d && d.text) || '').length + '자 · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); const _fmtTok = n => n >= 1e6 ? (n/1e6).toFixed(1).replace(/\.0$/,'')+'m' : n >= 1e3 ? (n/1e3).toFixed(1).replace(/\.0$/,'')+'k' : String(n); const _tk = d && d.tokens; const _statTok = (_tk && (_tk.out || _tk.in)) ? _fmtTok((_tk.out||0)+(_tk.in||0)) + ' Tokens' : ((d && d.text) || '').length + '자'; dobisStatus('완료 · ' + _statTok + ' · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
       dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
@@ -8354,7 +8418,6 @@
         if (dobisThink && _dobisLen === 0) dobisStatus('🧠 깊은 생각 중... ' + t + 's');
         else dobisStatus('● 생성 중 ' + t + 's · ' + _dobisLen + '자');
       }, 400);
-      _dobisWatch = setTimeout(() => dobisFail('응답이 없어 중단했어요 (시간 초과)'), DOBIS_WATCH_MS);
       const payload = { message, model: dobisModel, hud: hudReq() };
       if (Array.isArray(files) && files.length) {
         payload.files = files.map(f => ({ data: f.data, type: f.type, name: f.name, kind: f.kind }));
@@ -9446,7 +9509,7 @@
         try { wsshSecret = sessionStorage.getItem('dobis_wssh') || ''; } catch { }
         try {
           const r = await fetch(API + '/auth/touch', { method: 'POST', headers: H() });
-          if (r.ok) { const j = await r.json(); sessionExp = Date.now() + (j.expiresInSec || 600) * 1000; _lastTouch = Date.now(); showApp(); return; }
+          if (r.ok) { const j = await r.json(); sessionExp = Date.now() + (j.expiresInSec || 600) * 1000; _lastTouch = Date.now(); if (j.role) myRole = j.role; if (j.username) myName = j.username; showApp(); return; }
         } catch { }
       }
       showLogin();

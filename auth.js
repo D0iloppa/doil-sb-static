@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const express = require('express');
 const adminUsers = require('./db/adminUsers');
 
-const TOKEN_TTL_MS = 10 * 60 * 1000; // 10분 — 짧은 인증용
+const TOKEN_TTL_MS = 60 * 60 * 1000; // 1시간
 
 // ---- 비밀번호 해시(scrypt, 내장 crypto) ----
 function hashPw(pw) {
@@ -128,7 +128,7 @@ router.post('/login', async (req, res) => {
 router.post('/touch', requireToken, (req, res) => {
   const token = (req.headers.authorization || '').slice(7);
   touchSession(token);
-  res.json({ expiresInSec: TOKEN_TTL_MS / 1000 });
+  res.json({ expiresInSec: TOKEN_TTL_MS / 1000, role: req.admin.role, username: req.admin.username });
 });
 
 // GET /drec (토큰 필요) — dRec 녹음 카드가 쓸 공유 dRec 신원 토큰 + API base.

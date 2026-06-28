@@ -119,7 +119,7 @@ statusRouter.get('/health', requireToken, (req, res) => {
 // 수동 계정 전환(관리자 토큰) — 워커에 switch 전달.
 statusRouter.post('/account', requireToken, express.json(), (req, res) => {
   const index = Number((req.body || {}).index);
-  if (!Number.isInteger(index) || index < 0 || index > 1) return res.status(400).json({ error: 'invalid index' });
+  if (!Number.isInteger(index) || index < 0 || index > 9) return res.status(400).json({ error: 'invalid index' });
   if (!workerSocket) return res.status(503).json({ error: 'worker offline' });
   workerSocket.emit('switch', { index });
   res.json({ ok: true, index });

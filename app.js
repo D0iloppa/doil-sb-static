@@ -380,6 +380,7 @@ const { router: collectRouter } = require('./routes/api/collect');
 const sketchpadRouter = require('./routes/api/sketchpad');
 const graphHookRouter = require('./routes/api/graphHook');
 const graphRouter = require('./routes/graph');
+const jamiRouter = require('./routes/jami');
 app.use('/api/dev', devRouter);        // Plane → dev_context proxy
 app.use('/api/auth', authRouter);      // 공유 로그인(CHATBOT_ID/PW → 토큰)
 app.use('/api/geo/chat', geoChatRouter); // geo 챗봇(인증 + 작업 큐)
@@ -392,6 +393,8 @@ app.use('/api/stock', collectRouter); // market 데이터 수집 (collect, colle
 app.use('/api/sketchpad', sketchpadRouter); // 스케치패드 캔버스 저장/조회
 app.use('/api/graph', graphHookRouter);    // 그래프 Notion 버튼 웹훅
 app.use('/graph', graphRouter);            // DOYCLOPEDIA 그래프 뷰어 + 데이터 API
+app.use('/jamidusu/src', express.static(path.join(__dirname, 'jamidusu/src')));
+app.use('/jamidusu', jamiRouter);
 app.use('/api', apiRouter);      // 기존 내부 API
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 

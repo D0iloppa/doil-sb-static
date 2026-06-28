@@ -11,8 +11,9 @@ const { tools: planeTools } = require('./tools/plane.js');
 const { tools: mmTools } = require('./tools/mattermost.js');
 const { tools: stockTools } = require('./tools/stock.js');
 const { tools: jenkinsTools } = require('./tools/jenkins.js');
+const { tools: graphTools } = require('./tools/graph.js');
 
-const allTools = [...planeTools, ...mmTools, ...stockTools, ...jenkinsTools];
+const allTools = [...planeTools, ...mmTools, ...stockTools, ...jenkinsTools, ...graphTools];
 
 const server = new Server(
   { name: 'doil-mcp', version: '1.0.0' },
