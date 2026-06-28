@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 의존성 레이어: package*.json + 로컬 tarball 먼저 복사해 레이어 캐시를 최대화
 COPY package.json ./
-COPY d0iloppa-djinn-0.1.0.tgz ./
+COPY d0iloppa-djinn-0.1.1.tgz ./
 RUN npm install --omit=dev
 
 # 애플리케이션 소스

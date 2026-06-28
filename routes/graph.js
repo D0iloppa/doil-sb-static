@@ -607,25 +607,18 @@ router.get('/search', (req, res) => {
   res.json({ count: nodes.length, nodes });
 });
 
-const getNodeVal = (node, field) => {
-  if (field === 'id') return node.id || '';
-  if (field in node) {
-    const v = node[field];
-    if (Array.isArray(v)) return v.join(';');
-    return v == null ? '' : String(v);
-  }
-  return String((node.props || {})[field] ?? '');
-};
+// node의 top-level 필드 vs props.* 필드 판별 (도메인 지식)
+const TOP_NODE_FIELDS = new Set(['id', 'title', 'grp', 'url', 'nodeType', 'excerpt', 'tags']);
+const nodeOrderBy = (field) => field && !TOP_NODE_FIELDS.has(field) ? `props.${field}` : field;
 
-const applySort = (nodes, orderBy) => {
-  if (!orderBy) return nodes;
-  const [field, dir] = orderBy.split(':');
-  const desc = dir === 'desc';
-  return [...nodes].sort((a, b) => {
-    const av = getNodeVal(a, field), bv = getNodeVal(b, field);
-    return desc ? bv.localeCompare(av, undefined, { numeric: true })
-                : av.localeCompare(bv, undefined, { numeric: true });
-  });
+// props 포함 값 추출 — db.toCSV()의 커스텀 resolver로 전달
+const nodeVal = (rec, field) => {
+  if (field === 'id') return rec.id ?? '';
+  if (field in rec) {
+    const v = rec[field];
+    return Array.isArray(v) ? v.join(';') : (v == null ? '' : String(v));
+  }
+  return String((rec.props || {})[field] ?? '');
 };
 
 // 특정 노드의 직계 자식 수
@@ -637,57 +630,68 @@ router.get('/children/count/:id', (req, res) => {
 
 // 특정 노드의 직계 자식 목록 (페이징)
 router.get('/children/:id', (req, res) => {
-  const id     = nid(req.params.id);
+  const id = nid(req.params.id);
+  const [orderField, orderDir] = (req.query.order_by || '').split(':');
+  const limit  = parseInt(req.query.limit)  || null;
   const offset = Math.max(0, parseInt(req.query.offset) || 0);
-  const limit  = parseInt(req.query.limit) || null;
 
   const childIds = db.find('edges', { source: id })
     .filter(e => (e.edgeType || 'child') === 'child')
     .map(e => e.target);
 
+  // 노드를 edge 타겟 순서로 가져온 후 djinn orderBy/paginate 적용
   let nodes = childIds.map(cid => {
     const n = db.get('nodes', cid);
     return n ? dbNodeToGraph({ ...n, id: cid }) : null;
   }).filter(Boolean);
 
-  nodes = applySort(nodes, req.query.order_by);
+  if (orderField) {
+    const desc = orderDir === 'desc';
+    nodes = [...nodes].sort((a, b) => {
+      const av = nodeVal(a, orderField), bv = nodeVal(b, orderField);
+      return desc ? bv.localeCompare(av, undefined, { numeric: true })
+                  : av.localeCompare(bv, undefined, { numeric: true });
+    });
+  }
+
   const total = nodes.length;
   const paged = nodes.slice(offset, limit != null ? offset + limit : undefined);
-
   res.json({ id, total, offset, limit, nodes: paged });
 });
 
 router.get('/csv', (req, res) => {
-  const columns = (req.query.columns || '').split(',').map(c => {
-    const [field, alias] = c.trim().split(':');
-    return { field, header: alias || field };
-  }).filter(c => c.field);
-  if (!columns.length) return res.status(400).json({ error: 'columns required' });
+  const rawColumns = (req.query.columns || '').split(',').map(c => c.trim()).filter(Boolean);
+  if (!rawColumns.length) return res.status(400).json({ error: 'columns required' });
 
-  let nodes = db.find('nodes');
-  if (req.query.grp)    nodes = nodes.filter(n => n.grp === req.query.grp);
-  if (req.query.q)      nodes = nodes.filter(n => (n.title || '').includes(req.query.q));
+  const [orderField, orderDir] = (req.query.order_by || '').split(':');
+  const limit  = parseInt(req.query.limit)  || null;
+  const offset = Math.max(0, parseInt(req.query.offset) || 0);
+
+  const where = {};
+  if (req.query.grp) where.grp = req.query.grp;
+  if (req.query.q)   where.title = `%${req.query.q}%`;
+
+  let nodes = db.find('nodes', where, {
+    orderBy:  nodeOrderBy(orderField),
+    orderDir: orderDir || 'asc',
+  });
+
   if (req.query.parent) {
     const pid = nid(req.query.parent);
-    const childIds = new Set(db.find('edges', { source: pid }).filter(e => (e.edgeType || 'child') === 'child').map(e => e.target));
+    const childIds = new Set(
+      db.find('edges', { source: pid })
+        .filter(e => (e.edgeType || 'child') === 'child')
+        .map(e => e.target)
+    );
     nodes = nodes.filter(n => childIds.has(n.id));
   }
 
-  nodes = applySort(nodes, req.query.order_by);
-  const total  = nodes.length;
-  const offset = Math.max(0, parseInt(req.query.offset) || 0);
-  const limit  = parseInt(req.query.limit) || null;
+  const total = nodes.length;
   nodes = nodes.slice(offset, limit != null ? offset + limit : undefined);
-
-  const esc = (v) => `"${String(v).replace(/"/g, '""')}"`;
-  const lines = [
-    columns.map(c => esc(c.header)).join(','),
-    ...nodes.map(n => columns.map(c => esc(getNodeVal(n, c.field))).join(',')),
-  ];
 
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('X-Total-Count', total);
-  res.send(lines.join('\n'));
+  res.send(db.toCSV(nodes, rawColumns, nodeVal));
 });
 
 router.post('/scan', (req, res) => {
