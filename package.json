@@ -27,7 +27,7 @@
   "license": "ISC",
   "description": "Express-based sandbox project for hosting static web pages, portfolios, and learning projects",
   "dependencies": {
-    "@d0iloppa/djinn": "file:./d0iloppa-djinn-0.1.1.tgz",
+    "@d0iloppa/djinn": "file:./d0iloppa-djinn-0.1.2.tgz",
     "@notionhq/client": "^2.2.15",
     "ejs": "^3.1.10",
     "express": "^5.1.0",

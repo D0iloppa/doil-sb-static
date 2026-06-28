@@ -639,24 +639,15 @@ router.get('/children/:id', (req, res) => {
     .filter(e => (e.edgeType || 'child') === 'child')
     .map(e => e.target);
 
-  // 노드를 edge 타겟 순서로 가져온 후 djinn orderBy/paginate 적용
-  let nodes = childIds.map(cid => {
-    const n = db.get('nodes', cid);
-    return n ? dbNodeToGraph({ ...n, id: cid }) : null;
-  }).filter(Boolean);
+  const total = childIds.length;
+  const nodes = db.findByIds('nodes', childIds, {
+    orderBy:  nodeOrderBy(orderField),
+    orderDir: orderDir || 'asc',
+    limit,
+    offset,
+  }).map(n => dbNodeToGraph(n));
 
-  if (orderField) {
-    const desc = orderDir === 'desc';
-    nodes = [...nodes].sort((a, b) => {
-      const av = nodeVal(a, orderField), bv = nodeVal(b, orderField);
-      return desc ? bv.localeCompare(av, undefined, { numeric: true })
-                  : av.localeCompare(bv, undefined, { numeric: true });
-    });
-  }
-
-  const total = nodes.length;
-  const paged = nodes.slice(offset, limit != null ? offset + limit : undefined);
-  res.json({ id, total, offset, limit, nodes: paged });
+  res.json({ id, total, offset, limit, nodes });
 });
 
 router.get('/csv', (req, res) => {
