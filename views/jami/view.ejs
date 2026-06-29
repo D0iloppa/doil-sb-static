@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>자미두수 명반</title>
+  <link href="<%= rootContext %>/jamidusu/src/css2" rel="stylesheet">
+  <script>
+    (function () {
+      var t = localStorage.getItem('jami-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <link rel="stylesheet" href="<%= rootContext %>/jamidusu/src/styles_gemini.css">
+  <link rel="stylesheet" href="<%= rootContext %>/jamidusu/src/legal.css">
+  <script defer src="<%= rootContext %>/jamidusu/src/legal.js"></script>
+</head>
+
+<body style="opacity: 1; transition: opacity 0.3s;" data-lang="ko">
+  <div style="position:fixed;top:12px;right:12px;display:flex;gap:8px;z-index:9999;align-items:center;">
+    <a href="" target="_blank" rel="noopener" onclick="this.href=location.href" style="padding:6px 12px;border-radius:6px;background:rgba(0,0,0,0.55);color:#ccc;font-size:12px;text-decoration:none;border:1px solid rgba(255,255,255,0.15);cursor:pointer;">↗ 새 탭</a>
+    <button id="saveImgBtn" style="padding:6px 12px;border-radius:6px;background:rgba(0,0,0,0.55);color:#ccc;font-size:12px;border:1px solid rgba(255,255,255,0.15);cursor:pointer;">⬇ 이미지 저장</button>
+    <button id="themeToggle" class="theme-toggle-btn" aria-label="라이트/다크 모드 전환">
+      <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+      <span class="theme-toggle-label">다크 모드</span>
+    </button>
+  </div>
+
+  <div class="app-container">
+    <div class="top-header" style="display: none !important">
+      <h1>자미두수 명반</h1>
+    </div>
+
+    <div class="input-section" style="display: none !important; opacity: 1; transform: none;">
+      <div class="form-title">명반 작성 정보</div>
+
+      <div class="input-row">
+        <div class="input-group">
+          <label>이름</label>
+          <input type="text" id="nameInput" class="input-field" placeholder="이름을 입력하세요">
+        </div>
+        <div class="input-group">
+          <label>성별</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" checked> 남자</label>
+            <label><input type="radio" name="gender" value="female"> 여자</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group flex-2">
+          <label>생년월일</label>
+          <div class="date-inputs">
+            <input type="number" id="yearInput" class="input-field" placeholder="YYYY" min="1900" max="2100">
+            <span class="unit">년</span>
+            <input type="number" id="monthInput" class="input-field" placeholder="MM" min="1" max="12">
+            <span class="unit">월</span>
+            <input type="number" id="dayInput" class="input-field" placeholder="DD" min="1" max="31">
+            <span class="unit">일</span>
+          </div>
+        </div>
+        <div class="input-group flex-1">
+          <div class="radio-group small-text" style="margin-top: 24px">
+            <label><input type="radio" name="calendarType" value="solar" checked> 양력</label>
+            <label><input type="radio" name="calendarType" value="lunar"> 음력</label>
+            <label><input type="checkbox" id="leapMonth"> 윤달</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div class="input-group">
+          <label>태어난 시간</label>
+          <div class="time-inputs">
+            <input type="number" id="hourInput" class="input-field" placeholder="시 (0-23)" min="0" max="23">
+            <span class="separator separator-text">시</span>
+            <input type="number" id="minuteInput" class="input-field" placeholder="분 (0-59)" min="0" max="59">
+            <span class="separator separator-text">분</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>출생 지역</label>
+          <select id="cityInput" class="input-field">
+            <option value="서울">서울</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="인천">인천</option>
+            <option value="광주">광주</option>
+            <option value="대전">대전</option>
+            <option value="울산">울산</option>
+            <option value="세종">세종</option>
+            <option value="수원">수원</option>
+            <option value="강릉">강릉</option>
+            <option value="춘천">춘천</option>
+            <option value="청주">청주</option>
+            <option value="천안">천안</option>
+            <option value="전주">전주</option>
+            <option value="여수">여수</option>
+            <option value="포항">포항</option>
+            <option value="창원">창원</option>
+            <option value="제주">제주</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="calcBtn" class="calc-btn">명반 작성</button>
+    </div>
+
+    <div class="chart-container">
+      <div class="palace-grid" id="chartContent">
+        <div class="palace" data-position="4"></div>
+        <div class="palace" data-position="5"></div>
+        <div class="palace" data-position="6"></div>
+        <div class="palace" data-position="7"></div>
+
+        <div class="palace" data-position="3"></div>
+
+        <div class="center-area">
+          <div id="toastMessage" class="toast-message"></div>
+          <svg class="center-svg" id="centerSvg"></svg>
+
+          <div class="center-content">
+            <button id="langToggleCenter" class="lang-btn-yunyeon">한글/漢字</button>
+
+            <div class="person-info">
+              <div class="person-header-grid">
+                <div class="grid-left"></div>
+                <div class="grid-center">
+                  <h2 id="userNameDisplay">무명 남</h2>
+                  <span id="userGenderDisplay" class="gender male">남</span>
+                </div>
+                <div class="grid-right"></div>
+              </div>
+              <div class="birth-info-wrapper">
+                <p class="birth-info">양력: - <span id="guksuDisplay"></span></p>
+                <p class="birth-info">음력: -</p>
+                <p class="birth-info" id="trueSolarTimeInfo" style="display: none">진태양시: -</p>
+              </div>
+            </div>
+
+            <div class="saju-section">
+              <div class="saju-container">
+                <div class="saju-table" id="sajuTable">
+                  <div class="saju-column">
+                    <div class="saju-header">時</div>
+                    <div class="saju-value"><span>-</span><span>-</span></div>
+                  </div>
+                  <div class="saju-column">
+                    <div class="saju-header">日</div>
+                    <div class="saju-value"><span>-</span><span>-</span></div>
+                  </div>
+                  <div class="saju-column">
+                    <div class="saju-header">月</div>
+                    <div class="saju-value"><span>-</span><span>-</span></div>
+                  </div>
+                  <div class="saju-column">
+                    <div class="saju-header">年</div>
+                    <div class="saju-value"><span>-</span><span>-</span></div>
+                  </div>
+                </div>
+                <div class="daeun-section" id="daeunSection">
+                  <div class="daeun-list" id="daeunList"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="triangle-info" id="triangleInfo"></div>
+            <div class="toggle-buttons center-mode-controls">
+              <div class="mode-btn basic active" data-mode="basic">
+                <span class="mode-btn-label">선천</span>
+              </div>
+              <div class="mode-btn daehan" data-mode="daehan">
+                <span class="mode-btn-label">대한</span>
+              </div>
+              <div class="mode-btn yunyeon" data-mode="yunyeon">
+                <span class="mode-btn-label">유년</span>
+              </div>
+              <div class="mode-btn sohan" data-mode="sohan">
+                <span class="mode-btn-label">소한</span>
+              </div>
+              <div class="mode-btn yuwol" data-mode="yuwol">
+                <span class="mode-btn-label">유월</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="palace" data-position="8"></div>
+
+        <div class="palace" data-position="2"></div>
+        <div class="palace" data-position="9"></div>
+
+        <div class="palace" data-position="1"></div>
+        <div class="palace" data-position="0"></div>
+        <div class="palace" data-position="11"></div>
+        <div class="palace" data-position="10"></div>
+      </div>
+
+      <div class="ai-copy-section" id="aiCopySection" style="display:none">
+        <button id="aiCopyBtn" class="ai-copy-btn" onclick="copyAIJSON()">명반 정보 복사</button>
+        <button id="jsonCopyBtn" class="ai-copy-btn" onclick="copyRawJSON()">JSON 복사</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-modern">
+      <div class="footer-copy">© 2026 DOBIS</div>
+    </div>
+  </footer>
+
+  <script src="<%= rootContext %>/jamidusu/src/TimeCorrector.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/korean-lunar-calendar.min.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/solar_terms_utc_1899_2101.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/LunarConverter.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/ZiWeiDouShu.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/hanjaMap.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/StateManager.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/Renderer.js"></script>
+  <script src="<%= rootContext %>/jamidusu/src/script_gemini.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      const calcBtn = document.getElementById('calcBtn');
+      if (calcBtn) {
+        calcBtn.addEventListener('click', function () {
+          if (window.handleCalculate) window.handleCalculate();
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          const active = document.activeElement;
+          const isInput = active && (active.tagName === 'INPUT' || active.tagName === 'SELECT');
+          if (isInput && window.handleCalculate) {
+            e.preventDefault();
+            window.handleCalculate();
+          }
+        }
+      });
+
+      const originalHandleCalculate = window.handleCalculate;
+      if (typeof originalHandleCalculate === 'function') {
+        window.handleCalculate = function () {
+          const btn = document.getElementById('calcBtn');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = '계산 중…';
+          }
+          try {
+            originalHandleCalculate();
+          } finally {
+            setTimeout(function () {
+              if (btn) {
+                btn.disabled = false;
+                btn.textContent = '명반 작성';
+              }
+            }, 600);
+          }
+        };
+      }
+
+      const p = new URLSearchParams(window.location.search);
+      if (p.has('year') || p.has('month')) {
+        let attempts = 0;
+        const checkReady = setInterval(function () {
+          if (typeof window.handleCalculate === 'function') {
+            clearInterval(checkReady);
+            window.handleCalculate();
+            document.body.style.opacity = '1';
+          }
+          if (++attempts > 20) {
+            clearInterval(checkReady);
+            document.body.style.opacity = '1';
+          }
+        }, 100);
+      } else {
+        document.body.style.opacity = '1';
+      }
+    });
+  </script>
+
+  <script src="<%= rootContext %>/jamidusu/src/html2canvas.min.js"></script>
+  <script>
+    document.getElementById('saveImgBtn').addEventListener('click', function () {
+      var btn = this;
+      btn.textContent = '캡처 중…'; btn.disabled = true;
+      html2canvas(document.querySelector('.app-container'), { useCORS: true, scale: 2 }).then(function (canvas) {
+        var a = document.createElement('a');
+        a.download = 'jamidusu.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        btn.textContent = '⬇ 이미지 저장'; btn.disabled = false;
+      }).catch(function () { btn.textContent = '⬇ 이미지 저장'; btn.disabled = false; });
+    });
+  </script>
+  <script>
+    (function () {
+      var btn = document.getElementById('themeToggle');
+      var label = btn.querySelector('.theme-toggle-label');
+
+      function apply(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        label.textContent = theme === 'dark' ? '라이트 모드' : '다크 모드';
+        localStorage.setItem('jami-theme', theme);
+      }
+
+      apply(localStorage.getItem('jami-theme') || 'light');
+
+      btn.addEventListener('click', function () {
+        var cur = document.documentElement.getAttribute('data-theme') || 'light';
+        apply(cur === 'dark' ? 'light' : 'dark');
+      });
+    })();
+  </script>
+</body>
+
+</html>

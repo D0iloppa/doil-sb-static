@@ -1,0 +1,1211 @@
+/* ============================================================
+   자미두수 명반 — Styles
+   Light: White-Orange | Dark: Black-Green
+   ============================================================ */
+
+/* === CSS Variables === */
+:root {
+  --primary:        #e07b1a;
+  --primary-light:  #f5a042;
+  --primary-hover:  #c5680e;
+  --primary-purple: #e07b1a;
+
+  --bg-app:      #fafaf8;
+  --bg-palace:   #ffffff;
+  --bg-center:   #fffcf8;
+  --bg-input:    #fafaf8;
+  --bg-section:  #ffffff;
+  --bg-toast:    rgba(255, 248, 240, 0.97);
+  --bg-mode-btn: #ffffff;
+  --bg-daeun:    linear-gradient(135deg, #fff9f4 0%, #fff5ec 100%);
+  --bg-saju:     linear-gradient(135deg, #ffffff 0%, #fffcf8 100%);
+
+  --text-1: #1a1a1a;
+  --text-2: #4a4a4a;
+  --text-3: #666666;
+  --text-4: #999999;
+  --text-5: #c8c8c8;
+
+  --border-xs: rgba(224, 123, 26, 0.10);
+  --border-sm: rgba(224, 123, 26, 0.20);
+  --border-md: rgba(224, 123, 26, 0.32);
+  --border-lg: rgba(224, 123, 26, 0.55);
+
+  --label-palace:  #b35a10;
+  --label-body:    #9b2335;
+  --label-earthly: #b35a10;
+  --saju-value:    #7a3800;
+  --daeun-gz:      #7a3800;
+  --daeun-age:     #777777;
+  --daeun-item-fg: #7a3800;
+  --gender-fg:     #7a3800;
+  --gender-border: #f0d0b0;
+  --gender-bg:     linear-gradient(135deg, #fff8f0 0%, #ffffff 100%);
+  --mode-btn-text: #555555;
+
+  --star-jusung:        #7d52a8;
+  --star-gilsung:       #2b6cb3;
+  --star-salsung:       #c94040;
+  --star-zabseong:      #5a5a5a;
+  --star-default:       #2d3e50;
+  --star-status-color:  #444444;
+  --minor-star-color:   #555555;
+
+  --basic-primary:      #9fa8b7;
+  --daehan-primary:     #e2c29f;
+  --yunyeon-primary:    #2a9d8f;
+  --sohan-primary:      #a8c5da;
+  --daehan-dark:        #c59d71;
+  --yunyeon-dark:       #1a7a6e;
+  --star-daehan:        #a07830;
+  --star-daehan-light:  #d4b88a;
+  --star-yunyeon:       #2a9d8f;
+  --star-yunyeon-light: #b8ddd6;
+  --star-yuwol:         #c0625e;
+  --star-yuwol-light:   #e8c4c3;
+
+  --shadow-1: 0 2px  8px  rgba(0, 0, 0, 0.05);
+  --shadow-2: 0 4px  16px rgba(0, 0, 0, 0.08);
+  --shadow-3: 0 8px  32px rgba(0, 0, 0, 0.10);
+
+  --footer-text:        rgba(0, 0, 0, 0.52);
+  --footer-text-hover:  rgba(0, 0, 0, 0.80);
+  --footer-text-muted:  rgba(0, 0, 0, 0.36);
+  --footer-border:      rgba(0, 0, 0, 0.10);
+  --footer-link-bg:     rgba(0, 0, 0, 0.03);
+  --footer-link-border: rgba(0, 0, 0, 0.11);
+}
+
+[data-theme="dark"] {
+  --primary:        #22c55e;
+  --primary-light:  #4ade80;
+  --primary-hover:  #16a34a;
+  --primary-purple: #22c55e;
+
+  --bg-app:      #0c0c0c;
+  --bg-palace:   #181818;
+  --bg-center:   #111111;
+  --bg-input:    #1e1e1e;
+  --bg-section:  #161616;
+  --bg-toast:    rgba(8, 18, 10, 0.97);
+  --bg-mode-btn: #1e1e1e;
+  --bg-daeun:    linear-gradient(135deg, #1c1c1c 0%, #1a1a1a 100%);
+  --bg-saju:     linear-gradient(135deg, #1c1c1c 0%, #181818 100%);
+
+  --text-1: #e8e8e8;
+  --text-2: #b0b0b0;
+  --text-3: #727272;
+  --text-4: #505050;
+  --text-5: #303030;
+
+  --border-xs: rgba(34, 197, 94, 0.09);
+  --border-sm: rgba(34, 197, 94, 0.17);
+  --border-md: rgba(34, 197, 94, 0.28);
+  --border-lg: rgba(34, 197, 94, 0.52);
+
+  --label-palace:  #4ade80;
+  --label-body:    #f87171;
+  --label-earthly: #4ade80;
+  --saju-value:    #86efac;
+  --daeun-gz:      #86efac;
+  --daeun-age:     #727272;
+  --daeun-item-fg: #86efac;
+  --gender-fg:     #4ade80;
+  --gender-border: rgba(34, 197, 94, 0.32);
+  --gender-bg:     linear-gradient(135deg, #1a1a1a 0%, #1e1e1e 100%);
+  --mode-btn-text: #a0a0a0;
+
+  --star-jusung:        #c084fc;
+  --star-gilsung:       #60a5fa;
+  --star-salsung:       #f87171;
+  --star-zabseong:      #9ca3af;
+  --star-default:       #c8d4e0;
+  --star-status-color:  #a0a8b0;
+  --minor-star-color:   #909090;
+
+  --yunyeon-primary:    #34d399;
+  --daehan-primary:     #d4a857;
+  --star-daehan:        #d4a857;
+  --star-daehan-light:  #e8c98a;
+  --star-yunyeon:       #34d399;
+  --star-yunyeon-light: #6ee7b7;
+  --star-yuwol:         #f87171;
+  --star-yuwol-light:   #fca5a5;
+
+  --shadow-1: 0 2px  8px  rgba(0, 0, 0, 0.55);
+  --shadow-2: 0 4px  16px rgba(0, 0, 0, 0.75);
+  --shadow-3: 0 8px  32px rgba(0, 0, 0, 0.85);
+
+  --footer-text:        rgba(255, 255, 255, 0.62);
+  --footer-text-hover:  rgba(255, 255, 255, 0.88);
+  --footer-text-muted:  rgba(255, 255, 255, 0.34);
+  --footer-border:      rgba(255, 255, 255, 0.09);
+  --footer-link-bg:     rgba(255, 255, 255, 0.04);
+  --footer-link-border: rgba(255, 255, 255, 0.12);
+}
+
+/* === Base === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Noto Sans CJK KR", "Noto Sans KR", sans-serif;
+  background: var(--bg-app);
+  padding: 8px;
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  zoom: 0.8;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+}
+
+.app-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* === 입력 섹션 === */
+.input-section {
+  background: var(--bg-section);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-3);
+  margin: 0 auto 30px auto;
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid var(--border-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  opacity: 1;
+  transform: none;
+}
+
+.form-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+  color: var(--text-1);
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group.flex-2 { flex: 2; }
+.input-group.flex-1 { flex: 1; }
+
+.input-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.input-field {
+  padding: 10px;
+  border: 1px solid var(--border-sm);
+  border-radius: 6px;
+  font-size: 13px;
+  width: 100%;
+  background: var(--bg-input);
+  color: var(--text-1);
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--border-xs);
+}
+
+/* Hide spin buttons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+.date-inputs,
+.time-inputs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.date-inputs .input-field {
+  text-align: center;
+  padding: 10px 2px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 40px;
+}
+
+.radio-group label {
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-2);
+}
+
+.unit,
+.separator-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin: 0 2px;
+}
+
+.calc-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+}
+.calc-btn:hover { transform: translateY(-2px); }
+
+/* === 명반 그리드 === */
+.chart-container {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.palace-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  aspect-ratio: 1;
+  width: 100%;
+}
+
+/* === 궁 공통 === */
+.palace {
+  position: relative;
+  background: var(--bg-palace);
+  border-radius: 12px;
+  padding: 4px 6px;
+  border: 1px solid var(--border-md) !important;
+  box-shadow: var(--shadow-1);
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.palace.selected {
+  border: 2px solid var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--border-md), var(--shadow-2) !important;
+  z-index: 20;
+}
+
+.palace.samhap {
+  border: 2px dashed var(--border-lg) !important;
+  box-shadow: 0 0 10px var(--border-sm) !important;
+  z-index: 15;
+}
+
+.palace.daegung {
+  border: 2px dotted var(--border-lg) !important;
+  box-shadow: 0 0 10px var(--border-sm) !important;
+  z-index: 15;
+}
+
+.palace:hover {
+  background: var(--bg-palace);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--border-sm);
+  border-color: var(--border-lg) !important;
+  z-index: 10;
+}
+
+/* === 궁 내부 레이아웃 === */
+.palace-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+/* 1. Header */
+.palace-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 5px;
+  padding-bottom: 4px;
+  margin: 0 4px 0 4px;
+  border-bottom: 1px solid var(--border-xs);
+  min-height: 26px;
+  flex-shrink: 0;
+}
+
+.header-label {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.header-label.basic   { color: var(--label-palace);    font-size: 13px; font-weight: 700; }
+.header-label.body    { color: var(--label-body);       font-size: 13px; font-weight: 700; }
+.header-label.daehan  { color: var(--star-daehan);      font-size: 13px; font-weight: 700; }
+.header-label.yunyeon { color: var(--yunyeon-primary);  font-size: 13px; font-weight: 700; }
+.header-label.sohan   { color: var(--yunyeon-primary);  font-size: 13px; font-weight: 700; }
+.header-label.yuwol   { color: var(--star-yuwol);       font-size: 13px; font-weight: 700; }
+
+/* 2. Body */
+.palace-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  gap: 4px;
+  padding: 0px 4px 2px;
+  overflow: hidden;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.star-tracks-container {
+  display: flex;
+  flex-direction: row-reverse;
+  flex: 1;
+  width: 100%;
+  align-items: stretch;
+  gap: 2px;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.star-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  width: 9%;
+  gap: 8px;
+}
+
+.sahwa-badge.yunyeon-sahwa {
+  background: var(--star-yunyeon) !important;
+  color: white !important;
+  font-size: 10px;
+  padding: 1px 2px;
+  border-radius: 4px;
+  margin-top: 1px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.star-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+  direction: ltr;
+}
+
+.star-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--star-default);
+  padding: 2px 1px;
+  letter-spacing: 0.5px;
+}
+
+.star-char.jusung   { color: var(--star-jusung); }
+.star-char.gilsung  { color: var(--star-gilsung); }
+.star-char.salsung  { color: var(--star-salsung); }
+.star-char.zabseong { color: var(--star-zabseong); }
+.star-char.yuwol    { color: var(--star-yuwol); font-weight: 700; }
+
+.star-status {
+  font-size: 12px;
+  color: var(--star-status-color);
+  margin: 1px 0;
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* 사화 배지 */
+.sahwa-badge {
+  writing-mode: horizontal-tb;
+  font-size: 10px;
+  padding: 1px 2px;
+  border-radius: 4px;
+  color: white !important;
+  background: var(--star-jusung) !important;
+  margin-top: 1px;
+  line-height: 1.1;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.sahwa-badge.daehan-sahwa {
+  color: white !important;
+  background: var(--star-daehan) !important;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 2px;
+  border-radius: 4px;
+  margin-top: 1px;
+  line-height: 1.1;
+}
+
+.sahwa-badge.yuwol-sahwa {
+  color: white !important;
+  background: var(--star-yuwol) !important;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 2px;
+  border-radius: 4px;
+  margin-top: 1px;
+  line-height: 1.1;
+}
+
+.palace-name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--label-palace);
+  letter-spacing: 0px;
+  z-index: 10;
+  text-align: right;
+}
+
+.yunyeon-sohan-ming-label,
+.sohan-yunyeon-ming-label {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--label-palace);
+  letter-spacing: 0px;
+  z-index: 10;
+  text-align: right;
+}
+
+/* 3. Footer */
+.palace-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 4px 0 4px;
+  padding-top: 4px;
+  padding-bottom: 2px;
+  border-top: 1px solid var(--border-xs);
+  min-height: 32px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.footer-left {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  z-index: 5;
+  justify-self: start;
+}
+
+.minor-star {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 13px;
+  color: var(--minor-star-color);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 3px;
+  margin-left: 0;
+}
+
+.minor-star.yunyeon { color: var(--star-yunyeon); font-weight: 600; }
+.minor-star.yuwol   { color: var(--star-yuwol);   font-weight: 600; }
+
+.footer-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  z-index: 10;
+  justify-self: center;
+  flex: 0 0 auto;
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-self: end;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.age-btn-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 3px;
+  padding: 0 0 1px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Yunyeon Age Button */
+.yunyeon-age-btn {
+  position: relative;
+  padding: 3px 8px;
+  background: var(--bg-palace);
+  border: 1px solid var(--star-yunyeon);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--star-yunyeon);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: all 0.2s;
+  min-width: 36px;
+  z-index: 20;
+  box-shadow: none;
+  align-self: center;
+  margin: 0 auto;
+}
+.yunyeon-age-btn.active        { background: var(--star-yunyeon); color: white; }
+.yunyeon-age-btn.yunyeon-bounce{ animation: yunyeon-bounce-pulse 2s infinite !important; box-shadow: none; }
+
+/* Sohan Age Button */
+.sohan-age-btn {
+  position: relative;
+  padding: 3px 8px;
+  background: var(--bg-palace);
+  border: 1px solid var(--star-yunyeon);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--star-yunyeon);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: all 0.2s;
+  min-width: 36px;
+  z-index: 20;
+  box-shadow: none;
+  align-self: center;
+  margin: 0 auto;
+}
+.sohan-age-btn.active      { background: var(--star-yunyeon); color: white; }
+.sohan-age-btn.sohan-bounce{ animation: sohan-bounce-pulse 2s infinite !important; box-shadow: none; }
+
+/* Yuwol Age Button */
+.yuwol-age-btn {
+  position: absolute;
+  bottom: 1px;
+  left: 4px;
+  padding: 3px 8px;
+  background: var(--bg-palace);
+  border: 1px solid var(--star-yuwol);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--star-yuwol);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: all 0.2s;
+  min-width: 36px;
+  z-index: 1000;
+  box-shadow: none;
+}
+.yuwol-age-btn.active      { background: var(--star-yuwol); color: white; border-color: var(--star-yuwol); box-shadow: none; }
+.yuwol-age-btn.yuwol-bounce{ animation: yuwol-bounce-color 2s infinite !important; box-shadow: none; }
+
+/* Daeun Age Button */
+.daeun-age-btn {
+  padding: 3px 8px;
+  background: var(--bg-palace);
+  border: 1px solid var(--star-daehan);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--star-daehan);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: all 0.2s;
+  min-width: 50px;
+  margin: 0 auto;
+  align-self: center;
+  box-shadow: none !important;
+}
+.daeun-age-btn.daehan-active {
+  background: var(--star-daehan);
+  color: white !important;
+  border-color: var(--star-daehan);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  animation: none;
+}
+.daeun-age-btn.daehan-bounce {
+  animation: daehan-bounce-pulse 2s infinite !important;
+  cursor: pointer;
+  border-color: var(--star-daehan-light);
+}
+
+/* === Animations === */
+@keyframes yuwol-bounce-color {
+  0%, 100% { transform: scale(1);    box-shadow: none; }
+  50%       { transform: scale(1.08); box-shadow: none; }
+}
+@keyframes yuwol-bounce-pulse {
+  0%, 100% { transform: scale(1);   }
+  50%       { transform: scale(1.1); }
+}
+@keyframes daehan-bounce-pulse {
+  0%, 100% { transform: scale(1);   }
+  50%       { transform: scale(1.1); }
+}
+@keyframes yunyeon-bounce-pulse {
+  0%, 100% { transform: scale(1);   }
+  50%       { transform: scale(1.1); }
+}
+@keyframes sohan-bounce-pulse {
+  0%, 100% { transform: scale(1);   }
+  50%       { transform: scale(1.1); }
+}
+@keyframes bounce-pulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(72, 201, 176, 0.4); }
+  50%       { transform: scale(1.05); box-shadow: 0 4px 12px rgba(72, 201, 176, 0.3); }
+}
+
+.body-palace-label {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--label-palace);
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+
+.earthly-branch-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--label-earthly);
+  line-height: 1.4;
+  letter-spacing: 3px;
+}
+
+/* === CSS Grid — 12 Palace Positions === */
+.palace[data-position="5"] { grid-column: 1; grid-row: 1; }
+.palace[data-position="6"] { grid-column: 2; grid-row: 1; }
+.palace[data-position="7"] { grid-column: 3; grid-row: 1; }
+.palace[data-position="8"] { grid-column: 4; grid-row: 1; }
+.palace[data-position="4"] { grid-column: 1; grid-row: 2; }
+.palace[data-position="9"] { grid-column: 4; grid-row: 2; }
+.palace[data-position="3"] { grid-column: 1; grid-row: 3; }
+.palace[data-position="10"]{ grid-column: 4; grid-row: 3; }
+.palace[data-position="2"] { grid-column: 1; grid-row: 4; }
+.palace[data-position="1"] { grid-column: 2; grid-row: 4; }
+.palace[data-position="0"] { grid-column: 3; grid-row: 4; }
+.palace[data-position="11"]{ grid-column: 4; grid-row: 4; }
+
+/* === 중앙 영역 === */
+.center-area {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  background: var(--bg-center);
+  border: 1px solid var(--border-sm);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.center-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.center-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Lang Toggle */
+.lang-btn,
+.lang-btn-yunyeon {
+  position: absolute;
+  top: 0; right: 0;
+  padding: 5px 12px;
+  border: 1px solid var(--border-sm);
+  background: var(--bg-palace);
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-3);
+}
+.lang-btn:hover,
+.lang-btn-yunyeon:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Person Info */
+.person-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
+  margin-top: -6px;
+}
+
+.person-name-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+#userNameDisplay {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-1);
+}
+
+.gender {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1.5px solid var(--gender-border);
+  background: var(--gender-bg);
+  color: var(--gender-fg);
+  box-shadow: var(--shadow-1);
+}
+
+.birth-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.birth-info {
+  font-size: 14px;
+  color: var(--text-2);
+  margin: 1px 0;
+  font-weight: 600;
+  text-align: left;
+  padding-left: 0;
+  display: block;
+  line-height: 1.35;
+}
+
+/* Saju Table */
+.saju-section {
+  width: 100%;
+  background: var(--bg-saju);
+  border: 1px solid var(--border-sm);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-1);
+  margin-bottom: 8px;
+}
+
+.saju-table {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 22px;
+  padding: 0 8px;
+  border: none;
+}
+
+.saju-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 24px;
+}
+
+.saju-header {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.saju-value {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--saju-value);
+  gap: 4px;
+  line-height: 1.2;
+}
+
+/* Daeun List */
+.daeun-section {
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-xs);
+}
+
+.daeun-list {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 6px;
+  overflow-x: hidden;
+  padding-bottom: 4px;
+}
+
+.daeun-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  padding: 9px 5px;
+  background: var(--bg-daeun);
+  border: 1px solid var(--border-sm);
+  border-radius: 8px;
+  color: var(--daeun-item-fg);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  min-width: 39px;
+}
+.daeun-item:hover { cursor: default; }
+
+.daeun-gz {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--daeun-gz);
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 1px;
+}
+
+.daeun-age {
+  font-size: 12px;
+  color: var(--daeun-age);
+  margin-top: 4px;
+  writing-mode: horizontal-tb;
+}
+
+/* Mode Controls */
+.center-mode-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 0;
+  border-top: 0;
+  width: 100%;
+}
+
+.mode-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  border-radius: 24px !important;
+  background: var(--bg-mode-btn) !important;
+  border: 1px solid var(--border-sm) !important;
+  color: var(--mode-btn-text) !important;
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  box-shadow: none;
+}
+
+/* === 삼방사정 Highlights === */
+.palace.selected {
+  border: 2px solid var(--primary) !important;
+  box-shadow: none;
+  background: var(--bg-palace);
+  z-index: 50;
+}
+
+.palace.samhap {
+  border: 2px solid var(--primary) !important;
+  box-shadow: 0 0 10px var(--border-md) !important;
+  background: var(--bg-palace);
+}
+
+.palace.daegung {
+  border: 2px solid var(--primary) !important;
+  box-shadow: 0 0 10px var(--border-md) !important;
+  background: var(--bg-palace);
+}
+
+/* === SVG Arrow Paths === */
+.arrow-path {
+  fill: none !important;
+  stroke-width: 1.8px;
+  stroke-dasharray: 6, 3;
+  animation: dash 4s linear infinite;
+  opacity: 0.85;
+}
+.arrow-path.triangle { stroke: var(--primary); }
+.arrow-path.opposite { stroke: var(--primary); }
+
+@keyframes dash { to { stroke-dashoffset: -18; } }
+
+/* === Toast === */
+.toast-notification {
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translate(-50%, -20px);
+  background: var(--bg-toast);
+  backdrop-filter: blur(8px);
+  color: var(--text-1);
+  border: 1.5px solid var(--border-md);
+  border-radius: 30px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: var(--shadow-2);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.toast-notification.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* === 유월 툴팁 === */
+.yuwol-fixed-tooltip {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background: var(--bg-toast);
+  backdrop-filter: blur(8px);
+  color: var(--text-1);
+  border: 1.5px solid var(--border-md);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 99999;
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* === 한글/한자 lang-specific === */
+body[data-lang="zh"] .star-char   { font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+body[data-lang="zh"] .sahwa-badge { font-size: 11px; }
+
+.star-char[data-lang="ko"]               { font-size: 14px; font-weight: 600; letter-spacing: 0.3px; line-height: 1.3; }
+.star-char[data-lang="zh"]               { font-size: 15px; font-weight: 700; letter-spacing: 1px;   line-height: 1.4; }
+.earthly-branch-vertical[data-lang="ko"] { font-size: 13px; font-weight: 700; letter-spacing: 3px; }
+.earthly-branch-vertical[data-lang="zh"] { font-size: 14px; font-weight: 800; letter-spacing: 4px; }
+.minor-star[data-lang="ko"]              { font-size: 13px; font-weight: 500; letter-spacing: 3px; }
+.minor-star[data-lang="zh"]              { font-size: 14px; font-weight: 600; letter-spacing: 4px; }
+.saju-value[data-lang="ko"]              { font-size: 17px; font-weight: 800; }
+.saju-value[data-lang="zh"]              { font-size: 18px; font-weight: 900; }
+.daeun-gz[data-lang="ko"]               { font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+.daeun-gz[data-lang="zh"]               { font-size: 13px; font-weight: 900; letter-spacing: 1px; }
+.star-status[data-lang="ko"]             { font-size: 12px; font-weight: 500; }
+.star-status[data-lang="zh"]             { font-size: 13px; font-weight: 600; }
+
+/* === AI 복사 섹션 === */
+.ai-copy-section {
+  margin-top: 20px;
+  padding: 0 16px 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.ai-copy-btn {
+  width: 160px;
+  margin: 0;
+  padding: 14px 24px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  box-shadow: var(--shadow-2);
+}
+.ai-copy-btn:hover  { background: var(--primary-hover); box-shadow: var(--shadow-3); transform: translateY(-1px); }
+.ai-copy-btn:active { transform: translateY(0); }
+.ai-copy-btn.copied { background: #27ae60; }
+
+.ai-copy-desc { font-family: 'Noto Sans KR', sans-serif; font-size: 15px; color: var(--text-3); line-height: 1.7; margin: 0; }
+.ai-copy-warn { color: var(--text-4); font-size: 14px; }
+
+/* === 사이트 푸터 === */
+.site-footer {
+  width: 100%;
+  max-width: 900px;
+  margin: 24px auto 0;
+  padding: 20px 16px;
+  border-top: 1px solid var(--border-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.site-footer-copy                { font-size: 12px; color: var(--text-4); letter-spacing: 0.04em; }
+.site-footer-links               { display: flex; align-items: center; gap: 6px; }
+.site-footer-links a             { font-size: 11px; color: var(--text-4); text-decoration: none; cursor: pointer; transition: color 0.2s; }
+.site-footer-links a:hover       { color: var(--primary); }
+.site-footer-links .dot          { font-size: 10px; color: var(--text-5); }
+
+/* === 라이트/다크 토글 버튼 === */
+.theme-toggle-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 10px;
+  background: var(--bg-palace);
+  border: 1px solid var(--border-md);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-2);
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-3);
+}
+
+.theme-toggle-track {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  background: var(--border-sm);
+  border-radius: 999px;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .theme-toggle-track { background: var(--primary); }
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+[data-theme="dark"] .theme-toggle-thumb { transform: translateX(12px); }
+
+.theme-toggle-label { white-space: nowrap; }
