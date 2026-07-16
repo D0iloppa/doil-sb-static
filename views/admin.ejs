@@ -790,14 +790,50 @@
       color: var(--grn);
     }
 
-    .imggen-form {
-      display: inline-flex;
+    .imggen-toggle {
+      font-size: 13px;
+    }
+
+    .imggen-toggle.active {
+      background: rgba(77, 255, 143, .22);
+      border-color: var(--grn);
+      color: var(--grn);
+    }
+
+    .imggen-card {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: rgba(77, 255, 143, .045);
+      border: 1px solid rgba(77, 255, 143, .25);
+      border-radius: 5px;
+    }
+
+    .imggen-card-head {
+      display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+    }
+
+    .imggen-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(77, 255, 143, .2);
     }
 
     .imggen-form.hidden {
       display: none;
+    }
+
+    .imggen-form-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
     }
 
     .imggen-prompt {
@@ -808,8 +844,9 @@
       font-size: 12px;
       padding: 3px 8px;
       outline: none;
-      min-width: 170px;
-      max-width: 46vw;
+      flex: 1 1 auto;
+      min-width: 320px;
+      width: 100%;
     }
 
     .imggen-prompt::placeholder {
@@ -830,6 +867,75 @@
     .imggen-high input {
       cursor: pointer;
       margin: 0;
+    }
+
+    .imggen-provider {
+      background: rgba(77, 255, 143, .06);
+      border: 1px solid rgba(77, 255, 143, .3);
+      color: var(--grn);
+      font-family: inherit;
+      font-size: 11px;
+      padding: 2px 4px;
+      outline: none;
+      color-scheme: dark;
+    }
+
+    .imggen-provider option {
+      background: var(--scr);
+      color: var(--grn);
+    }
+
+    .imggen-attach {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border: 1px dashed rgba(77, 255, 143, .4);
+      border-radius: 3px;
+      cursor: pointer;
+      color: var(--grn);
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .imggen-attach:hover {
+      border-color: var(--grn);
+    }
+
+    .imggen-form.drag-over {
+      outline: 1px dashed var(--grn);
+    }
+
+    .imggen-thumbs {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .imggen-thumb {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      background-size: cover;
+      background-position: center;
+      background-color: rgba(77, 255, 143, .08);
+      border: 1px solid rgba(77, 255, 143, .3);
+    }
+
+    .imggen-thumb-rm {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 12px;
+      height: 12px;
+      line-height: 11px;
+      text-align: center;
+      font-size: 9px;
+      background: rgba(0, 0, 0, .7);
+      border: 1px solid rgba(77, 255, 143, .4);
+      border-radius: 50%;
+      cursor: pointer;
     }
 
     .msg-copy {
@@ -857,9 +963,10 @@
       flex-direction: column;
     }
 
-    /* 레지스트리·홈·터미널 뷰포트 스크롤바 통일 */
+    /* 레지스트리·홈·터미널·블로그 뷰포트 스크롤바 통일 */
     #registryView,
     #homeView,
+    #blogView,
     .xterm-viewport {
       scrollbar-width: thin;
       scrollbar-color: var(--dim) transparent;
@@ -867,24 +974,28 @@
 
     #registryView::-webkit-scrollbar,
     #homeView::-webkit-scrollbar,
+    #blogView::-webkit-scrollbar,
     .xterm-viewport::-webkit-scrollbar {
       width: 5px;
     }
 
     #registryView::-webkit-scrollbar-track,
-    #homeView::-webkit-scrollbar-track {
+    #homeView::-webkit-scrollbar-track,
+    #blogView::-webkit-scrollbar-track {
       background: transparent;
     }
 
     #registryView::-webkit-scrollbar-thumb,
     #homeView::-webkit-scrollbar-thumb,
+    #blogView::-webkit-scrollbar-thumb,
     .xterm-viewport::-webkit-scrollbar-thumb {
       background: var(--dim);
       border-radius: 4px;
     }
 
     #registryView::-webkit-scrollbar-thumb:hover,
-    #homeView::-webkit-scrollbar-thumb:hover {
+    #homeView::-webkit-scrollbar-thumb:hover,
+    #blogView::-webkit-scrollbar-thumb:hover {
       background: var(--grn);
     }
 
@@ -2365,6 +2476,60 @@
       border-radius: 4px;
     }
 
+    .imggen-pending {
+      position: relative;
+      display: inline-block;
+    }
+
+    .imggen-pending-ctrls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .imggen-pending-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 1;
+      color: var(--grn);
+      background: rgba(77, 255, 143, .1);
+      border: 1px solid rgba(77, 255, 143, .4);
+      border-radius: 3px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .imggen-pending-btn:hover {
+      background: rgba(77, 255, 143, .22);
+      border-color: var(--grn);
+    }
+
+    .imggen-pending-btn-x {
+      color: #ff6b6b;
+      border-color: rgba(255, 107, 107, .4);
+      background: rgba(255, 107, 107, .08);
+    }
+
+    .imggen-pending-btn-x:hover {
+      background: rgba(255, 107, 107, .18);
+      border-color: #ff6b6b;
+    }
+
+    .imggen-pending-done .imggen-pending-ctrls {
+      display: none;
+    }
+
+    .imggen-pending-done .imggen-placeholder {
+      opacity: .35;
+    }
+
     /* 주사위 SVG도 같은 누수 대상 — '.monitor svg'(0,1,1)에 걸려 화면을 꽉 채운다.
        '.dobis-log .dice-die'(0,2,0)로 이기고 position/inset/크기를 인라인 30px 로 리셋. */
     .dobis-log .dice-die {
@@ -2883,13 +3048,16 @@
       width: 4px;
       height: 4px;
     }
+
     .code-block::-webkit-scrollbar-track {
       background: transparent;
     }
+
     .code-block::-webkit-scrollbar-thumb {
       background: rgba(77, 255, 143, .35);
       border-radius: 2px;
     }
+
     .code-block::-webkit-scrollbar-thumb:hover {
       background: rgba(77, 255, 143, .65);
     }
@@ -4421,6 +4589,8 @@
               <span class="cmd navtab" id="tabRegistry" onclick="showView('registry')">[ WORKS ]</span>
               <span class="cmd navtab" id="tabSsh" onclick="showView('ssh')">[ SSH ]</span>
               <span class="cmd navtab" id="tabDobis" onclick="showView('dobis')">[ 🤖 DOBIS ]</span>
+              <span class="cmd navtab" id="tabBlog" onclick="showView('blog')">[ ✍️ BLOG ]</span>
+              <span class="cmd navtab" id="tabOrca" onclick="showView('orca')">[ 🐋 ORCA ]</span>
               <span class="cmd navtab" id="tabGeo" onclick="openGeoWindow()">[ 🗺️ GEO ]</span>
               <span class="cmd navtab" id="tabTimes" onclick="openTimesWindow()">[ 📰 TIMES ]</span>
               <label class="navtab music-cb" title="음악 패널 토글"><input type="checkbox" id="musicToggleCb"
@@ -4503,6 +4673,8 @@
                     class="app-ico">🗂️</span><span class="app-label">WORKS</span></div>
                 <div class="app-card" onclick="showView('ssh')" title="호스트 SSH 터미널"><span
                     class="app-ico">🖥️</span><span class="app-label">SSH</span></div>
+                <div class="app-card" onclick="showView('orca')" title="Orca 데스크톱 원격 접속 (VPN 전용)"><span
+                    class="app-ico">🐋</span><span class="app-label">ORCA</span></div>
                 <div class="app-card" onclick="showView('dobis')" title="DOBIS 챗봇"><span class="app-ico">🤖</span><span
                     class="app-label">DOBIS</span></div>
                 <div class="app-card" onclick="openGeoWindow()" title="지리 학습 도구"><span class="app-ico">🗺️</span><span
@@ -4531,8 +4703,7 @@
                   title="로컬 안티그라비티 프록시"><span class="app-ico">🛸</span><span class="app-label">agy</span></a>
                 <div class="app-card"
                   onclick="window.open('https://drec.doil.me/','drec','width=1280,height=860,noopener')"
-                  title="dRec 회의 녹취·회의록 (팝업)"><span class="app-ico">🎙️</span><span
-                    class="app-label">dRec</span></div>
+                  title="dRec 회의 녹취·회의록 (팝업)"><span class="app-ico">🎙️</span><span class="app-label">dRec</span></div>
               </div>
             </div>
 
@@ -4562,6 +4733,176 @@
                 </div>
               </div>
               <div id="rows"></div>
+            </div>
+
+            <!-- BLOG 뷰 (CMS: 글/카테고리/댓글/사용자) -->
+            <div id="blogView" class="hidden">
+              <style>
+                #blogView{flex:1 1 auto;min-height:0;overflow:auto;padding-right:4px}
+                #blogView .blog-sub{display:flex;gap:6px;margin-bottom:12px}
+                #blogView .blog-sub .cmd.on{color:var(--fg,#7CFC00);text-shadow:0 0 6px currentColor}
+                #blogView .bpane{display:none}
+                #blogView .bpane.on{display:block}
+                #blogView table{width:100%;border-collapse:collapse;font-size:13px}
+                #blogView th,#blogView td{border:1px solid rgba(124,252,0,.25);padding:6px 8px;text-align:left;vertical-align:top}
+                #blogView th{color:#9aa;font-weight:normal}
+                #blogView input,#blogView select,#blogView textarea{background:#000;color:inherit;border:1px solid rgba(124,252,0,.35);padding:6px 8px;font:inherit;width:100%}
+                #blogView .bgrid{display:grid;grid-template-columns:90px 1fr;gap:8px 10px;align-items:center;margin-bottom:10px}
+                #blogView .beditor{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+                #blogView .beditor textarea{height:340px;resize:vertical;font-family:var(--mono,monospace)}
+                #blogView .bprev{border:1px solid rgba(124,252,0,.25);padding:10px;height:340px;overflow:auto;background:#0a0a0a;color:#cfc}
+                #blogView .bprev h1,#blogView .bprev h2,#blogView .bprev h3{color:#9f9}
+                #blogView .bprev a{color:#6cf}
+                #blogView .bprev img{max-width:100%}
+                #blogView .beditor textarea,#blogView .bprev{scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+                #blogView .beditor textarea::-webkit-scrollbar,#blogView .bprev::-webkit-scrollbar{width:5px}
+                #blogView .beditor textarea::-webkit-scrollbar-track,#blogView .bprev::-webkit-scrollbar-track{background:transparent}
+                #blogView .beditor textarea::-webkit-scrollbar-thumb,#blogView .bprev::-webkit-scrollbar-thumb{background:var(--dim);border-radius:4px}
+                #blogView .beditor textarea::-webkit-scrollbar-thumb:hover,#blogView .bprev::-webkit-scrollbar-thumb:hover{background:var(--grn)}
+                #blogView .brow-act{display:flex;gap:8px;flex-wrap:wrap}
+                #blogView .pill{padding:1px 8px;border:1px solid rgba(124,252,0,.4);border-radius:10px;font-size:11px}
+                #blogView .bimglib{margin-top:12px;border-top:1px dashed rgba(124,252,0,.25);padding-top:10px}
+                #blogView .bimgdrop{border:1px dashed rgba(124,252,0,.35);padding:8px;text-align:center;font-size:12px;color:#9aa;margin:6px 0}
+                #blogView .bimgdrop.drag{background:rgba(124,252,0,.08);color:#cfc}
+                #blogView .bimggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+                #blogView .bimgcell{position:relative;border:1px solid rgba(124,252,0,.25);cursor:pointer}
+                #blogView .bimgcell img{width:100%;height:64px;object-fit:cover;display:block}
+                #blogView .blang-tabs{display:flex;gap:6px;align-items:center;margin:4px 0 8px;border-bottom:1px solid rgba(124,252,0,.2);padding-bottom:6px}
+                #blogView .blang-tabs .cmd.on{color:var(--fg,#7CFC00);text-shadow:0 0 6px currentColor}
+                #blogView .blangpane{display:none}
+                #blogView .blangpane.on{display:block}
+                @media(max-width:900px){#blogView .beditor{grid-template-columns:1fr}}
+              </style>
+              <div class="blog-sub">
+                <span class="cmd on" id="bsubPosts" onclick="blogSub('posts')">[ 글 ]</span>
+                <span class="cmd" id="bsubCats" onclick="blogSub('cats')">[ 카테고리 ]</span>
+                <span class="cmd" id="bsubSeries" onclick="blogSub('series')">[ 시리즈 ]</span>
+                <span class="cmd" id="bsubComments" onclick="blogSub('comments')">[ 댓글 ]</span>
+                <span class="cmd" id="bsubUsers" onclick="blogSub('users')">[ 사용자 ]</span>
+                <span class="spacer" style="flex:1"></span>
+                <a class="cmd" href="/blog" target="_blank" rel="noreferrer">[ 블로그 열기 ↗ ]</a>
+              </div>
+
+              <!-- 글 -->
+              <div class="bpane on" id="bpanePosts">
+                <div class="subbar"><span class="cmd" onclick="blogNewPost()">[ + 새 글 ]</span><span class="cmd" onclick="blogLoadPosts()">[ RELOAD ]</span></div>
+                <div class="subbar">
+                  <input id="bpf_q" placeholder="제목 검색..." oninput="blogFilterChanged()" style="min-width:220px">
+                  <select id="bpf_cat" onchange="blogFilterChanged()"><option value="">전체 카테고리</option></select>
+                </div>
+                <div id="blogEditor" class="hidden">
+                  <!-- 언어 공통(slug/카테고리/태그/커버) -->
+                  <div class="bgrid">
+                    <label>slug</label><input id="bp_slug" placeholder="자동 생성(수정 가능)">
+                    <label>카테고리</label><select id="bp_cat"></select>
+                    <label>태그</label><input id="bp_tags" placeholder="쉼표로 구분: 맛집, 전주, 리뷰">
+                    <label>커버 URL</label><input id="bp_cover" placeholder="https://... (선택)">
+                    <label>작성일시</label><input id="bp_published_at" type="datetime-local">
+                    <label>시리즈</label><span style="display:flex;gap:8px">
+                      <select id="bp_series" onchange="blogPreview()" style="flex:1"><option value="">(없음)</option></select>
+                      <input id="bp_series_order" placeholder="순서: 1, 1-2, 2-1-3" style="width:160px">
+                    </span>
+                  </div>
+                  <!-- 언어 탭: 제목·요약·본문은 언어별. EN 은 선택(있으면 /blog/en/:slug 페어 생성) -->
+                  <div class="blang-tabs">
+                    <span class="cmd on" id="blangKo" onclick="blogLang('ko')">[ 한글 ]</span>
+                    <span class="cmd" id="blangEn" onclick="blogLang('en')">[ English (선택) ]</span>
+                    <span class="muted" id="bp_enflag" style="margin-left:8px"></span>
+                  </div>
+                  <div class="subbar">
+                    <span class="cmd" onclick="blogLinkSelection()" title="본문에서 텍스트를 드래그해 선택한 뒤 클릭하면 그 텍스트에만 링크가 걸립니다">[ 🔗 선택 텍스트에 링크 ]</span>
+                    <span class="cmd" onclick="blogInsertLinkCard()" title="URL 입력 시 발행 시점에 OG 메타를 가져와 링크 카드로 렌더">[ 🔗 링크 임베드 추가 ]</span>
+                    <span class="cmd" onclick="blogInsertSeriesTag()" title="이 위치에 시리즈 목록이 자동 삽입됩니다(글에 시리즈 지정 필요)">[ 📚 시리즈 목록 삽입 ]</span>
+                  </div>
+                  <div class="blangpane on" id="bpaneKo">
+                    <div class="bgrid">
+                      <label>제목</label><input id="bp_title" oninput="blogSuggestSlug()">
+                      <label>요약</label><input id="bp_summary" placeholder="비우면 본문 앞부분 자동">
+                    </div>
+                    <div class="beditor">
+                      <textarea id="bp_body" placeholder="# 마크다운으로 작성" oninput="blogPreview('ko')"></textarea>
+                      <div class="bprev" id="bp_preview"><span class="muted">미리보기</span></div>
+                    </div>
+                  </div>
+                  <div class="blangpane" id="bpaneEn">
+                    <div class="bgrid">
+                      <label>Title</label><input id="bp_title_en">
+                      <label>Summary</label><input id="bp_summary_en" placeholder="empty → auto from body">
+                    </div>
+                    <div class="beditor">
+                      <textarea id="bp_body_en" placeholder="# English pair (optional)" oninput="blogPreview('en')"></textarea>
+                      <div class="bprev" id="bp_preview_en"><span class="muted">preview</span></div>
+                    </div>
+                  </div>
+                  <div class="subbar" style="margin-top:10px">
+                    <span class="cmd" onclick="blogSavePost(false)">[ 저장(초안) ]</span>
+                    <span class="cmd" onclick="blogSavePost(true)">[ 저장 후 발행 ]</span>
+                    <span class="cmd" onclick="blogCancelEdit()">[ 취소 ]</span>
+                    <span class="muted" id="bp_status"></span>
+                  </div>
+
+                  <!-- 이미지 라이브러리 -->
+                  <div class="bimglib">
+                    <div class="subbar">
+                      <span class="muted">🖼 이미지 라이브러리</span>
+                      <label class="cmd" style="cursor:pointer">[ + 업로드 ]
+                        <input id="bp_imgfile" type="file" accept="image/*" style="display:none" onchange="blogUploadImage(this.files[0])">
+                      </label>
+                      <span class="cmd" id="bp_imgscope" onclick="blogToggleImgScope()" title="현재 글 이미지 ↔ 전체 이미지 전환">[ 전체 이미지 보기 ]</span>
+                      <span class="cmd" id="bp_trashBtn" onclick="blogTrashUnused()" title="어떤 글에도 안 쓰인 이미지를 휴지통으로 이동">[ 미사용 정리 ]</span>
+                      <span class="cmd" onclick="blogEmptyTrash()" title="휴지통 영구 삭제">[ 휴지통 비우기 ]</span>
+                      <span class="muted" id="bp_imgstatus"></span>
+                    </div>
+                    <div id="bp_imgdrop" class="bimgdrop">썸네일 클릭 → 커서 위치에 삽입 · 여기로 드래그&amp;드롭 업로드</div>
+                    <div id="bp_imggrid" class="bimggrid"></div>
+                  </div>
+                </div>
+                <div id="blogPostList"></div>
+              </div>
+
+              <!-- 카테고리 -->
+              <div class="bpane" id="bpaneCats">
+                <div class="bgrid" style="grid-template-columns:90px 1fr 90px 1fr">
+                  <label>상위</label><select id="bc_parent"></select>
+                  <label>이름</label><input id="bc_name">
+                  <label>slug</label><input id="bc_slug" placeholder="자동">
+                  <label>정렬</label><input id="bc_sort" type="number" value="0">
+                  <label></label><span>
+                    <span class="cmd" id="bc_submit" onclick="blogSubmitCat()">[ + 추가 ]</span>
+                    <span class="cmd hidden" id="bc_cancel" onclick="blogCancelCatEdit()">[ 취소 ]</span>
+                    <span class="muted" id="bc_editflag"></span>
+                  </span>
+                </div>
+                <div id="blogCatList"></div>
+              </div>
+
+              <!-- 시리즈 -->
+              <div class="bpane" id="bpaneSeries">
+                <div class="bgrid" style="grid-template-columns:90px 1fr 90px 1fr">
+                  <label>이름</label><input id="bs_name">
+                  <label>slug</label><input id="bs_slug" placeholder="자동">
+                  <label>챕터 라벨</label>
+                  <textarea id="bs_labels" rows="3" placeholder="글 없는 챕터 구분에 이름 붙이기. 한 줄에 하나: 경로=이름&#10;예) 1=아스라이&#10;2=소용(所用)히"></textarea>
+                  <label></label><span>
+                    <span class="cmd" id="bs_submit" onclick="blogSubmitSeries()">[ + 추가 ]</span>
+                    <span class="cmd hidden" id="bs_cancel" onclick="blogCancelSeriesEdit()">[ 취소 ]</span>
+                    <span class="muted" id="bs_editflag"></span>
+                  </span>
+                </div>
+                <div id="blogSeriesList"></div>
+              </div>
+
+              <!-- 댓글 -->
+              <div class="bpane" id="bpaneComments">
+                <div class="subbar"><span class="cmd" onclick="blogLoadComments()">[ RELOAD ]</span></div>
+                <div id="blogCommentList"></div>
+              </div>
+
+              <!-- 사용자 -->
+              <div class="bpane" id="bpaneUsers">
+                <div class="subbar"><span class="cmd" onclick="blogLoadUsers()">[ RELOAD ]</span></div>
+                <div id="blogUserList"></div>
+              </div>
             </div>
 
             <!-- SSH 뷰 (터미널이 채우고, 스크롤은 xterm 내부) -->
@@ -4595,6 +4936,28 @@
                   <div id="sbList" class="sb-list"></div>
                   <div class="sb-foot"><span class="cmd" onclick="addSshTab()">[ + NEW ]</span></div>
                 </div>
+              </div>
+            </div>
+
+            <!-- ORCA 뷰 (Orca 데스크톱 원격 접속 — 페어링 코드 붙여넣기 → 워크트리 → 터미널) -->
+            <div id="orcaView" class="hidden">
+              <div class="ssh-form">
+                <span class="muted">&gt; orca desktop (데스크톱 QR 화면의 코드를 붙여넣기 · VPN 전용)</span>
+                <textarea id="orcaCode" rows="2" placeholder="orca://pair?code=… 또는 code 문자열"
+                  style="flex:1;min-width:220px;background:transparent;color:inherit;border:1px solid currentColor;font:inherit;padding:4px"></textarea>
+                <span class="cmd" onclick="orcaPair()">[ PAIR ]</span>
+                <span class="cmd" onclick="orcaUnpair()">[ DISCONNECT ]</span>
+                <span id="orcaStatus">idle</span>
+                <span id="orcaRecent"></span>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:8px;align-items:stretch">
+                <div style="width:260px;flex:none;overflow:auto;max-height:62vh">
+                  <div class="muted">&gt; WORKTREES</div>
+                  <div id="orcaWorktrees"></div>
+                  <div class="muted" style="margin-top:8px">&gt; TABS</div>
+                  <div id="orcaTabs"></div>
+                </div>
+                <div id="orcaTermWrap" style="flex:1;min-width:0;height:62vh"></div>
               </div>
             </div>
 
@@ -4640,6 +5003,7 @@
                         onclick="document.getElementById('dobisImgInput').click(); toggleInputMenu(true)">📎 파일 첨부
                       </div>
                       <div class="dim-item" id="dimSearch" onclick="dobisToggleSearch()">🌐 인터넷 검색</div>
+                      <div class="dim-item" onclick="dobisOpenImggenPanel(); toggleInputMenu(true)">🎨 이미지 생성</div>
                     </div>
                   </div>
                   <textarea id="dobisInput" rows="1" placeholder="메시지를 입력하세요… (/help)" autocomplete="off"
@@ -7038,8 +7402,8 @@
     }
 
     // ===== 뷰 전환 (한 번에 한 스크롤 영역만) =====
-    const VIEWS = { home: 'homeView', registry: 'registryView', ssh: 'sshView', dobis: 'dobisView' };
-    const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis' };
+    const VIEWS = { home: 'homeView', registry: 'registryView', ssh: 'sshView', dobis: 'dobisView', blog: 'blogView', orca: 'orcaView' };
+    const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis', blog: 'tabBlog', orca: 'tabOrca' };
     function showView(v) {
       touchSession();   // 페이지 이동 = 활동 → 세션 갱신
       try { localStorage.setItem('dobisLastView', v); } catch (e) { }   // 새로고침 시 마지막 뷰 복원용
@@ -7049,6 +7413,641 @@
       if (v === 'registry') load();
       if (v === 'ssh') { ensureSshTabs(); const _t = ct(); if (_t && _t.fit) requestAnimationFrame(() => { try { _t.fit.fit(); if (_t.sshOn) _t.sock && _t.sock.emit('ssh:resize', { cols: _t.term.cols, rows: _t.term.rows }); } catch { } }); }
       if (v === 'dobis') { ensureSocket(); _restoreDraft(); setChatName(); requestAnimationFrame(() => { const i = document.getElementById('dobisInput'); if (i) i.focus(); }); }
+      if (v === 'blog') blogInit();
+      if (v === 'orca') orcaInit();
+    }
+
+    // ===== ORCA (Orca 데스크톱 원격 접속 — /orca 네임스페이스 경유 E2EE relay) =====
+    let orcaSock = null, orcaTermObj = null, orcaHandle = null, orcaStreamId = null;
+    function orcaStatus(s) { document.getElementById('orcaStatus').textContent = s; }
+    function orcaErr(r) { if (!r) return 'no response'; const e = r.error; return typeof e === 'string' ? e : (e && e.message) || JSON.stringify(e || r); }
+    function orcaAsList(x) {
+      if (Array.isArray(x)) return x;
+      if (x && Array.isArray(x.worktrees)) return x.worktrees;
+      if (x && Array.isArray(x.items)) return x.items;
+      if (x && Array.isArray(x.tabs)) return x.tabs;
+      return x ? [x] : [];
+    }
+    function orcaEnsureSocket(cb) {
+      if (orcaSock && orcaSock.connected) { if (cb) cb(); return; }
+      if (orcaSock) { try { orcaSock.disconnect(); } catch (e) { } }
+      orcaSock = io('/orca', { path: '/sb/socket.io', auth: { token } });
+      orcaSock.on('connect', () => { orcaStatus('gateway ok — 페어링 대기'); if (cb) { cb(); cb = null; } });
+      orcaSock.on('connect_error', (e) => orcaStatus('GATE FAIL: ' + e.message));
+      orcaSock.on('disconnect', () => orcaStatus('gateway 연결 끊김'));
+      orcaSock.on('orca:closed', (m) => { orcaHandle = null; orcaStreamId = null; orcaStatus('데스크톱 연결 끊김: ' + ((m && m.reason) || '')); });
+      orcaSock.on('orca:stream', orcaOnStream);
+    }
+    function orcaInit() {
+      orcaEnsureSocket();
+      orcaRenderRecent();
+      if (orcaTermObj) requestAnimationFrame(() => { try { orcaTermObj.fit.fit(); } catch (e) { } });
+    }
+    function orcaGetRecent() { try { return JSON.parse(localStorage.getItem('orcaRecent') || '[]'); } catch (e) { return []; } }
+    function orcaSaveRecent(code, endpoint) {
+      const l = orcaGetRecent().filter(x => x.code !== code);
+      l.unshift({ code, endpoint, at: Date.now() });
+      try { localStorage.setItem('orcaRecent', JSON.stringify(l.slice(0, 2))); } catch (e) { }
+      orcaRenderRecent();
+    }
+    function orcaRenderRecent() {
+      const box = document.getElementById('orcaRecent'); box.innerHTML = '';
+      for (const r of orcaGetRecent()) {
+        const s = document.createElement('span'); s.className = 'cmd'; s.title = '최근 페어링 재연결';
+        s.textContent = '[ ↻ ' + r.endpoint + ' ]';
+        s.onclick = () => orcaPair(r.code);
+        box.appendChild(s);
+      }
+    }
+    function orcaPair(codeArg) {
+      const code = codeArg || document.getElementById('orcaCode').value.trim();
+      if (!code) { orcaStatus('페어링 코드를 붙여넣으세요'); return; }
+      orcaEnsureSocket(() => {
+        orcaStatus('connecting…');
+        orcaSock.emit('orca:pair', { code }, (r) => {
+          if (!r || !r.ok) { orcaStatus('PAIR FAIL: ' + orcaErr(r)); return; }
+          orcaStatus('connected — ' + r.endpoint);
+          orcaSaveRecent(code, r.endpoint);
+          orcaLoadWorktrees();
+        });
+      });
+    }
+    function orcaUnpair() {
+      if (orcaSock) orcaSock.emit('orca:unpair');
+      orcaHandle = null; orcaStreamId = null;
+      document.getElementById('orcaWorktrees').innerHTML = '';
+      document.getElementById('orcaTabs').innerHTML = '';
+      orcaStatus('disconnected');
+    }
+    function orcaRpc(method, params) { return new Promise((res) => orcaSock.emit('orca:rpc', { method, params }, res)); }
+    function orcaItem(label, onclick) {
+      const d = document.createElement('div'); d.className = 'cmd'; d.style.display = 'block';
+      d.textContent = label; d.onclick = onclick; return d;
+    }
+    async function orcaLoadWorktrees() {
+      const box = document.getElementById('orcaWorktrees'); box.textContent = 'loading…';
+      const r = await orcaRpc('worktree.ps', { limit: 10000 });
+      box.innerHTML = '';
+      if (!r || !r.ok) { box.textContent = 'worktree.ps 실패: ' + orcaErr(r); return; }
+      const list = orcaAsList(r.result);
+      if (!list.length) { box.textContent = '(워크트리 없음)'; return; }
+      for (const wt of list) {
+        const label = wt.title || wt.name || wt.branch || wt.path || wt.id || JSON.stringify(wt).slice(0, 60);
+        box.appendChild(orcaItem('▸ ' + label, () => orcaLoadTabs(wt)));
+      }
+    }
+    async function orcaLoadTabs(wt) {
+      const box = document.getElementById('orcaTabs'); box.textContent = 'loading…';
+      const params = wt && wt.id != null ? { worktreeId: wt.id } : {};
+      const r = await orcaRpc('session.tabs.list', params);
+      box.innerHTML = '';
+      const nb = document.createElement('div'); nb.className = 'cmd'; nb.textContent = '[ + NEW TERMINAL ]';
+      nb.onclick = async () => {
+        const cr = await orcaRpc('session.tabs.createTerminal', params);
+        if (!cr || !cr.ok) { orcaStatus('createTerminal 실패: ' + orcaErr(cr)); return; }
+        orcaOpenTerminal(cr.result);
+        orcaLoadTabs(wt);
+      };
+      box.appendChild(nb);
+      if (!r || !r.ok) { orcaStatus('tabs.list 실패: ' + orcaErr(r)); return; }
+      for (const tab of orcaAsList(r.result)) {
+        const label = tab.title || tab.name || tab.kind || tab.id || JSON.stringify(tab).slice(0, 60);
+        box.appendChild(orcaItem('· ' + label, () => orcaOpenTerminal(tab)));
+      }
+    }
+    function orcaEnsureTerm() {
+      if (orcaTermObj) return;
+      const el = document.getElementById('orcaTermWrap');
+      const term = new Terminal({
+        fontFamily: '"MesloLGS NF", "DejaVu Sans Mono", monospace', fontSize: 13, cursorBlink: true,
+        allowProposedApi: true, theme: { background: '#03150c', foreground: '#4dff8f', cursor: '#4dff8f' },
+      });
+      const fit = new FitAddon.FitAddon(); term.loadAddon(fit);
+      try { const u = new Unicode11Addon.Unicode11Addon(); term.loadAddon(u); term.unicode.activeVersion = '11'; } catch (e) { }
+      term.open(el); fit.fit();
+      term.onData((d) => {
+        if (!orcaHandle || !orcaSock) return;
+        touchSession();
+        // Enter(\r)는 enter:true, 그 외 키 입력은 raw text 그대로 — 출력은 subscribe 스트림으로 비동기 도착
+        const params = d === '\r' ? { terminal: orcaHandle, text: '', enter: true } : { terminal: orcaHandle, text: d, enter: false };
+        orcaSock.emit('orca:rpc', { method: 'terminal.send', params }, (r) => { if (r && r.ok === false) orcaStatus('send 실패: ' + orcaErr(r)); });
+      });
+      new ResizeObserver(() => { try { fit.fit(); } catch (e) { } }).observe(el);
+      orcaTermObj = { term, fit };
+    }
+    function orcaTermHandleOf(t) { return (t && (t.terminal || t.handle)) || t; }
+    function orcaOpenTerminal(tabOrResult) {
+      const handle = orcaTermHandleOf(tabOrResult);
+      if (!handle) { orcaStatus('터미널 핸들 없음'); return; }
+      if (orcaStreamId) { orcaSock.emit('orca:unsubscribe', { id: orcaStreamId, terminal: orcaHandle }); orcaStreamId = null; }
+      orcaHandle = handle;
+      orcaEnsureTerm();
+      orcaTermObj.term.reset();
+      orcaSock.emit('orca:subscribe', { terminal: handle }, (r) => {
+        if (!r || !r.ok) { orcaStatus('subscribe 실패: ' + orcaErr(r)); return; }
+        orcaStreamId = r.id;
+        orcaStatus('terminal attached');
+        orcaTermObj.term.focus();
+      });
+    }
+    function orcaOnStream(msg) {
+      if (!orcaTermObj) return;
+      if (msg && msg.ok === false) { orcaStatus('stream err: ' + orcaErr(msg)); return; }
+      // 최초 {type:'scrollback',...} 후 반복 {type:'data', chunk} — envelope(result) 유무 모두 수용
+      const ev = (msg && msg.result && msg.result.type) ? msg.result : (msg && msg.type ? msg : null);
+      if (!ev) return;
+      if (ev.type === 'scrollback') orcaTermObj.term.write(ev.data || ev.chunk || ev.text || '');
+      else if (ev.type === 'data') orcaTermObj.term.write(ev.chunk || '');
+      touchSession();
+    }
+
+    // ===== BLOG CMS =====
+    const blogState = { loaded: false, editingId: null, editingCatId: null, editingSeriesId: null, cats: [], series: [], prevTimer: null, activeLang: 'ko', imgScope: 'post', postPage: 0, postPageSize: 20, postTotal: 0, postQ: '', postCatId: '', filterTimer: null };
+    function blogFilterChanged(){
+      clearTimeout(blogState.filterTimer);
+      blogState.filterTimer=setTimeout(()=>{
+        blogState.postQ=document.getElementById('bpf_q').value;
+        blogState.postCatId=document.getElementById('bpf_cat').value;
+        blogLoadPosts(0);
+      },300);
+    }
+    function blogLang(l){
+      blogState.activeLang=l;
+      document.getElementById('bpaneKo').classList.toggle('on',l==='ko');
+      document.getElementById('bpaneEn').classList.toggle('on',l==='en');
+      document.getElementById('blangKo').classList.toggle('on',l==='ko');
+      document.getElementById('blangEn').classList.toggle('on',l==='en');
+    }
+    function blogUpdateEnFlag(){
+      const has=(document.getElementById('bp_body_en').value||'').trim().length>0;
+      document.getElementById('bp_enflag').textContent=has?'· EN 페어 있음':'';
+    }
+    function blogEsc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
+    function blogSlugify(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^\p{L}\p{N}\-_]/gu,'').replace(/-{2,}/g,'-').replace(/^-+|-+$/g,''); }
+
+    function blogInit(){ if(blogState.loaded) return; blogState.loaded=true; Promise.all([blogLoadCats(),blogLoadSeries()]).then(blogLoadPosts); }
+    function blogSub(name){
+      const map={posts:'bpanePosts',cats:'bpaneCats',series:'bpaneSeries',comments:'bpaneComments',users:'bpaneUsers'};
+      const tabs={posts:'bsubPosts',cats:'bsubCats',series:'bsubSeries',comments:'bsubComments',users:'bsubUsers'};
+      for(const [k,id] of Object.entries(map)) document.getElementById(id).classList.toggle('on',k===name);
+      for(const [k,id] of Object.entries(tabs)) document.getElementById(id).classList.toggle('on',k===name);
+      if(name==='cats') blogLoadCats();
+      if(name==='series') blogLoadSeries();
+      if(name==='comments') blogLoadComments();
+      if(name==='users') blogLoadUsers();
+    }
+
+    // 카테고리 트리 → depth 계산 후 select/list 렌더
+    function blogCatDepth(c, byId){ let d=0,p=c.parent_id; while(p){ d++; p=(byId.get(p)||{}).parent_id; } return d; }
+    // 평면 배열 → DFS 트리 순서(각 부모 바로 뒤에 그 자손). 각 그룹은 API가 준 순서(sort_order,id) 유지.
+    function blogTreeOrder(cats){
+      const byParent=new Map();
+      cats.forEach(c=>{ const k=c.parent_id||0; (byParent.get(k)||byParent.set(k,[]).get(k)).push(c); });
+      const out=[];
+      (function walk(pk){ (byParent.get(pk)||[]).forEach(c=>{ out.push(c); walk(c.id); }); })(0);
+      return out;
+    }
+    async function blogLoadCats(){
+      const r=await fetch(API+'/blog/admin/categories',{headers:H()}); const j=await r.json();
+      blogState.cats=j.categories||[];
+      const byId=new Map(blogState.cats.map(c=>[c.id,c]));
+      const ordered=blogTreeOrder(blogState.cats);   // 부모→자식 인접하도록 트리 순서로 정렬
+      // 글 에디터 카테고리 select
+      const opts=['<option value="">(없음)</option>'].concat(ordered.map(c=>{
+        const pad='  '.repeat(blogCatDepth(c,byId));
+        return `<option value="${c.id}">${pad}${blogEsc(c.name)}</option>`;
+      }));
+      const bpCat=document.getElementById('bp_cat'); if(bpCat) bpCat.innerHTML=opts.join('');
+      const bcParent=document.getElementById('bc_parent'); if(bcParent) bcParent.innerHTML=opts.join('');
+      const bpfCat=document.getElementById('bpf_cat');
+      if(bpfCat) bpfCat.innerHTML=['<option value="">전체 카테고리</option>'].concat(ordered.map(c=>{
+        const pad='  '.repeat(blogCatDepth(c,byId));
+        return `<option value="${c.id}">${pad}${blogEsc(c.name)}</option>`;
+      })).join('');
+      // 카테고리 목록
+      const list=document.getElementById('blogCatList');
+      if(list) list.innerHTML = ordered.length ? ('<table><tr><th>카테고리</th><th>slug</th><th>정렬</th><th></th></tr>'+
+        ordered.map(c=>{const pad='— '.repeat(blogCatDepth(c,byId));
+          return `<tr><td>${pad}${blogEsc(c.name)}</td><td>${blogEsc(c.slug)}</td><td>${c.sort_order}</td>`+
+          `<td class="brow-act"><span class="cmd" onclick="blogEditCat(${c.id})">[ 편집 ]</span><span class="cmd" onclick="blogDeleteCat(${c.id})">[ 삭제 ]</span></td></tr>`;}).join('')+'</table>')
+        : '<div class="muted">카테고리가 없습니다.</div>';
+    }
+    // 자신 + 모든 자손 id 집합(상위 지정 시 사이클 방지용)
+    function blogCatDescendants(id){
+      const set=new Set([id]); const cats=blogState.cats||[]; let changed=true;
+      while(changed){ changed=false; cats.forEach(c=>{ if(c.parent_id && set.has(c.parent_id) && !set.has(c.id)){ set.add(c.id); changed=true; } }); }
+      return set;
+    }
+    async function blogSubmitCat(){
+      const name=document.getElementById('bc_name').value.trim(); if(!name) return alert('이름을 입력하세요');
+      const parentVal=document.getElementById('bc_parent').value;
+      const body={ name, slug:document.getElementById('bc_slug').value.trim()||undefined,
+        parent_id:parentVal||null,
+        sort_order:Number(document.getElementById('bc_sort').value)||0 };
+      const id=blogState.editingCatId;
+      if(id){
+        if(parentVal && blogCatDescendants(id).has(Number(parentVal)))
+          return alert('자기 자신이나 하위 카테고리를 상위로 지정할 수 없습니다');
+        const r=await fetch(API+'/blog/admin/categories/'+id,{method:'PUT',headers:H(),body:JSON.stringify(body)});
+        if(!r.ok){ const j=await r.json().catch(()=>({})); return alert('수정 실패: '+(j.error||r.status)); }
+        blogCancelCatEdit();
+      } else {
+        const r=await fetch(API+'/blog/admin/categories',{method:'POST',headers:H(),body:JSON.stringify(body)});
+        if(!r.ok) return alert('추가 실패(slug 중복?)');
+        document.getElementById('bc_name').value=''; document.getElementById('bc_slug').value='';
+      }
+      blogLoadCats();
+    }
+    function blogEditCat(id){
+      const c=(blogState.cats||[]).find(x=>x.id===id); if(!c) return;
+      blogState.editingCatId=id;
+      document.getElementById('bc_parent').value=c.parent_id||'';
+      document.getElementById('bc_name').value=c.name||'';
+      document.getElementById('bc_slug').value=c.slug||'';
+      document.getElementById('bc_sort').value=c.sort_order||0;
+      document.getElementById('bc_submit').textContent='[ 저장 ]';
+      document.getElementById('bc_cancel').classList.remove('hidden');
+      document.getElementById('bc_editflag').textContent='· 편집 중: '+c.name;
+      document.getElementById('bc_name').focus();
+    }
+    function blogCancelCatEdit(){
+      blogState.editingCatId=null;
+      document.getElementById('bc_name').value=''; document.getElementById('bc_slug').value='';
+      document.getElementById('bc_parent').value=''; document.getElementById('bc_sort').value='0';
+      document.getElementById('bc_submit').textContent='[ + 추가 ]';
+      document.getElementById('bc_cancel').classList.add('hidden');
+      document.getElementById('bc_editflag').textContent='';
+    }
+    async function blogDeleteCat(id){ if(!confirm('카테고리를 삭제할까요? (하위 카테고리·글은 상위로 승격되며, 상위가 없으면 최상위/카테고리 없음 처리)')) return;
+      const r=await fetch(API+'/blog/admin/categories/'+id,{method:'DELETE',headers:H()});
+      if(r.ok) blogLoadCats(); else alert('삭제 실패');
+    }
+
+    // 시리즈(연재물) — 카테고리와 별개, 글에 옵셔널로 부여. 순서는 '1-2-3'처럼 '-'로 depth 구분.
+    async function blogLoadSeries(){
+      const r=await fetch(API+'/blog/admin/series',{headers:H()}); const j=await r.json();
+      blogState.series=j.series||[];
+      const opts=['<option value="">(없음)</option>'].concat(blogState.series.map(s=>
+        `<option value="${s.id}">${blogEsc(s.name)} (${s.post_count})</option>`));
+      const bpSeries=document.getElementById('bp_series'); if(bpSeries) bpSeries.innerHTML=opts.join('');
+      const list=document.getElementById('blogSeriesList');
+      if(list) list.innerHTML = blogState.series.length ? ('<table><tr><th>시리즈</th><th>slug</th><th>글 수</th><th></th></tr>'+
+        blogState.series.map(s=>`<tr><td>${blogEsc(s.name)}</td><td>${blogEsc(s.slug)}</td><td>${s.post_count}</td>`+
+        `<td class="brow-act"><span class="cmd" onclick="blogEditSeries(${s.id})">[ 편집 ]</span><span class="cmd" onclick="blogDeleteSeries(${s.id})">[ 삭제 ]</span></td></tr>`).join('')+'</table>')
+        : '<div class="muted">시리즈가 없습니다.</div>';
+    }
+    // 챕터 라벨 텍스트("경로=이름", 줄바꿈 구분) <-> {경로:이름} 객체 변환
+    function blogParseLabels(text){
+      const out={};
+      (text||'').split('\n').forEach(line=>{
+        const i=line.indexOf('='); if(i<0) return;
+        const path=line.slice(0,i).trim(), label=line.slice(i+1).trim();
+        if(path && label) out[path]=label;
+      });
+      return out;
+    }
+    function blogFormatLabels(obj){
+      return Object.entries(obj||{}).map(([path,label])=>path+'='+label).join('\n');
+    }
+    async function blogSubmitSeries(){
+      const name=document.getElementById('bs_name').value.trim(); if(!name) return alert('이름을 입력하세요');
+      const body={ name, slug:document.getElementById('bs_slug').value.trim()||undefined,
+        chapter_labels: blogParseLabels(document.getElementById('bs_labels').value) };
+      const id=blogState.editingSeriesId;
+      if(id){
+        const r=await fetch(API+'/blog/admin/series/'+id,{method:'PUT',headers:H(),body:JSON.stringify(body)});
+        if(!r.ok){ const j=await r.json().catch(()=>({})); return alert('수정 실패: '+(j.error||r.status)); }
+        blogCancelSeriesEdit();
+      } else {
+        const r=await fetch(API+'/blog/admin/series',{method:'POST',headers:H(),body:JSON.stringify(body)});
+        if(!r.ok) return alert('추가 실패(slug 중복?)');
+        document.getElementById('bs_name').value=''; document.getElementById('bs_slug').value=''; document.getElementById('bs_labels').value='';
+      }
+      blogLoadSeries();
+    }
+    function blogEditSeries(id){
+      const s=(blogState.series||[]).find(x=>x.id===id); if(!s) return;
+      blogState.editingSeriesId=id;
+      document.getElementById('bs_name').value=s.name||'';
+      document.getElementById('bs_slug').value=s.slug||'';
+      document.getElementById('bs_labels').value=blogFormatLabels(s.chapter_labels);
+      document.getElementById('bs_submit').textContent='[ 저장 ]';
+      document.getElementById('bs_cancel').classList.remove('hidden');
+      document.getElementById('bs_editflag').textContent='· 편집 중: '+s.name;
+      document.getElementById('bs_name').focus();
+    }
+    function blogCancelSeriesEdit(){
+      blogState.editingSeriesId=null;
+      document.getElementById('bs_name').value=''; document.getElementById('bs_slug').value=''; document.getElementById('bs_labels').value='';
+      document.getElementById('bs_submit').textContent='[ + 추가 ]';
+      document.getElementById('bs_cancel').classList.add('hidden');
+      document.getElementById('bs_editflag').textContent='';
+    }
+    async function blogDeleteSeries(id){ if(!confirm('시리즈를 삭제할까요? (연결된 글들은 시리즈 지정만 해제됩니다)')) return;
+      const r=await fetch(API+'/blog/admin/series/'+id,{method:'DELETE',headers:H()});
+      if(r.ok) blogLoadSeries(); else alert('삭제 실패');
+    }
+    function blogInsertSeriesTag(){
+      const lang=blogState.activeLang||'ko';
+      const ta=document.getElementById(lang==='en'?'bp_body_en':'bp_body');
+      const s=ta.selectionStart, e=ta.selectionEnd, snip='<series>';
+      ta.value=ta.value.slice(0,s)+snip+ta.value.slice(e);
+      ta.selectionStart=ta.selectionEnd=s+snip.length;
+      ta.focus(); blogPreview(lang);
+    }
+
+    function blogToLocalInput(iso){
+      if(!iso) return '';
+      const d=new Date(iso), pad=n=>String(n).padStart(2,'0');
+      return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+    }
+    function blogFmtDate(iso){
+      if(!iso) return '';
+      const d=new Date(iso), pad=n=>String(n).padStart(2,'0');
+      return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+    }
+    async function blogLoadPosts(page){
+      if(typeof page==='number') blogState.postPage=page;
+      const offset=blogState.postPage*blogState.postPageSize;
+      const qs=new URLSearchParams({limit:blogState.postPageSize,offset});
+      if(blogState.postQ) qs.set('q',blogState.postQ);
+      if(blogState.postCatId) qs.set('category_id',blogState.postCatId);
+      const r=await fetch(API+'/blog/admin/posts?'+qs.toString(),{headers:H()}); const j=await r.json();
+      blogState.postTotal=j.total||0;
+      const rows=(j.posts||[]).map(p=>{
+        const badge=p.status==='published'?'<span class="pill">발행</span>':'<span class="pill" style="opacity:.6">초안</span>';
+        const pubBtn=p.status==='published'
+          ? `<span class="cmd" onclick="blogTogglePublish(${p.id},false)">[ 내리기 ]</span>`
+          : `<span class="cmd" onclick="blogTogglePublish(${p.id},true)">[ 발행 ]</span>`;
+        const dateStr=blogFmtDate(p.published_at||p.created_at);
+        return `<tr><td>${blogEsc(p.title)}</td><td>${badge}</td><td>${blogEsc(p.category_name||'')}</td><td>${dateStr}</td><td>${p.view_count}</td>`+
+          `<td class="brow-act"><span class="cmd" onclick="blogEditPost(${p.id})">[ 편집 ]</span>${pubBtn}`+
+          `<a class="cmd" href="/blog/${encodeURIComponent(p.slug)}" target="_blank" rel="noreferrer">[ 보기 ]</a>`+
+          `<span class="cmd" onclick="blogDeletePost(${p.id})">[ 삭제 ]</span></td></tr>`;
+      }).join('');
+      const totalPages=Math.max(1,Math.ceil(blogState.postTotal/blogState.postPageSize));
+      const curPage=blogState.postPage+1;
+      const pager=`<div class="subbar">`+
+        `<span class="cmd" onclick="blogLoadPosts(${Math.max(0,blogState.postPage-1)})"${blogState.postPage<=0?' style="opacity:.4;pointer-events:none"':''}>[ ◀ 이전 ]</span>`+
+        `<span class="muted"> ${curPage} / ${totalPages} (${blogState.postTotal}) </span>`+
+        `<span class="cmd" onclick="blogLoadPosts(${blogState.postPage+1})"${curPage>=totalPages?' style="opacity:.4;pointer-events:none"':''}>[ 다음 ▶ ]</span>`+
+      `</div>`;
+      document.getElementById('blogPostList').innerHTML = (j.posts&&j.posts.length)
+        ? '<table><tr><th>제목</th><th>상태</th><th>카테고리</th><th>작성일</th><th>조회</th><th></th></tr>'+rows+'</table>'+pager
+        : '<div class="muted">글이 없습니다.</div>';
+    }
+    function blogNewPost(){
+      blogState.editingId=null;
+      ['bp_title','bp_slug','bp_tags','bp_cover','bp_summary','bp_body','bp_title_en','bp_summary_en','bp_body_en','bp_published_at','bp_series_order']
+        .forEach(id=>document.getElementById(id).value='');
+      document.getElementById('bp_cat').value='';
+      document.getElementById('bp_series').value='';
+      document.getElementById('bp_preview').innerHTML='<span class="muted">미리보기</span>';
+      document.getElementById('bp_preview_en').innerHTML='<span class="muted">preview</span>';
+      document.getElementById('bp_status').textContent='새 글';
+      document.getElementById('bp_imgstatus').textContent='';
+      blogLang('ko'); blogUpdateEnFlag();
+      blogResetImgScope();
+      blogLoadImages(null);
+      document.getElementById('blogEditor').classList.remove('hidden');
+      document.getElementById('bp_title').focus();
+    }
+    async function blogEditPost(id){
+      const r=await fetch(API+'/blog/admin/posts/'+id,{headers:H()}); if(!r.ok) return alert('불러오기 실패');
+      const j=await r.json(); const p=j.post;
+      blogState.editingId=id;
+      document.getElementById('bp_title').value=p.title||'';
+      document.getElementById('bp_slug').value=p.slug||'';
+      document.getElementById('bp_cat').value=p.category_id||'';
+      document.getElementById('bp_tags').value=(j.tags||[]).map(t=>t.name).join(', ');
+      document.getElementById('bp_cover').value=p.cover_url||'';
+      document.getElementById('bp_summary').value=p.summary||'';
+      document.getElementById('bp_body').value=p.body_md||'';
+      document.getElementById('bp_title_en').value=p.title_en||'';
+      document.getElementById('bp_summary_en').value=p.summary_en||'';
+      document.getElementById('bp_body_en').value=p.body_md_en||'';
+      document.getElementById('bp_published_at').value=blogToLocalInput(p.published_at||p.created_at);
+      document.getElementById('bp_series').value=p.series_id||'';
+      document.getElementById('bp_series_order').value=p.series_order||'';
+      document.getElementById('bp_status').textContent='편집 중: '+p.slug;
+      document.getElementById('bp_imgstatus').textContent='';
+      blogLang('ko'); blogUpdateEnFlag();
+      blogResetImgScope();
+      blogLoadImages(id);
+      document.getElementById('blogEditor').classList.remove('hidden');
+      blogPreview('ko'); if((p.body_md_en||'').trim()) blogPreview('en');
+    }
+    function blogCancelEdit(){ document.getElementById('blogEditor').classList.add('hidden'); blogState.editingId=null; }
+    function blogSuggestSlug(){ const s=document.getElementById('bp_slug'); if(!s.value.trim()){ /* 힌트만: 저장 시 서버가 최종 확정 */ } }
+    function blogPreview(lang){
+      lang = lang || blogState.activeLang || 'ko';
+      const src = lang==='en' ? 'bp_body_en' : 'bp_body';
+      const dst = lang==='en' ? 'bp_preview_en' : 'bp_preview';
+      if(lang==='en') blogUpdateEnFlag();
+      clearTimeout(blogState.prevTimer);
+      blogState.prevTimer=setTimeout(async()=>{
+        const md=document.getElementById(src).value;
+        const seriesId=document.getElementById('bp_series').value||null;
+        try{ const r=await fetch(API+'/blog/admin/preview',{method:'POST',headers:H(),body:JSON.stringify({body_md:md,series_id:seriesId,post_id:blogState.editingId})});
+          const j=await r.json(); document.getElementById(dst).innerHTML=j.html||''; }catch(e){}
+      },300);
+    }
+    async function blogSavePost(publish){
+      const tags=document.getElementById('bp_tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+      const body={
+        title:document.getElementById('bp_title').value.trim(),
+        slug:document.getElementById('bp_slug').value.trim()||undefined,
+        category_id:document.getElementById('bp_cat').value||null,
+        cover_url:document.getElementById('bp_cover').value.trim()||null,
+        summary:document.getElementById('bp_summary').value.trim(),
+        body_md:document.getElementById('bp_body').value,
+        title_en:document.getElementById('bp_title_en').value.trim(),
+        summary_en:document.getElementById('bp_summary_en').value.trim(),
+        body_md_en:document.getElementById('bp_body_en').value,
+        tags,
+        status: publish ? 'published' : 'draft',
+        published_at: document.getElementById('bp_published_at').value
+          ? new Date(document.getElementById('bp_published_at').value).toISOString() : null,
+        series_id: document.getElementById('bp_series').value || null,
+        series_order: document.getElementById('bp_series_order').value.trim() || null,
+      };
+      if(!body.title && !body.body_md) return alert('제목이나 본문을 입력하세요');
+      let id=blogState.editingId, r;
+      if(id){ r=await fetch(API+'/blog/admin/posts/'+id,{method:'PUT',headers:H(),body:JSON.stringify(body)}); }
+      else { r=await fetch(API+'/blog/admin/posts',{method:'POST',headers:H(),body:JSON.stringify(body)}); }
+      if(!r.ok) return alert('저장 실패');
+      const j=await r.json(); id=j.post.id;
+      if(publish){ await fetch(API+'/blog/admin/posts/'+id+'/publish',{method:'POST',headers:H(),body:JSON.stringify({publish:true})}); }
+      document.getElementById('bp_status').textContent='저장됨';
+      blogCancelEdit(); blogLoadPosts();
+    }
+    async function blogTogglePublish(id,publish){
+      const r=await fetch(API+'/blog/admin/posts/'+id+'/publish',{method:'POST',headers:H(),body:JSON.stringify({publish})});
+      if(r.ok) blogLoadPosts(); else alert('실패');
+    }
+    async function blogDeletePost(id){ if(!confirm('글을 삭제할까요?')) return;
+      const r=await fetch(API+'/blog/admin/posts/'+id,{method:'DELETE',headers:H()});
+      if(r.ok) blogLoadPosts(); else alert('삭제 실패');
+    }
+
+    // ── 이미지 라이브러리 ──
+    function blogRenderImages(images){
+      const grid=document.getElementById('bp_imggrid');
+      grid.innerHTML=(images||[]).map(im=>
+        `<div class="bimgcell" title="${blogEsc(im.filename||'')}" onclick="blogInsertImage('${im.url}')"><img src="${im.url}" loading="lazy"></div>`
+      ).join('');
+    }
+    async function blogLoadImages(id){
+      const grid=document.getElementById('bp_imggrid'); if(!grid) return;
+      if(blogState.imgScope==='all'){
+        try{ const r=await fetch(API+'/blog/admin/images/all',{headers:H()}); const j=await r.json(); blogRenderImages(j.images); }catch(e){}
+        return;
+      }
+      if(!id){ grid.innerHTML=''; return; }  // 새 글: 저장 전엔 업로드분만 클라에서 누적
+      try{ const r=await fetch(API+'/blog/admin/posts/'+id+'/images/strict',{headers:H()}); const j=await r.json(); blogRenderImages(j.images); }catch(e){}
+    }
+    function blogResetImgScope(){
+      blogState.imgScope='post';
+      document.getElementById('bp_imgscope').textContent='[ 전체 이미지 보기 ]';
+      document.getElementById('bp_trashBtn').style.display='';
+    }
+    function blogToggleImgScope(){
+      blogState.imgScope = blogState.imgScope==='all' ? 'post' : 'all';
+      document.getElementById('bp_imgscope').textContent = blogState.imgScope==='all' ? '[ 현재 글만 보기 ]' : '[ 전체 이미지 보기 ]';
+      document.getElementById('bp_trashBtn').style.display = blogState.imgScope==='all' ? 'none' : '';
+      blogLoadImages(blogState.editingId);
+    }
+    async function blogUploadImage(file){
+      if(!file) return;
+      const st=document.getElementById('bp_imgstatus'); st.textContent='업로드 중…';
+      const fd=new FormData(); fd.append('file',file);
+      if(blogState.editingId) fd.append('post_id',blogState.editingId);
+      try{
+        const r=await fetch(API+'/blog/admin/images',{method:'POST',headers:{'Authorization':'Bearer '+token},body:fd});
+        const j=await r.json();
+        if(!r.ok){ st.textContent='실패: '+(j.error||r.status); return; }
+        st.textContent='업로드됨';
+        const grid=document.getElementById('bp_imggrid');
+        grid.insertAdjacentHTML('afterbegin',
+          `<div class="bimgcell" title="${blogEsc(j.image.filename||'')}" onclick="blogInsertImage('${j.image.url}')"><img src="${j.image.url}" loading="lazy"></div>`);
+        blogInsertImage(j.image.url);  // 커서 위치에 바로 삽입
+      }catch(e){ st.textContent='업로드 오류'; }
+      document.getElementById('bp_imgfile').value='';
+    }
+    function blogInsertImage(url){
+      const lang=blogState.activeLang||'ko';
+      const ta=document.getElementById(lang==='en'?'bp_body_en':'bp_body');
+      const s=ta.selectionStart, e=ta.selectionEnd, snip=`![](${url})`;
+      ta.value=ta.value.slice(0,s)+snip+ta.value.slice(e);
+      ta.selectionStart=ta.selectionEnd=s+snip.length;
+      ta.focus(); blogPreview(lang);
+    }
+    function blogLinkSelection(){
+      const lang=blogState.activeLang||'ko';
+      const ta=document.getElementById(lang==='en'?'bp_body_en':'bp_body');
+      const s=ta.selectionStart, e=ta.selectionEnd;
+      if(s===e) return alert('먼저 본문에서 링크를 걸 텍스트를 드래그해 선택하세요.');
+      const url=(prompt('연결할 URL을 입력하세요')||'').trim();
+      if(!/^https?:\/\//i.test(url)) return;
+      const text=ta.value.slice(s,e);
+      const snip=`[${text}](${url})`;
+      ta.value=ta.value.slice(0,s)+snip+ta.value.slice(e);
+      ta.selectionStart=ta.selectionEnd=s+snip.length;
+      ta.focus(); blogPreview(lang);
+    }
+    function blogInsertLinkCard(){
+      const url=(prompt('임베드할 링크 URL을 입력하세요')||'').trim();
+      if(!/^https?:\/\//i.test(url)) return;
+      const lang=blogState.activeLang||'ko';
+      const ta=document.getElementById(lang==='en'?'bp_body_en':'bp_body');
+      const s=ta.selectionStart, e=ta.selectionEnd, snip=`<link-card src="${url}">`;
+      ta.value=ta.value.slice(0,s)+snip+ta.value.slice(e);
+      ta.selectionStart=ta.selectionEnd=s+snip.length;
+      ta.focus(); blogPreview(lang);
+    }
+    async function blogTrashUnused(){
+      if(!confirm('어떤 글에도 안 쓰인 이미지를 휴지통으로 옮길까요?')) return;
+      const st=document.getElementById('bp_imgstatus');
+      const r=await fetch(API+'/blog/admin/images/trash-unused',{method:'POST',headers:H()});
+      const j=await r.json();
+      st.textContent=r.ok?`휴지통 이동: ${j.trashed}개`:'실패';
+      if(r.ok) blogLoadImages(blogState.editingId);
+    }
+    async function blogEmptyTrash(){
+      if(!confirm('휴지통을 영구 삭제할까요? (복구 불가)')) return;
+      const st=document.getElementById('bp_imgstatus');
+      const r=await fetch(API+'/blog/admin/trash/empty',{method:'POST',headers:H()});
+      const j=await r.json();
+      st.textContent=r.ok?`영구 삭제: ${j.removed}개`:'실패';
+    }
+    (function blogImgDnD(){
+      const dz=document.getElementById('bp_imgdrop'); if(!dz) return;
+      dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+      dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+      dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');
+        const f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) blogUploadImage(f);});
+    })();
+    // 이미지 라이브러리 썸네일을 본문 textarea 로 드래그&드롭 시 URL 대신 마크다운 이미지 문법으로 삽입
+    (function blogBodyImgDnD(){
+      ['bp_body','bp_body_en'].forEach(id=>{
+        const ta=document.getElementById(id); if(!ta) return;
+        ta.addEventListener('drop',e=>{
+          const url=(e.dataTransfer.getData('text/uri-list')||e.dataTransfer.getData('text/plain')||'').trim();
+          if(!/^https?:\/\/\S+\.(png|jpe?g|gif|webp|svg)(\?\S*)?$/i.test(url)) return; // 이미지 URL 아니면 기본 동작 유지
+          e.preventDefault();
+          const s=ta.selectionStart, en=ta.selectionEnd, snip=`![](${url})`;
+          ta.value=ta.value.slice(0,s)+snip+ta.value.slice(en);
+          ta.selectionStart=ta.selectionEnd=s+snip.length;
+          ta.focus(); blogPreview(id==='bp_body_en'?'en':'ko');
+        });
+        // 노션처럼 Ctrl/Cmd+E — 선택 영역을 인라인 코드블록(`텍스트`)으로 전환
+        ta.addEventListener('keydown',e=>{
+          if(!(e.ctrlKey||e.metaKey) || e.shiftKey || e.altKey || e.key.toLowerCase()!=='e') return;
+          e.preventDefault();
+          const s=ta.selectionStart, en=ta.selectionEnd;
+          const text=ta.value.slice(s,en);
+          const snip=`\`${text}\``;
+          ta.value=ta.value.slice(0,s)+snip+ta.value.slice(en);
+          if(s===en) ta.selectionStart=ta.selectionEnd=s+1;
+          else { ta.selectionStart=s+1; ta.selectionEnd=s+1+text.length; }
+          ta.focus(); blogPreview(id==='bp_body_en'?'en':'ko');
+        });
+      });
+    })();
+
+    async function blogLoadComments(){
+      const r=await fetch(API+'/blog/admin/comments',{headers:H()}); const j=await r.json();
+      const rows=(j.comments||[]).map(c=>{
+        const op=c.is_op?' <span class="pill">OP</span>':'';
+        const txt=c.is_deleted?'<span class="muted">(삭제됨)</span>':blogEsc(c.body).slice(0,200);
+        return `<tr><td>${blogEsc(c.display_name)}${op}</td><td>${txt}</td>`+
+          `<td><a class="cmd" href="/blog/${encodeURIComponent(c.post_slug)}" target="_blank" rel="noreferrer">${blogEsc(c.post_title||'').slice(0,24)}</a></td>`+
+          `<td class="brow-act">${c.is_deleted?'':`<span class="cmd" onclick="blogDeleteComment(${c.id})">[ 삭제 ]</span>`}</td></tr>`;
+      }).join('');
+      document.getElementById('blogCommentList').innerHTML=(j.comments&&j.comments.length)
+        ? '<table><tr><th>작성자</th><th>내용</th><th>글</th><th></th></tr>'+rows+'</table>'
+        : '<div class="muted">댓글이 없습니다.</div>';
+    }
+    async function blogDeleteComment(id){ if(!confirm('댓글을 삭제할까요?')) return;
+      const r=await fetch(API+'/blog/admin/comments/'+id,{method:'DELETE',headers:H()});
+      if(r.ok) blogLoadComments(); else alert('삭제 실패');
+    }
+
+    async function blogLoadUsers(){
+      const r=await fetch(API+'/blog/admin/users',{headers:H()}); const j=await r.json();
+      const rows=(j.users||[]).map(u=>{
+        const op=u.is_op?'<span class="pill">OP</span>':'';
+        const btn=u.is_op?`<span class="cmd" onclick="blogSetOp(${u.id},false)">[ OP 해제 ]</span>`
+          :`<span class="cmd" onclick="blogSetOp(${u.id},true)">[ OP 승격 ]</span>`;
+        return `<tr><td>${blogEsc(u.display_name)}</td><td>${blogEsc(u.provider)}</td><td>${op}</td><td>${u.comment_count}</td><td class="brow-act">${btn}</td></tr>`;
+      }).join('');
+      document.getElementById('blogUserList').innerHTML=(j.users&&j.users.length)
+        ? '<table><tr><th>이름</th><th>provider</th><th>권한</th><th>댓글수</th><th></th></tr>'+rows+'</table>'
+        : '<div class="muted">가입 사용자가 없습니다.</div>';
+    }
+    async function blogSetOp(id,isOp){
+      const r=await fetch(API+'/blog/admin/users/'+id+'/op',{method:'POST',headers:H(),body:JSON.stringify({is_op:isOp})});
+      if(r.ok) blogLoadUsers(); else alert('실패');
     }
 
     // ===== 배경 =====
@@ -7213,6 +8212,7 @@
     let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, _dobisCancelled = false;
     let dobisBusy = false, _dobisT0 = 0, _dobisLen = 0, _dobisTick = null, _dobisWatch = null;
     let _chatAllMsgs = [], _chatLoaded = 0;
+    let _chatHeadMsgs = [];   // DOM에 안 올라온 이전 대화 — botSend가 _chatAllMsgs를 비워도 저장 시 유실 방지
     const _CHAT_PAGE = 30;
     const _dobisQueue = [];  // {msg, img, hidden?} — busy 중 입력/생성된 메시지 큐(hidden=화면 비노출 메타, 예: 주사위 결과)
     const DOBIS_WATCH_MS = 210000;   // 응답 무소식 시 UI 가 영원히 매달리지 않도록 하는 백스톱(워커 180s 타임아웃보다 길게)
@@ -7223,13 +8223,11 @@
     function setChatName() { const el = document.getElementById('chatName'); const t = chatTitle ? ('저장됨: ' + chatTitle) : '(미저장)'; el.textContent = t; el.title = t; }
     function buildChatMd(title) {
       const lines = ['# ' + title, '', '> DOBIS chat · ' + new Date().toLocaleString('ko-KR'), ''];
-      // 아직 DOM에 올라오지 않은 이전 대화(_chatAllMsgs 앞부분)를 먼저 추가 — tail만 로드된 채 저장해도 유실 방지
-      const loadedFrom = _chatAllMsgs.length - _chatLoaded;
-      if (loadedFrom > 0) {
-        _chatAllMsgs.slice(0, loadedFrom).forEach(msg => {
-          lines.push((msg.role === 'you' ? '**YOU:** ' : '**DOBIS:** ') + msg.text, '');
-        });
-      }
+      // 아직 DOM에 올라오지 않은 이전 대화를 먼저 추가 — tail만 로드된 채 저장해도 유실 방지
+      // (_chatAllMsgs는 botSend가 비우므로 별도 보관한 _chatHeadMsgs 사용)
+      _chatHeadMsgs.forEach(msg => {
+        lines.push((msg.role === 'you' ? '**YOU:** ' : '**DOBIS:** ') + msg.text, '');
+      });
       document.querySelectorAll('#dobisLog .dobis-msg').forEach((m) => {
         const you = m.classList.contains('you');
         const txt = you ? m.textContent.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim() : (m.dataset.raw || '');
@@ -7269,11 +8267,7 @@
       } finally { _restoring = false; }
     }
     async function dobisNewChat() {
-      // 미저장 대화가 있으면 저장 여부를 한 번 묻는다(저장은 그때그때 사용자 결정)
-      if (document.querySelector('#dobisLog .dobis-msg') && !chatTitle) {
-        const yes = await dlgConfirm('지금 대화를 저장할까요?\n(취소 = 저장하지 않고 새 채팅)', '새 채팅');
-        if (yes) { await dobisSaveChat(); }
-      }
+      _autoSaveChat();   // 남은 미저장분(초안 복원 직후 등) 마지막 반영 — 평소엔 턴마다 이미 저장됨
       try { localStorage.removeItem(getDraftKey()); } catch (e) { }   // 초안 비움
       _pendingRestoreMd = '';   // 복원 대기 맥락도 폐기
       setDobisBusy(false); stopDobisTimers(); dobisStatus(''); _dobisCancelled = true;   // 진행 중 응답의 잔여 delta/done 무시
@@ -7282,7 +8276,7 @@
       const _s = ensureSocket();
       try { _s && _s.emit('newchat', { sessionId: dobisSession }); } catch (e) { }
       dobisSession = newSessionId(); chatTitle = ''; streamBubble = null;
-      _chatAllMsgs = []; _chatLoaded = 0;
+      _chatAllMsgs = []; _chatLoaded = 0; _chatHeadMsgs = []; _chatGen++;
       document.getElementById('dobisLog').innerHTML = '';
       document.getElementById('chatList').classList.add('hidden');
       hideDomoji(); setChatName();
@@ -7351,7 +8345,26 @@
         title = await dlgPrompt('채팅 제목을 입력하세요', first.replace(/^YOU:\s?/, '').slice(0, 40) || 'DOBIS chat', '채팅 저장');
         if (!title) return;
       }
+      _saveAuto = false;
       ensureSocket().emit('chat:save', { title, md: buildChatMd(title) });
+    }
+    // ===== 서버 자동 저장 — 새 채팅은 첫 발화에 자동 생성, 이후 턴마다 같은 파일에 덮어쓰기 =====
+    let _saveInFlight = 0;    // 마지막 emit 시각(ms). 응답 수신 시 0 — 응답 전 중복 create 방지
+    let _saveDirty = false;   // in-flight 중 새 변경 발생 → 응답 후 재저장
+    let _saveAuto = false;    // 마지막 저장이 자동인지(성공 플래시 생략용)
+    let _chatGen = 0;         // 새 채팅/불러오기 세대 — 늦게 도착한 chat:saved가 새 채팅 제목을 오염시키지 않게
+    let _saveGen = 0;
+    function _autoSaveChat() {
+      if (_restoring) return;
+      if (!document.querySelector('#dobisLog .dobis-msg')) return;
+      if (_saveInFlight && Date.now() - _saveInFlight < 10000) { _saveDirty = true; return; }
+      let title = chatTitle;
+      if (!title) {
+        const first = (document.querySelector('#dobisLog .dobis-msg.you') || {}).textContent || '';
+        title = first.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim().slice(0, 40) || 'DOBIS chat';
+      }
+      _saveInFlight = Date.now(); _saveDirty = false; _saveAuto = true; _saveGen = _chatGen;
+      ensureSocket().emit('chat:save', { title, md: buildChatMd(title), create: !chatTitle });
     }
     function dobisListChats() {
       const box = document.getElementById('chatList');
@@ -7671,7 +8684,55 @@
       wrap.appendChild(controls);
       return wrap;
     }
-    function _makeImggenPlaceholder() {
+    let _lastImggenMeta = null;   // { prompt, high, provider, files } — 🔃 재시도 시 복원용(마지막 dobisGenImage 호출값)
+    function _makeImggenPlaceholder(jid) {
+      const wrap = document.createElement('div');
+      wrap.className = 'imggen-pending';
+      wrap.appendChild(_imggenSpinnerSvg());
+      const ctrls = document.createElement('div');
+      ctrls.className = 'imggen-pending-ctrls';
+      const retryBtn = document.createElement('span');
+      retryBtn.className = 'imggen-pending-btn'; retryBtn.textContent = '↻'; retryBtn.title = '취소 후 재시도(입력 복원)';
+      const cancelBtn = document.createElement('span');
+      cancelBtn.className = 'imggen-pending-btn imggen-pending-btn-x'; cancelBtn.textContent = '✕'; cancelBtn.title = '취소';
+      const finish = (label) => { retryBtn.remove(); cancelBtn.remove(); wrap.title = label; wrap.classList.add('imggen-pending-done'); };
+      retryBtn.onclick = () => {
+        if (dobisSock && jid) dobisSock.emit('imggen-cancel', { jid });
+        finish('취소됨 — 재시도 대기');
+        if (_lastImggenMeta) _openImggenRetryForm(_lastImggenMeta);
+      };
+      cancelBtn.onclick = () => {
+        if (dobisSock && jid) dobisSock.emit('imggen-cancel', { jid });
+        finish('취소됨');
+      };
+      ctrls.appendChild(retryBtn); ctrls.appendChild(cancelBtn);
+      wrap.appendChild(ctrls);
+      return wrap;
+    }
+    // 재시도 폼 — 직전 프롬프트/옵션/첨부를 그대로 채운 채 취소 위치에 인라인으로 띄워 바로 재전송할 수 있게 함
+    function _openImggenRetryForm(meta) {
+      const bubble = dobisAppend('bot', '');
+      bubble.textContent = '';
+      const card = document.createElement('div'); card.className = 'imggen-card';
+      const form = document.createElement('div'); form.className = 'imggen-form';
+      form.style.borderTop = form.style.paddingTop = form.style.marginTop = '0';   // 카드에 바로 붙는 첫 요소라 상단 구분선 불필요
+      const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'imggen-prompt';
+      inp.value = meta.prompt || ''; inp.placeholder = '(지시사항)';
+      const hi = document.createElement('label'); hi.className = 'imggen-high';
+      const hcb = document.createElement('input'); hcb.type = 'checkbox'; hcb.checked = !!meta.high;
+      hi.appendChild(hcb); hi.appendChild(document.createTextNode(' HIGH'));
+      const go = document.createElement('span'); go.className = 'dl-btn'; go.textContent = '재생성';
+      const submit = () => { dobisGenImage(inp.value.trim(), hcb.checked, meta.provider, meta.files); card.remove(); };
+      go.onclick = submit;
+      inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } };
+      const row = document.createElement('div'); row.className = 'imggen-form-row';
+      row.appendChild(inp); row.appendChild(hi); row.appendChild(go);
+      form.appendChild(row);
+      card.appendChild(form);
+      bubble.appendChild(card);
+      inp.focus();
+    }
+    function _imggenSpinnerSvg() {
       const ns = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('viewBox', '0 0 240 240');
@@ -7853,12 +8914,12 @@
     }
     function renderBotText(text, imgCache) {
       const frag = document.createDocumentFragment();
-      text = text.replace('🎨 이미지 생성 중…', '\x00IMGGEN_PLACEHOLDER\x00');
-      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[link:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER\x00)/g;
+      text = text.replace(/🎨 이미지 생성 중…\[imggen-jid:([^\]]+)\]/, (m, jid) => '\x00IMGGEN_PLACEHOLDER:' + jid + '\x00');
+      const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[link:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER:[^\x00]+\x00)/g;
       text.split(TOKEN_RE).forEach(p => {
         if (!p) return;
-        if (p === '\x00IMGGEN_PLACEHOLDER\x00') {
-          frag.appendChild(_makeImggenPlaceholder());
+        if (p.startsWith('\x00IMGGEN_PLACEHOLDER:')) {
+          frag.appendChild(_makeImggenPlaceholder(p.slice('\x00IMGGEN_PLACEHOLDER:'.length, -1)));
         } else if (p.startsWith('[dice:')) {
           frag.appendChild(_makeDiceRoll(p.slice(6, -1)));
         } else if (p.startsWith('[spread:')) {
@@ -7951,7 +9012,7 @@
         d.dataset.raw = text;
       }
       log.appendChild(d); log.scrollTop = log.scrollHeight;
-      if (role === 'you') _saveDraft();   // 유저 발화 즉시 초안 저장(새로고침 복구)
+      if (role === 'you') { _saveDraft(); _autoSaveChat(); }   // 유저 발화 즉시 초안+서버 저장(응답 실패해도 입력 보존)
       return d;
     }
     function setBotBubble(bubble, text, live) {
@@ -7975,7 +9036,7 @@
       a.className = 'dl-btn'; a.href = dl.url; a.download = dl.filename || dl.name || 'download';
       a.textContent = '⬇ ' + (dl.name || dl.filename || '다운로드');
       card.appendChild(a);
-      if (dl.filename) {
+      if (dl.filename && /\.(mp3|ogg|wav|m4a)$/i.test(dl.filename)) {
         const add = document.createElement('span'); add.className = 'dl-btn add';
         add.textContent = '♪ 음악에 추가';
         add.onclick = () => dobisSendMsg('/music add ' + dl.filename);
@@ -7984,32 +9045,118 @@
       bubble.appendChild(card);
     }
     // 캐릭챗 답변 말미 🎨 이미지 생성 pill — 클릭 시 (지시사항) 입력 펼침, [생성]으로 실행
+    // 카드별 로컬 첨부 큐(파일 읽기) — 전역 _pendingImgs(일반 채팅 첨부)와 분리해 여러 🎨 카드가 안 꼬이게 함
+    function _readFileToQueue(file, queue, onchange) {
+      if (!file.type || !file.type.startsWith('image/')) return;
+      const item = { data: null, type: file.type, name: file.name, kind: 'image' };
+      queue.push(item);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const comma = reader.result.indexOf(',');
+        item.data = reader.result.slice(comma + 1);
+        onchange();
+      };
+      reader.readAsDataURL(file);
+    }
+    // 캐릭챗 답변 말미 이미지 생성 pill — 버튼 클릭이 곧 실행, ⚙ 로 고급모드(모델 선택·첨부) 토글
     function appendImggenCard(bubble) {
-      const card = document.createElement('div'); card.className = 'dl-card dl-ext';
-      const btn = document.createElement('span'); btn.className = 'dl-btn add'; btn.textContent = '🎨'; btn.title = '이미지 생성';
-      const form = document.createElement('span'); form.className = 'imggen-form hidden';
-      const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'imggen-prompt'; inp.placeholder = '(지시사항)';
+      const card = document.createElement('div'); card.className = 'imggen-card';
+      const head = document.createElement('div'); head.className = 'imggen-card-head';
+      const btn = document.createElement('span'); btn.className = 'dl-btn add'; btn.textContent = '🎨 이미지 생성'; btn.title = '이미지 생성(클릭 시 바로 실행)';
+      const toggle = document.createElement('span'); toggle.className = 'dl-btn imggen-toggle'; toggle.textContent = '⚙'; toggle.title = '고급 옵션(모델·첨부)';
+      const panel = document.createElement('div'); panel.className = 'imggen-form hidden';
+      const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'imggen-prompt'; inp.placeholder = '(지시사항, 비우면 직전 장면)';
       const hi = document.createElement('label'); hi.className = 'imggen-high'; hi.title = '고품질(HIGH) — 느리고 토큰 더 씀';
       const hcb = document.createElement('input'); hcb.type = 'checkbox';
       hi.appendChild(hcb); hi.appendChild(document.createTextNode(' HIGH'));
-      const go = document.createElement('span'); go.className = 'dl-btn'; go.textContent = '생성';
-      const submit = () => { dobisGenImage(inp.value.trim(), hcb.checked); form.classList.add('hidden'); inp.value = ''; };
-      go.onclick = submit;
+      // models.json 의 imagegen_chain 과 같은 목록(공통소스) — provider 뿐 아니라 모델까지 명시 선택 가능하게.
+      // 체인/모델 구성이 바뀌면 models.json·router.py·이 목록도 같이 갱신할 것.
+      const sel = document.createElement('select'); sel.className = 'imggen-provider'; sel.title = '이미지 생성 provider · 모델';
+      [
+        ['auto', 'auto(폴백)'],
+        ['nvidia:flux.2-klein-4b', 'nvidia · flux.2-klein-4b'],
+        ['codex:gpt-5.4', 'codex · gpt-5.4'],
+        ['gemini:gemini-3.1-flash-image', 'gemini · flash-image'],
+        ['gemini:gemini-2.0-flash-preview-image-generation', 'gemini · flash-preview(2.0)'],
+      ].forEach(([v, label]) => {
+        const o = document.createElement('option'); o.value = v; o.textContent = label; sel.appendChild(o);
+      });
+      const fileInp = document.createElement('input'); fileInp.type = 'file'; fileInp.accept = 'image/*'; fileInp.multiple = true; fileInp.className = 'hidden';
+      const attachBtn = document.createElement('span'); attachBtn.className = 'imggen-attach'; attachBtn.textContent = '+'; attachBtn.title = '참조 이미지 첨부';
+      const thumbs = document.createElement('span'); thumbs.className = 'imggen-thumbs';
+      let queue = [];
+      const renderThumbs = () => {
+        thumbs.innerHTML = '';
+        queue.forEach((f, i) => {
+          const t = document.createElement('span'); t.className = 'imggen-thumb';
+          if (f.data) t.style.backgroundImage = `url(data:${f.type};base64,${f.data})`;
+          const rm = document.createElement('span'); rm.className = 'imggen-thumb-rm'; rm.textContent = '×';
+          rm.onclick = (e) => { e.stopPropagation(); queue.splice(i, 1); renderThumbs(); };
+          t.appendChild(rm);
+          thumbs.appendChild(t);
+        });
+      };
+      attachBtn.onclick = () => fileInp.click();
+      fileInp.onchange = () => { [...fileInp.files].forEach(f => _readFileToQueue(f, queue, renderThumbs)); fileInp.value = ''; };
+      panel.ondragover = (e) => { e.preventDefault(); panel.classList.add('drag-over'); };
+      panel.ondragleave = () => panel.classList.remove('drag-over');
+      panel.ondrop = (e) => {
+        e.preventDefault(); panel.classList.remove('drag-over');
+        [...(e.dataTransfer.files || [])].forEach(f => _readFileToQueue(f, queue, renderThumbs));
+      };
+      const submit = () => {
+        const provider = panel.classList.contains('hidden') ? 'auto' : sel.value;
+        const files = queue.filter(f => f.data);
+        dobisGenImage(inp.value.trim(), hcb.checked, provider, files.length ? files : undefined);
+        panel.classList.add('hidden'); toggle.classList.remove('active'); inp.value = ''; queue = []; renderThumbs();
+      };
+      btn.onclick = submit;
       inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); submit(); } };
-      btn.onclick = () => { form.classList.toggle('hidden'); if (!form.classList.contains('hidden')) inp.focus(); };
-      form.appendChild(inp); form.appendChild(hi); form.appendChild(go);
-      card.appendChild(btn); card.appendChild(form);
+      toggle.onclick = () => {
+        const opening = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        toggle.classList.toggle('active', opening);
+        if (opening) inp.focus();
+      };
+      // 옵션 행(HIGH·provider·첨부)을 위, 지시사항 입력 행을 아래로 분리 — 입력창이 한 행을 온전히 채우게
+      const optsRow = document.createElement('div'); optsRow.className = 'imggen-form-row';
+      optsRow.appendChild(hi); optsRow.appendChild(sel); optsRow.appendChild(attachBtn);
+      optsRow.appendChild(fileInp); optsRow.appendChild(thumbs);
+      const inputRow = document.createElement('div'); inputRow.className = 'imggen-form-row';
+      inputRow.appendChild(inp);
+      panel.appendChild(optsRow); panel.appendChild(inputRow);
+      head.appendChild(btn); head.appendChild(toggle);
+      card.appendChild(head); card.appendChild(panel);
       bubble.appendChild(card);
     }
+    // [+] 메뉴 → [이미지 생성] — 아무것도 전송하지 않고 YOU 버블에 🎨 패널만 로컬로 append(초안저장/자동저장 없음)
+    function dobisOpenImggenPanel() {
+      const log = document.getElementById('dobisLog');
+      const d = document.createElement('div');
+      d.className = 'dobis-msg you';
+      d.appendChild(document.createTextNode('YOU: '));
+      appendImggenCard(d);
+      log.appendChild(d); log.scrollTop = log.scrollHeight;
+    }
     // 이미지 생성 트리거 — 유저 버블 없이 메타 메시지 전송(캐릭챗 몰입 유지)
-    function dobisGenImage(prompt, high) {
+    function dobisGenImage(prompt, high, provider, files) {
       if (dobisBusy) { dobisStatus('⏳ 생성 중 — 잠시 후 다시'); return; }
+      // 프롬프트를 비우면 '직전 답변을 그려줘' 폴백을 쓰는데, 새 채팅 직후처럼 봇 답변이 하나도 없으면
+      // 참고할 '직전 답변'이 없어 DOBIS가 페르소나 기본 정보로 즉흥 생성한다(맥락이 안 지워진 것처럼 보이는 원인) — 막는다.
+      if (!prompt && !document.querySelector('#dobisLog .dobis-msg.bot')) {
+        dobisStatus('⚠️ 참고할 이전 답변이 없어요 — 프롬프트를 입력해주세요');
+        return;
+      }
       touchSession();
-      const tag = high ? '[이미지생성|HIGH]' : '[이미지생성]';
+      _lastImggenMeta = { prompt, high, provider, files };   // 🔃 재시도 복원용
+      let tag = '[이미지생성';
+      if (high) tag += '|HIGH';
+      if (provider && provider !== 'auto') tag += '|provider:' + provider;
+      tag += ']';
       const meta = prompt
         ? tag + ' ' + prompt
         : tag + ' 직전 답변(방금 장면)을 한 장의 이미지로 만들어줘.';
-      botSend(meta);
+      botSend(meta, files);
     }
     // 사용자가 보낸 domoji 스티커(채팅 내) — 원본 이미지 그대로, 크기만 스티커 사이즈
     function appendSticker(name) {
@@ -8267,9 +9414,16 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); const _fmtTok = n => n >= 1e6 ? (n/1e6).toFixed(1).replace(/\.0$/,'')+'m' : n >= 1e3 ? (n/1e3).toFixed(1).replace(/\.0$/,'')+'k' : String(n); const _tk = d && d.tokens; const _statTok = (_tk && (_tk.out || _tk.in)) ? _fmtTok((_tk.out||0)+(_tk.in||0)) + ' Tokens' : ((d && d.text) || '').length + '자'; dobisStatus('완료 · ' + _statTok + ' · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); _autoSaveChat(); _trimLiveChat(); const _fmtTok = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k' : String(n); const _tk = d && d.tokens; const _statTok = (_tk && (_tk.out || _tk.in)) ? _fmtTok((_tk.out || 0) + (_tk.in || 0)) + ' Tokens' : ((d && d.text) || '').length + '자'; dobisStatus('완료 · ' + _statTok + ' · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
-      dobisSock.on('chat:saved', (d) => { if (d && d.error) return flash('저장 실패: ' + d.error, false); chatTitle = d.slug || chatTitle; setChatName(); flash('채팅 저장됨: ' + chatTitle, true); });
+      dobisSock.on('chat:saved', (d) => {
+        _saveInFlight = 0;
+        const auto = _saveAuto; _saveAuto = false;
+        if (d && d.error) return flash('저장 실패: ' + d.error, false);
+        if (!auto || _saveGen === _chatGen) { chatTitle = d.slug || chatTitle; setChatName(); }
+        if (!auto) flash('채팅 저장됨: ' + (d.slug || chatTitle), true);
+        if (_saveDirty) _autoSaveChat();   // in-flight 중 쌓인 변경 반영
+      });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
       dobisSock.on('chat:loaded', (d) => { if (!d || d.error) return flash('불러오기 실패', false); loadChatMd(d.slug, d.md); });
       dobisSock.on('chat:renamed', (d) => {
@@ -8345,6 +9499,7 @@
       const start = total - count;
       _chatAllMsgs.slice(start).forEach(msg => log.appendChild(_makeMsgEl(msg.role, msg.text)));
       _chatLoaded = count;
+      _chatHeadMsgs = _chatAllMsgs.slice(0, start);
       if (total > count) {
         const b = document.createElement('div'); b.id = '_chatMoreBtn'; b.className = 'chat-more-btn';
         b.textContent = '▲ 이전 대화 전체 불러오기 (' + (total - count) + '개)';
@@ -8371,10 +9526,49 @@
           log.insertBefore(frag, btn.nextSibling);   // 버튼 바로 뒤에 오래된 것들 삽입
           log.scrollTop = oldT + (log.scrollHeight - oldH);
           _chatLoaded = total;
+          _chatHeadMsgs = [];   // 전부 DOM에 올라옴 — 저장 시 중복 방지
         }
         btn.remove();
         // DOM에 전체 대화가 올라왔으니 다음 turn restore_md에 반영
         _pendingRestoreMd = buildChatMd(chatTitle || '');
+      }, 16));
+    }
+    // ===== 라이브 채팅 DOM 트리밍 — 채팅이 길어지면 DOM 노드 수가 늘어 렌더링이 느려지므로,
+    // 오래된 메시지를 주기적으로 DOM에서 떼어 _chatHeadMsgs 로 옮기고 '▲ 이전 채팅 불러오기' 버튼으로 대체한다.
+    // (buildChatMd 는 이미 _chatHeadMsgs + 라이브 DOM 을 합쳐 저장하므로 트리밍해도 대화 저장엔 손실 없음)
+    const _LIVE_TRIM_MAX = 60;    // DOM 메시지가 이 개수를 넘으면 트리밍 실행
+    const _LIVE_TRIM_KEEP = 30;   // 트리밍 후 DOM에 남길 최근 메시지 수
+    function _trimLiveChat() {
+      const log = document.getElementById('dobisLog');
+      if (!log) return;
+      const nodes = [...log.children].filter(n => n.classList && n.classList.contains('dobis-msg'));
+      if (nodes.length <= _LIVE_TRIM_MAX) return;
+      const removed = nodes.slice(0, nodes.length - _LIVE_TRIM_KEEP);
+      removed.forEach(m => {
+        const you = m.classList.contains('you');
+        const txt = you ? m.textContent.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim() : (m.dataset.raw || '');
+        if (txt && !txt.startsWith('──')) _chatHeadMsgs.push({ role: you ? 'you' : 'bot', text: txt });
+        m.remove();
+      });
+      let btn = document.getElementById('_liveChatMoreBtn');
+      if (!btn) {
+        btn = document.createElement('div'); btn.id = '_liveChatMoreBtn'; btn.className = 'chat-more-btn';
+        btn.onclick = () => _loadHeadMsgs(log, btn);
+        log.insertBefore(btn, log.firstChild);
+      }
+      btn.textContent = '▲ 이전 채팅 불러오기 (' + _chatHeadMsgs.length + '개)';
+    }
+    // _chatHeadMsgs 전체를 DOM 맨 위로 되돌림(트리밍·복원 공용) — 스크롤 위치 보존
+    function _loadHeadMsgs(log, btn) {
+      if (btn) { btn.textContent = '⣾ 불러오는 중…'; btn.onclick = null; }
+      requestAnimationFrame(() => setTimeout(() => {
+        const frag = document.createDocumentFragment();
+        _chatHeadMsgs.forEach(msg => frag.appendChild(_makeMsgEl(msg.role, msg.text)));
+        const oldH = log.scrollHeight, oldT = log.scrollTop;
+        log.insertBefore(frag, btn || log.firstChild);
+        log.scrollTop = oldT + (log.scrollHeight - oldH);
+        _chatHeadMsgs = [];
+        if (btn) btn.remove();
       }, 16));
     }
     function loadChatMd(slug, md) {
@@ -8384,7 +9578,7 @@
       chatTitle = slug; setChatName();
       const body = (md || '').replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
       const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
-      _chatAllMsgs = []; _chatLoaded = 0;
+      _chatAllMsgs = []; _chatLoaded = 0; _chatHeadMsgs = []; _chatGen++;
       let m;
       while ((m = re.exec(body)) !== null) {
         const txt = m[2].replace(/\s+$/, '');

@@ -380,7 +380,11 @@ const { router: collectRouter } = require('./routes/api/collect');
 const sketchpadRouter = require('./routes/api/sketchpad');
 const graphHookRouter = require('./routes/api/graphHook');
 const graphRouter = require('./routes/graph');
+const dgraphRouter = require('./routes/dgraph');
 const jamiRouter = require('./routes/jami');
+const blogApiRouter = require('./routes/api/blog');
+const blogAuthRouter = require('./routes/blogAuth');
+const blogRouter = require('./routes/blog');
 app.use('/api/dev', devRouter);        // Plane → dev_context proxy
 app.use('/api/auth', authRouter);      // 공유 로그인(CHATBOT_ID/PW → 토큰)
 app.use('/api/geo/chat', geoChatRouter); // geo 챗봇(인증 + 작업 큐)
@@ -392,7 +396,11 @@ app.use('/api/stock', stockRouter);   // Bloomberg terminal — 주식 데이터
 app.use('/api/stock', collectRouter); // market 데이터 수집 (collect, collect/status)
 app.use('/api/sketchpad', sketchpadRouter); // 스케치패드 캔버스 저장/조회
 app.use('/api/graph', graphHookRouter);    // 그래프 Notion 버튼 웹훅
+app.use('/api/blog', blogApiRouter);       // 블로그 API(공개 읽기 + 유저 댓글/claps + 관리자 CRUD)
+app.use('/blog', blogAuthRouter);          // 블로그 OAuth 로그인/콜백/세션 (/blog/auth/*)
+app.use('/blog', blogRouter);              // 블로그 SSR 읽기 페이지 + /blog/rss.xml
 app.use('/graph', graphRouter);            // DOYCLOPEDIA 그래프 뷰어 + 데이터 API
+app.use('/dGraph', dgraphRouter);          // dGraph — 인터랙티브 그래프 캔버스 (Notion dJinn과 분리)
 app.use('/jamidusu/src', express.static(path.join(__dirname, 'jamidusu/src')));
 app.use('/jamidusu', jamiRouter);
 app.use('/api', apiRouter);      // 기존 내부 API
@@ -456,6 +464,7 @@ const io = new Server(server, {
 registerGameSocket(io);
 // SSH 터미널은 doil-webssh 컨테이너가 처리 (/wssh/socket.io)
 require('./dobisBridge').registerDobis(io);  // DOBIS 챗봇 (/dobis ↔ /dobis-worker 중계)
+require('./submodules/orca-web').registerOrcaWeb(app, io);  // Orca 데스크톱 원격 접속 (/orca, IP게이트+root)
 
 // geo 챗봇 작업 큐 테이블 보장(실패해도 서버는 뜬다 — 해당 API 만 502)
 require('./db/geoChat').ensureSchema()
@@ -476,6 +485,11 @@ require('./db/appSettings').ensureSchema()
 require('./db/sketchpad').ensureSchema()
   .then(() => console.log('🎨 sketchpad schema ready'))
   .catch((e) => console.error('[sketchpad] ensureSchema failed:', e.message));
+
+// 블로그 테이블 보장
+require('./db/blog').ensureSchema()
+  .then(() => console.log('📝 blog schema ready'))
+  .catch((e) => console.error('[blog] ensureSchema failed:', e.message));
 
 // 관리자 계정 테이블 보장 + (비어있으면) env 에서 초기 시드
 require('./db/adminUsers').ensureSchema()
