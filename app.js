@@ -404,6 +404,7 @@ app.use('/dGraph', dgraphRouter);          // dGraph — 인터랙티브 그래�
 app.use('/jamidusu/src', express.static(path.join(__dirname, 'jamidusu/src')));
 app.use('/jamidusu', jamiRouter);
 app.use('/api', apiRouter);      // 기존 내부 API
+require('./submodules/orca-web').registerOrcaWhoami(app);  // orca 게이트2 self-IP 에코 (pagesRouter보다 먼저 마운트 필수)
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 
 // =========================
