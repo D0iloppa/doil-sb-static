@@ -69,8 +69,14 @@ function recordFail(ip) {
   }
 }
 
-// nginx 프록시 뒤 — 전역 trust proxy 를 건드리지 않고 여기서만 클라이언트 IP 추출
+// nginx 프록시 뒤 — 전역 trust proxy 를 건드리지 않고 여기서만 클라이언트 IP 추출.
+// X-Real-IP를 우선한다 — nginx가 proxy_set_header로 자신이 관측한 $remote_addr를 항상
+// 덮어써서 보내므로 클라이언트가 헤더로 조작 불가. X-Forwarded-For는 $proxy_add_x_forwarded_for라
+// 클라이언트가 보낸 값에 실제 주소를 "추가"하는 방식이라, 첫 값만 취하면 클라이언트가
+// X-Forwarded-For: <임의IP> 를 직접 넣어 스푸핑할 수 있음(발견됨) — 그래서 fallback으로만 둔다.
 function clientIp(req) {
+  const realIp = req.headers['x-real-ip'];
+  if (realIp) return String(realIp).trim();
   const xff = req.headers['x-forwarded-for'];
   if (xff) return String(xff).split(',')[0].trim();
   return req.ip || 'unknown';
