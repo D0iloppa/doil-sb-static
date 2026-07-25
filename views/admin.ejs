@@ -2376,6 +2376,14 @@
       font-size: .92em;
       cursor: pointer;
       outline: none;
+      /* omniroute 콤보 모델 id(예: nvidia/deepseek-ai/deepseek-v4-pro)는 길어서
+         닫힌 상태에서 헤더 줄을 통째로 밀어낸다 — 접힌 표시 폭만 제한하고
+         말줄임표로 축약한다. 펼쳤을 때 옵션 목록은 브라우저 기본 동작이라
+         전체 텍스트 그대로 보인다. */
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .model-select:hover {
@@ -2383,6 +2391,29 @@
     }
 
     .model-select option {
+      background: #0d1a0d;
+      color: var(--grn);
+    }
+
+    .effort-select {
+      margin-left: 4px;
+      padding: 0 4px;
+      background: transparent;
+      color: var(--grn);
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: .92em;
+      cursor: pointer;
+      outline: none;
+      width: auto;
+    }
+
+    .effort-select:hover {
+      border-color: var(--grn);
+    }
+
+    .effort-select option {
       background: #0d1a0d;
       color: var(--grn);
     }
@@ -3505,6 +3536,67 @@
     .imggen-gauge.over {
       color: #ff6b6b;
       text-shadow: 0 0 6px rgba(255, 107, 107, .5);
+    }
+
+    /* CLI 토큰(프로파일) 실사용률 게이지 — oauth/usage 기반 세션(5h)/주간(7d) %. 클릭 시 계정 전환(설정→DOBIS 계정) */
+    .cli-usage-gauge {
+      flex: 0 0 auto;
+      align-self: center;
+      width: 88%;
+      box-sizing: border-box;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: 10.5px;
+      color: var(--dim);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .cli-usage-gauge:hover {
+      color: var(--grn);
+    }
+
+    .cli-usage-gauge.hidden {
+      display: none;
+    }
+
+    .cli-usage-gauge.warn {
+      color: #ffcf6b;
+      text-shadow: 0 0 6px rgba(255, 207, 107, .4);
+    }
+
+    /* 프로파일 패널(설정→DOBIS 계정) — 프로파일당 2번째 줄, S/W 사용률 바 */
+    .prof-usage-row {
+      margin: 2px 0 4px 14px;
+      font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+      font-size: .82em;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .prof-usage-row .prof-bar.ok {
+      color: var(--grn);
+    }
+
+    .prof-usage-row .prof-bar.warn {
+      color: #ffcf6b;
+      text-shadow: 0 0 6px rgba(255, 207, 107, .4);
+    }
+
+    .prof-usage-row .prof-bar.over {
+      color: #ff6b6b;
+      text-shadow: 0 0 6px rgba(255, 107, 107, .5);
+    }
+
+    .prof-provider-badge {
+      padding: 0 6px;
+      border: 1px solid var(--dim);
+      border-radius: 9px;
+      color: var(--dim);
+      font-size: .78em;
     }
 
     .dobis-mascot {
@@ -4699,11 +4791,19 @@
                   onclick="window.open('https://app.notion.com/p/doiloppa/DOYCLOPEDIA-e8553a423a664a31ba97db9c42265972','doyclopedia','width=1280,height=860,noopener')"
                   title="DOYCLOPEDIA 지식베이스 (팝업)"><span class="app-ico">📖</span><span
                     class="app-label">DOYCLOPEDIA</span></div>
-                <a class="app-card" href="https://agy.doil.me/" target="_blank" rel="noreferrer"
-                  title="로컬 안티그라비티 프록시"><span class="app-ico">🛸</span><span class="app-label">agy</span></a>
+                <div class="app-card"
+                  onclick="window.open('https://omniroute.doil.me/','omni','width=1280,height=860,noopener')"
+                  title="omniroute — AI 모델 라우팅 게이트웨이 (팝업, X-Frame-Options 로 iframe 임베드 불가)"><span
+                    class="app-ico">🔀</span><span class="app-label">omni</span></div>
                 <div class="app-card"
                   onclick="window.open('https://drec.doil.me/','drec','width=1280,height=860,noopener')"
                   title="dRec 회의 녹취·회의록 (팝업)"><span class="app-ico">🎙️</span><span class="app-label">dRec</span></div>
+                <a class="app-card" href="https://affine.doil.me/" target="_blank" rel="noreferrer"
+                  title="Affine 노트·화이트보드"><span class="app-ico">📝</span><span class="app-label">AFFINE</span></a>
+                <a class="app-card" href="https://doil.me/rhwp/" target="_blank" rel="noreferrer"
+                  title="rhwp — HWP/HWPX 웹 편집기"><span class="app-ico">📄</span><span class="app-label">rhwp</span></a>
+                <a class="app-card" href="https://doil.me/office-app/" target="_blank" rel="noreferrer"
+                  title="ONLYOFFICE — MS Office(docx/xlsx/pptx) 웹 편집기"><span class="app-ico">🗂️</span><span class="app-label">OFFICE</span></a>
               </div>
             </div>
 
@@ -4976,14 +5076,21 @@
                       📚 Notion 지식베이스</div>
                     <div class="dim-item" onclick="toggleStatusPanel(); toggleDobisMenu(true)">📊 상태 패널</div>
                   </div>
-                  <b>DOBIS</b><span class="muted"> · claude · model</span>
+                  <b>DOBIS</b><span class="muted"> · </span><span class="muted" id="dobisProviderLabel">claude</span><span class="muted"> · model</span>
                   <select class="model-select" id="modelSelect" onchange="dobisSetModel(this.value)">
-                    <option value="opus">opus</option>
-                    <option value="sonnet" selected>sonnet</option>
-                    <option value="haiku">haiku</option>
+                    <option value="">…</option>
                   </select>
-                  <span class="modelchips"><span class="chip think-chip" id="thinkChip"
-                      title="확장 사고 — 느리지만 더 깊게 추론 (기본 OFF)" onclick="dobisToggleThink()">🧠 thinking</span></span>
+                  <span class="modelchips">
+                    <span class="chip think-chip" id="thinkChip"
+                        title="확장 사고 — 느리지만 더 깊게 추론 (기본 OFF)" onclick="dobisToggleThink()">🧠</span>
+                    <select class="effort-select" id="effortSelect" onchange="dobisSetEffort(this.value)" title="추론 강도">
+                      <option value="low">low</option>
+                      <option value="medium" selected>medium</option>
+                      <option value="high">high</option>
+                      <option value="xhigh">xhigh</option>
+                      <option value="max">max</option>
+                    </select>
+                  </span>
                   <span id="dobisQueueBadge" class="muted" style="font-size:.75em;display:none"></span>
                   <span id="chatName" class="muted"></span>
                 </div>
@@ -5026,6 +5133,8 @@
                   title="shared 폴더 사용량 (논리 기준 10GB · 실제 제한 아님). 80%↑면 /clean 권장"></div>
                 <div id="imggenGauge" class="imggen-gauge hidden" title="오늘 이미지 생성 토큰 사용량 (일간 한도 100K). 초과 시 생성 중단.">
                 </div>
+                <div id="cliUsageGauge" class="cli-usage-gauge" onclick="openSettings(); setShow('account');"
+                  title="CLI 토큰(프로파일) 세션(5h)/주간(7d) 실사용률. 클릭 시 계정 전환.">— · usage 수집 전</div>
               </div>
             </div>
             <!-- DoilTimes 앱 윈도우 — doil.me/times/ iframe -->
@@ -5629,15 +5738,26 @@
               </div>
               <!-- DOBIS 계정 전환 -->
               <div id="setAccount" class="hidden">
-                <div class="rec-head">&gt; 설정 · DOBIS 계정 (Claude 토큰)</div>
-                <div class="muted" style="margin:6px 0">현재 활성: <b id="acctCur" style="color:#b6ffd6">—</b> · 5시간 제한 시 자동
-                  전환됩니다.</div>
-                <div style="display:flex;gap:10px;margin:8px 0">
-                  <span class="cmd setmenu-item" onclick="dobisSwitch(0)">[ 계정 #1 사용 ]</span>
-                  <span class="cmd setmenu-item" onclick="dobisSwitch(1)">[ 계정 #2 사용 ]</span>
-                  <span class="cmd setmenu-item" onclick="dobisSwitch(2)">[ 계정 #3 사용 ]</span>
+                <div class="rec-head">&gt; 설정 · DOBIS 계정 (로그인 프로파일)</div>
+                <div class="muted" style="margin:6px 0">현재 활성: <b id="acctCur" style="color:#b6ffd6">—</b></div>
+                <div id="profileList" class="muted" style="margin:8px 0">—</div>
+                <div style="margin-top:4px"><span class="cmd" onclick="toggleAcctForm()">[ 등록 ]</span></div>
+                <div id="acctForm" class="hidden" style="margin-top:8px">
+                  <div class="rec-grid" style="grid-template-columns:auto 1fr">
+                    <label>alias</label><input id="prof_alias" placeholder="예: wellconn" autocomplete="off" />
+                    <label>config_dir</label><input id="prof_dir" placeholder="예: /home/doil/.claude-wellconn" autocomplete="off" />
+                    <label>provider</label>
+                    <select id="prof_provider" class="inl">
+                      <option value="anthropic" selected>anthropic</option>
+                      <option value="omniroute">omniroute</option>
+                    </select>
+                  </div>
+                  <div style="margin-top:6px">
+                    <span class="cmd" onclick="dobisSaveProfile()">[ 저장 ]</span>
+                    <span class="cmd" onclick="dobisCancelEditProfile()">[ 입력 초기화 ]</span>
+                  </div>
                 </div>
-                <div id="acctMsg" class="muted" style="min-height:1.2em"></div>
+                <div id="acctMsg" class="muted" style="min-height:1.2em;margin-top:6px"></div>
                 <div style="margin-top:8px">
                   <span class="cmd" onclick="setShow('menu')">[ 뒤로 ]</span>
                   <span class="cmd" onclick="closeSettings()">[ 닫기 ]</span>
@@ -8161,7 +8281,7 @@
       try {
         const r = await fetch(API + '/dobis/health', { headers: H() });
         if (r.status === 401) return showLogin();
-        if (r.ok) { const j = await r.json(); setHealth(j.worker); renderRate(j.usage); }
+        if (r.ok) { const j = await r.json(); setHealth(j.worker); renderRate(j.usage); renderCliUsage(j.usage); renderProfiles(j.profiles); }
       } catch { }
     }
 
@@ -8209,7 +8329,7 @@
 
 
     // ===== DOBIS 챗봇 (소켓, 휘발성) =====
-    let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, _dobisCancelled = false;
+    let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, dobisEffort = 'medium', _dobisCancelled = false;
     let dobisBusy = false, _dobisT0 = 0, _dobisLen = 0, _dobisTick = null, _dobisWatch = null;
     let _chatAllMsgs = [], _chatLoaded = 0;
     let _chatHeadMsgs = [];   // DOM에 안 올라온 이전 대화 — botSend가 _chatAllMsgs를 비워도 저장 시 유실 방지
@@ -8916,8 +9036,13 @@
       const frag = document.createDocumentFragment();
       text = text.replace(/🎨 이미지 생성 중…\[imggen-jid:([^\]]+)\]/, (m, jid) => '\x00IMGGEN_PLACEHOLDER:' + jid + '\x00');
       const TOKEN_RE = /(```[\s\S]*?```|\[charchat-header:[^\]]+\]|\[status\][\s\S]*?\[\/status\]|\[choices\][\s\S]*?\[\/choices\]|\[n\][\s\S]*?\[\/n\]|\[s:[^\]]*?\][\s\S]*?\[\/s\]|\[spread:[^\]]+\]|\[tarot:[^\]]+\]|\[dice:[^\]]+\]|\[link:[^\]]+\]|\[img:[^\]]+\]|\x00IMGGEN_PLACEHOLDER:[^\x00]+\x00)/g;
-      text.split(TOKEN_RE).forEach(p => {
-        if (!p) return;
+      // split()+startsWith 재추측은 미완성 태그(스트리밍 중 닫는 태그 미도착)까지 완결 토큰으로 오인해
+      // slice 오프셋으로 본문을 잘라먹는다. matchAll로 실제 매치된 구간만 태그로 렌더하고,
+      // 매치 안 된 나머지(미완성 태그 포함)는 태그 판별을 타지 않고 그대로 평문 처리한다.
+      let last = 0;
+      for (const m of text.matchAll(TOKEN_RE)) {
+        const p = m[0];
+        if (m.index > last) appendBlockMd(frag, text.slice(last, m.index));
         if (p.startsWith('\x00IMGGEN_PLACEHOLDER:')) {
           frag.appendChild(_makeImggenPlaceholder(p.slice('\x00IMGGEN_PLACEHOLDER:'.length, -1)));
         } else if (p.startsWith('[dice:')) {
@@ -8983,10 +9108,10 @@
             img.onclick = () => window.open(url, '_blank');
           }
           frag.appendChild(img);
-        } else {
-          appendBlockMd(frag, p);
         }
-      });
+        last = m.index + p.length;
+      }
+      if (last < text.length) appendBlockMd(frag, text.slice(last));   // 매치 안 된 잔여 = 미완성 태그 포함 평문
       return frag;
     }
     // 클립보드 복사 + 아이콘 피드백(✓) — 봇/유저 메시지 공용
@@ -9174,6 +9299,11 @@
       const c = document.getElementById('thinkChip'); if (c) c.classList.toggle('on', dobisThink);
     }
     function dobisToggleThink() { if (dobisBusy) return; dobisSendMsg('/think ' + (dobisThink ? 'off' : 'on')); }
+    function dobisSetEffort(v) {
+      if (dobisBusy || !v) return;
+      dobisEffort = v;
+      dobisSendMsg('/effort ' + v);
+    }
     // 진행 중 응답 중단 — 워커에 cancel 전송(상주 claude 종료) + UI 즉시 잠금 해제. 이후 들어오는 stale delta/done/err 는 무시.
     function dobisCancel() {
       if (!dobisBusy) return;
@@ -9343,6 +9473,43 @@
       el.classList.toggle('warn', pct >= 80);
       el.classList.remove('hidden');
     }
+    const _hhmm = (ts) => ts ? new Date(ts * 1000).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '—';
+    const _wday = (ts) => ts ? new Date(ts * 1000).toLocaleDateString('ko-KR', { weekday: 'short' }) : '—';
+    // 세션(5h)/주간(7d) 사용률 뱃지 텍스트 — 둘 다 없으면 'usage 수집 전'(하단 스트립·프로파일 행 공용)
+    function _usageBadge(s, w) {
+      if (!s && !w) return 'usage 수집 전';
+      const parts = [];
+      if (s) parts.push('S ' + Math.round(s.usedPercent) + '%~' + _hhmm(s.resetsAt));
+      if (w) parts.push('W ' + Math.round(w.usedPercent) + '%~' + _wday(w.resetsAt));
+      return parts.join(' · ');
+    }
+    // 세션/주간 사용률 바(HTML) — 프로파일 패널 2번째 줄. %별 색상: >=80 over(위험) · >=60 warn(경고) · 그 외 ok.
+    function _usageBarRow(s, w) {
+      if (!s && !w) return '<span class="muted">usage 수집 전</span>';
+      const n = 10;
+      const one = (label, u, tail) => {
+        if (!u) return '';
+        const pct = Math.round(u.usedPercent);
+        const f = Math.max(0, Math.min(n, Math.round(pct / 100 * n)));
+        const cls = pct >= 80 ? 'over' : pct >= 60 ? 'warn' : 'ok';
+        return '<span class="prof-bar ' + cls + '">' + label + ' ' + '▓'.repeat(f) + '░'.repeat(n - f) + ' ' + pct + '% ~' + tail + '</span>';
+      };
+      return [one('S', s, _hhmm(s && s.resetsAt)), one('W', w, _wday(w && w.resetsAt))].filter(Boolean).join(' ');
+    }
+    // CLI 프로파일 실사용률 게이지 — u.session/u.weekly: {usedPercent, resetsAt(epoch초)} | null (worker _refresh_usage 가 채움)
+    // 데이터가 없어도 숨기지 않는다 — 'usage 수집 전' placeholder 로 항상 표시.
+    function renderCliUsage(u) {
+      const el = document.getElementById('cliUsageGauge'); if (!el) return;
+      const profile = (u && u.activeAlias) || '—';
+      const s = u && u.session, w = u && u.weekly;
+      el.textContent = profile + ' · ' + _usageBadge(s, w);
+      el.title = 'DOBIS 프로파일 ' + profile + ' 실사용률 — '
+        + '세션(5h) ' + (s ? Math.round(s.usedPercent) + '%, ' + _hhmm(s.resetsAt) + ' 리셋' : '조회 불가') + ' · '
+        + '주간(7d) ' + (w ? Math.round(w.usedPercent) + '%, ' + _wday(w.resetsAt) + ' 리셋' : '조회 불가')
+        + '. 클릭 시 프로파일 전환.';
+      el.classList.toggle('warn', (s && s.usedPercent >= 80) || (w && w.usedPercent >= 80));
+      el.classList.remove('hidden');
+    }
     let _emoCur = '';
     function setEmotion(emo) {
       const m = document.getElementById('dobisMascot');
@@ -9358,7 +9525,8 @@
       dobisSock.on('connect_error', (e) => { if (e && /unauthorized/i.test(e.message)) showLogin(); });
       dobisSock.on('dobis:ready', (d) => setHealth(!!(d && d.worker)));
       dobisSock.on('dobis:status', (s) => { setHealth(s === 'online'); if (s === 'offline' && dobisBusy) dobisFail('DOBIS 워커가 오프라인이에요. 잠시 후 다시 시도해 주세요.'); });
-      dobisSock.on('dobis:usage', (u) => renderRate(u));
+      dobisSock.on('dobis:usage', (u) => { renderRate(u); renderCliUsage(u); });
+      dobisSock.on('dobis:profiles', (p) => renderProfiles(p));
       dobisSock.on('dobis:stats', (s) => renderStatsHud(s));
       dobisSock.on('dobis:shared', (s) => renderShared(s));
       dobisSock.on('dobis:imggen-usage', (d) => renderImggenUsage(d));
@@ -9437,7 +9605,27 @@
         flash('삭제됨: ' + d.slug, true);
         if (chatTitle === d.slug) { chatTitle = ''; setChatName(); }
       });
+      loadDobisModels();
       return dobisSock;
+    }
+    // 활성 provider(anthropic/omniroute)의 허용 모델 목록을 불러와 #modelSelect 를 채운다.
+    // 기본 선택값은 서버가 기억한 default_model(마지막으로 고른 모델, provider 별) — 없으면 목록 첫 항목.
+    async function loadDobisModels() {
+      const sel = document.getElementById('modelSelect'); if (!sel) return;
+      try {
+        const r = await fetch(API + '/dobis/models', { headers: H() });
+        if (r.status === 401) return showLogin();
+        const j = await r.json().catch(() => ({}));
+        const labelEl = document.getElementById('dobisProviderLabel');
+        // 'omniroute' 는 길어서 헤더 한 줄을 밀어낸다 — 짧은 표기(omni)로 축약.
+        if (labelEl && j.provider) labelEl.textContent = (j.provider === 'omniroute') ? 'omni' : j.provider;
+        const models = (r.ok && Array.isArray(j.models)) ? j.models : [];
+        if (!models.length) { sel.innerHTML = '<option value="">(모델 없음)</option>'; sel.disabled = true; return; }
+        sel.disabled = false;
+        sel.innerHTML = models.map((m) => '<option value="' + m + '">' + m + '</option>').join('');
+        const pick = (j.default_model && models.includes(j.default_model)) ? j.default_model : models[0];
+        sel.value = pick; dobisModel = pick;
+      } catch { }
     }
     function renderChatList(items) {
       const box = document.getElementById('chatList');
@@ -10267,7 +10455,17 @@
         dobisSendMsg(msg);
       }
     }
-    function dobisSetModel(m) { if (dobisBusy) return; dobisSendMsg('/model ' + m); }
+    function dobisSetModel(m) {
+      if (dobisBusy || !m) return;
+      dobisModel = m;   // optimistic UI — 서버 왕복 결과와 무관하게 즉시 반영
+      dobisSendMsg('/model ' + m);
+      // provider 별 마지막 선택을 서버에 기억시킴(fire-and-forget) — 실패해도 현재 세션 동작엔 영향 없음
+      fetch(API + '/dobis/model', { method: 'POST', headers: H(), body: JSON.stringify({ model: m }) })
+        .then((r) => r.json().catch(() => ({})).then((j) => {
+          if (!r.ok || (j && j.ok === false)) flash('모델 선택 저장 실패: ' + ((j && j.error) || r.status), false);
+        }))
+        .catch(() => { });
+    }
 
     // ===== 터미널 테마 =====
     const TERMINAL_THEMES = [
@@ -10349,20 +10547,115 @@
       if (r.status === 401) return showLogin();
       if (r.ok) loadAdmins();
     }
-    async function dobisSwitch(i) {
+    async function dobisSwitch(alias) {
       const msg = document.getElementById('acctMsg'); msg.style.color = '#ff9aa6';
       try {
-        const r = await fetch(API + '/dobis/account', { method: 'POST', headers: H(), body: JSON.stringify({ index: i }) });
+        const r = await fetch(API + '/dobis/account', { method: 'POST', headers: H(), body: JSON.stringify({ alias }) });
         if (r.status === 401) return showLogin();
         if (r.status === 503) { msg.textContent = 'DOBIS 워커가 오프라인입니다 (로그인 직후 잠시 대기).'; return; }
         if (!r.ok) { msg.textContent = '전환 실패 (' + r.status + ')'; return; }
-        msg.style.color = '#9fffce'; msg.textContent = '계정 #' + (i + 1) + ' 로 전환 요청됨';
+        msg.style.color = '#9fffce'; msg.textContent = alias + ' 로 전환 요청됨 (재시작 중…)';
+      } catch { msg.textContent = '오류'; }
+    }
+    // ===== DOBIS 프로파일 목록/CRUD (dobis:profiles 소켓 이벤트 또는 /dobis/health.profiles 로 채워짐) =====
+    let _profEditing = null;   // 수정 중인 alias(없으면 추가 모드)
+    // p.profiles[i]: {alias, config_dir, session, weekly, source, ts} — session/weekly 는 _usageBadge 로 표시(없으면 '수집 전')
+    function renderProfiles(p) {
+      const box = document.getElementById('profileList'); if (!box) return;
+      const list = (p && p.profiles) || [];
+      const activeAlias = p && p.active;
+      const ac = document.getElementById('acctCur'); if (ac) ac.textContent = activeAlias || '—';
+      if (!list.length) { box.textContent = '(프로파일 없음 — 아래에서 추가)'; return; }
+      box.innerHTML = '';
+      list.forEach((pr) => {
+        const isActive = pr.alias === activeAlias;
+        const wrap = document.createElement('div');
+        // 활성 프로파일은 행 전체를 강조(배경 틴트 + 좌측 바) — [사용] 버튼 클릭 대신
+        // 라디오로 바로 전환하면서도 지금 뭐가 켜져 있는지 한눈에 보이게.
+        wrap.style.cssText = 'margin:4px 0;padding:4px 6px;border-radius:4px;'
+          + (isActive ? 'background:rgba(159,255,206,.08);border-left:2px solid #9fffce' : 'border-left:2px solid transparent');
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap';
+        const stale = pr.ts && (pr.session || pr.weekly) && (Date.now() - pr.ts * 1000) > 15 * 60 * 1000;
+        const radio = document.createElement('input');
+        radio.type = 'radio'; radio.name = 'profActive'; radio.checked = isActive;
+        radio.title = isActive ? '현재 활성' : '이 프로파일 사용';
+        radio.onchange = () => { if (!isActive) dobisSwitch(pr.alias); };
+        row.appendChild(radio);
+        const label = document.createElement('span');
+        label.innerHTML = '<b style="color:' + (isActive ? '#9fffce' : '#b6ffd6') + '">' + pr.alias + '</b>'
+          + (isActive ? ' <span class="muted">(활성)</span>' : '')
+          + ' <span class="prof-provider-badge">' + (pr.provider || 'anthropic') + '</span>'
+          + ' <span class="muted" style="font-size:.85em">' + pr.config_dir + '</span>';
+        row.appendChild(label);
+        const edit = document.createElement('span'); edit.className = 'cmd'; edit.textContent = '[ 수정 ]';
+        edit.onclick = () => {
+          _profEditing = pr.alias;
+          document.getElementById('prof_alias').value = pr.alias;
+          document.getElementById('prof_dir').value = pr.config_dir;
+          const provSel = document.getElementById('prof_provider'); if (provSel) provSel.value = pr.provider || 'anthropic';
+          const form = document.getElementById('acctForm'); if (form) form.classList.remove('hidden');
+        };
+        row.appendChild(edit);
+        if (list.length > 1) {
+          const del = document.createElement('span'); del.className = 'cmd'; del.textContent = '[ 삭제 ]';
+          del.onclick = () => dobisDeleteProfile(pr.alias);
+          row.appendChild(del);
+        }
+        wrap.appendChild(row);
+        const usageRow = document.createElement('div');
+        usageRow.className = 'prof-usage-row';
+        usageRow.innerHTML = _usageBarRow(pr.session, pr.weekly) + (stale ? ' <span class="muted">(오래됨)</span>' : '');
+        wrap.appendChild(usageRow);
+        box.appendChild(wrap);
+      });
+    }
+    function toggleAcctForm() { document.getElementById('acctForm').classList.toggle('hidden'); }
+    async function dobisSaveProfile() {
+      const msg = document.getElementById('acctMsg'); msg.style.color = '#ff9aa6';
+      const alias = document.getElementById('prof_alias').value.trim();
+      const config_dir = document.getElementById('prof_dir').value.trim();
+      const provider = document.getElementById('prof_provider').value;
+      if (!alias || !config_dir) { msg.textContent = 'alias·경로를 모두 입력하세요.'; return; }
+      const editing = _profEditing;
+      try {
+        const url = editing ? (API + '/dobis/profiles/' + encodeURIComponent(editing)) : (API + '/dobis/profiles');
+        const method = editing ? 'PUT' : 'POST';
+        const body = editing ? { new_alias: alias, config_dir, provider } : { alias, config_dir, provider };
+        const r = await fetch(url, { method, headers: H(), body: JSON.stringify(body) });
+        if (r.status === 401) return showLogin();
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { msg.textContent = (editing ? '수정' : '추가') + ' 실패: ' + (j.error || r.status); return; }
+        msg.style.color = '#9fffce'; msg.textContent = (editing ? '수정됨: ' : '추가됨: ') + alias;
+        _profEditing = null;
+        document.getElementById('prof_alias').value = ''; document.getElementById('prof_dir').value = '';
+        document.getElementById('prof_provider').value = 'anthropic';
+        document.getElementById('acctForm').classList.add('hidden');
+        pollHealth();   // 워커가 profile_result 전에 profiles 를 먼저 emit 하므로 lastProfiles 는 이미 최신
+      } catch { msg.textContent = '오류'; }
+    }
+    function dobisCancelEditProfile() {
+      _profEditing = null;
+      document.getElementById('prof_alias').value = ''; document.getElementById('prof_dir').value = '';
+      document.getElementById('prof_provider').value = 'anthropic';
+      document.getElementById('acctForm').classList.add('hidden');
+    }
+    async function dobisDeleteProfile(alias) {
+      if (!await dlgConfirm('프로파일 ' + alias + ' 를 삭제할까요?', '프로파일 삭제')) return;
+      const msg = document.getElementById('acctMsg'); msg.style.color = '#ff9aa6';
+      try {
+        const r = await fetch(API + '/dobis/profiles/' + encodeURIComponent(alias), { method: 'DELETE', headers: H() });
+        if (r.status === 401) return showLogin();
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { msg.textContent = '삭제 실패: ' + (j.error || r.status); return; }
+        msg.style.color = '#9fffce'; msg.textContent = '삭제됨: ' + alias;
+        pollHealth();
       } catch { msg.textContent = '오류'; }
     }
     function renderRate(u) {
-      const acctTxt = u && u.account ? ('계정 #' + u.account + (u.total > 1 ? ' / ' + u.total : '')) : '계정 —';
+      const acctTxt = u && u.activeAlias ? u.activeAlias : '—';
       const ra = document.getElementById('rateAcct'); if (ra) ra.textContent = acctTxt;
-      const ac = document.getElementById('acctCur'); if (ac) ac.textContent = u && u.account ? ('계정 #' + u.account) : '—';
+      const ac = document.getElementById('acctCur'); if (ac) ac.textContent = acctTxt;
       const bar = document.getElementById('rateBar'), info = document.getElementById('rateInfo');
       if (!bar) return;
       const N = 20, fh = u && u.fiveHour;
