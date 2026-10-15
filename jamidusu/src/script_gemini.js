@@ -1271,7 +1271,7 @@ function handleCalculate() {
     renderer.renderChart(result);
 
     const aiSection = document.getElementById('aiCopySection');
-    if (aiSection) aiSection.style.display = 'block';
+    if (aiSection) aiSection.style.display = 'flex';
 
     if (appState.currentLuckMode !== 'daehan') {
       setTimeout(() => selectPalace(result.mingIdx), 100);
