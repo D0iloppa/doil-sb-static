@@ -15,3 +15,7 @@ mattermost:
 
 google_drive:
   folder_id: ""
+
+blog:
+  base: https://doil.me
+  service_token: ""   # 루트 .env 의 BLOG_SERVICE_TOKEN 과 동일 값

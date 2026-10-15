@@ -1,0 +1,15 @@
+<footer class="foot"><div class="wrap">
+  <div><span style="color:var(--on-dark);font-size:18px"><span style="font-family:var(--mono);font-weight:400;color:var(--on-dark-soft)">{<span style="color:var(--primary)">*</span>}</span> <span style="font-family:var(--serif)">VOID</span></span> · doil.me</div>
+  <div><a href="/blog">Blog</a> &nbsp;·&nbsp; <a href="/blog/rss.xml">RSS</a> &nbsp;·&nbsp; <a href="/blog/privacy">Privacy</a> &nbsp;·&nbsp; <a href="/">Home</a></div>
+</div></footer>
+<script>
+async function blogLogout(){
+  try{ await fetch('/blog/auth/logout',{method:'POST'});}catch(e){}
+  location.reload();
+}
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+  onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], ignoredTags:['script','noscript','style','textarea','pre','code']});"></script>
+</body>
+</html>

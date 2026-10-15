@@ -1,0 +1,85 @@
+<%
+function fmtDate(d){ if(!d) return ''; const dt=new Date(d); return dt.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}); }
+const totalPages = Math.max(1, Math.ceil(pagination.total / pagination.limit));
+function pageUrl(n){ return pagination.baseUrl + (n>1 ? ('?page='+n) : ''); }
+%>
+<%- include('partials/head') %>
+
+<div class="wrap">
+  <header class="page-head">
+    <% if (breadcrumb && breadcrumb.length) { %>
+      <nav class="crumb">
+        <a href="/blog">Blog</a>
+        <% breadcrumb.forEach(function(b,i){ %>
+          <span class="sep">/</span>
+          <% if (i === breadcrumb.length-1) { %><span><%= b.name %></span><% } else { %><a href="<%= b.url %>"><%= b.name %></a><% } %>
+        <% }); %>
+      </nav>
+    <% } %>
+    <h1><%= heading %></h1>
+    <p><%= subheading %></p>
+  </header>
+
+  <% if ((drillCats && drillCats.length) || (tags && tags.length)) { %>
+    <div class="filterbar">
+      <% if (drillCats && drillCats.length) { %>
+        <div class="fgroup">
+          <span class="flabel">카테고리</span>
+          <div class="drill">
+            <% drillCats.forEach(function(c){ %><a href="<%= c.url %>"><%= c.name %></a><% }); %>
+          </div>
+        </div>
+      <% } %>
+      <% if (tags && tags.length) { %>
+        <div class="fgroup">
+          <span class="flabel">태그</span>
+          <div class="tagcloud">
+            <% tags.slice(0,12).forEach(function(t){ %><a class="<%= activeTag===t.slug ? 'on' : '' %>" href="/blog/tag/<%= encodeURIComponent(t.slug) %>">#<%= t.name %> <span class="tc"><%= t.post_count %></span></a><% }); %>
+            <% if (tags.length > 12) { %><a class="alllink" href="/blog/tags">전체 태그 →</a><% } %>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <% if (!posts.length) { %>
+    <div class="empty">아직 발행된 글이 없습니다.</div>
+  <% } else { %>
+    <div class="cards">
+      <% posts.forEach(function(p, i){ %>
+        <a class="card" href="/blog/<%= encodeURIComponent(p.slug) %>">
+          <div class="cover" style="background-image:url('<%= p.cover_url || '/cdn/blog/_static/cover-placeholder.svg' %>')"></div>
+          <div class="body">
+            <% if (p.category_name) { %><span class="cat"><%= p.category_name %></span><% } %>
+            <% if (p.has_en) { %><span class="enbadge">EN</span><% } %>
+            <h3><%= p.title %></h3>
+            <p class="sum"><%= p.summary || '' %></p>
+            <div class="meta"><span><%= fmtDate(p.published_at || p.created_at) %></span><span>· <%= p.read_minutes %>분 읽기</span><span>· 💬 <%= p.comment_count %></span><span>· 조회 <%= p.view_count %></span></div>
+          </div>
+        </a>
+        <% if (i === 5 && posts.length > 6) { %>
+          <div class="adslot-feed">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4322659154168202"
+                 data-ad-slot="3606107040" data-ad-format="auto" data-full-width-responsive="true"></ins>
+          </div>
+        <% } %>
+      <% }); %>
+    </div>
+    <% if (posts.length > 6) { %>
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4322659154168202" crossorigin="anonymous"></script>
+      <script>try{(window.adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}</script>
+    <% } %>
+
+    <% if (totalPages > 1) { %>
+      <nav class="pager">
+        <% if (pagination.page > 1) { %><a href="<%= pageUrl(pagination.page-1) %>">←</a><% } %>
+        <% for (let n=1; n<=totalPages; n++){ %>
+          <% if (n === pagination.page) { %><span class="on"><%= n %></span><% } else { %><a href="<%= pageUrl(n) %>"><%= n %></a><% } %>
+        <% } %>
+        <% if (pagination.page < totalPages) { %><a href="<%= pageUrl(pagination.page+1) %>">→</a><% } %>
+      </nav>
+    <% } %>
+  <% } %>
+</div>
+
+<%- include('partials/foot') %>

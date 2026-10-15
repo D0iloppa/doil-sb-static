@@ -1,0 +1,38 @@
+<%- include('partials/head') %>
+
+<div class="wrap">
+  <header class="page-head">
+    <nav class="crumb"><a href="/blog">Blog</a><span class="sep">/</span><span>Tags</span></nav>
+    <h1>Tags</h1>
+    <p><%= tags.length %>개의 태그</p>
+  </header>
+
+  <div class="tagsindex">
+    <input id="tagFilter" class="tagfilter" type="text" placeholder="태그 검색…" oninput="filterTags()" autocomplete="off" autofocus>
+    <% if (!tags.length) { %>
+      <div class="empty">아직 태그가 없습니다.</div>
+    <% } else { %>
+      <div class="tagcloud big" id="tagList">
+        <% tags.forEach(function(t){ %><a class="tagitem" data-name="<%= t.name.toLowerCase() %>" data-slug="<%= t.slug %>" href="/blog/tag/<%= encodeURIComponent(t.slug) %>">#<%= t.name %> <span class="tc"><%= t.post_count %></span></a><% }); %>
+      </div>
+      <div class="empty" id="tagEmpty" style="display:none">일치하는 태그가 없습니다.</div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  function filterTags(){
+    var q = document.getElementById('tagFilter').value.trim().toLowerCase();
+    var items = document.querySelectorAll('#tagList .tagitem');
+    var shown = 0;
+    items.forEach(function(a){
+      var hit = !q || a.dataset.name.indexOf(q) >= 0 || a.dataset.slug.indexOf(q) >= 0;
+      a.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    var empty = document.getElementById('tagEmpty');
+    if (empty) empty.style.display = shown ? 'none' : 'block';
+  }
+</script>
+
+<%- include('partials/foot') %>
