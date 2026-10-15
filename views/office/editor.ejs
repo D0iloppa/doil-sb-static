@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= name %> — Office 편집기</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #placeholder { position: absolute; inset: 0; }
+  </style>
+  <!-- ONLYOFFICE 통합 API (DS 는 /office 서브패스로 서빙됨) -->
+  <script src="/office/web-apps/apps/api/documents/api.js"></script>
+</head>
+<body>
+  <div id="placeholder"></div>
+  <script>
+    var config = <%- config %>;
+    config.width = "100%";
+    config.height = "100%";
+    config.events = {
+      onError: function (e) { console.error("ONLYOFFICE error", e); },
+    };
+    new DocsAPI.DocEditor("placeholder", config);
+  </script>
+</body>
+</html>

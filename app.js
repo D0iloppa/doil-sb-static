@@ -405,6 +405,8 @@ app.use('/graph', graphRouter);            // DOYCLOPEDIA 그래프 뷰어 + 데
 app.use('/dGraph', dgraphRouter);          // dGraph — 인터랙티브 그래프 캔버스 (Notion dJinn과 분리)
 app.use('/jamidusu/src', express.static(path.join(__dirname, 'jamidusu/src')));
 app.use('/jamidusu', jamiRouter);
+const officeRouter = require('./routes/office');
+app.use('/office-app', officeRouter);      // ONLYOFFICE Docs 통합(런처·편집기·문서 서빙·저장 콜백)
 app.use('/api', apiRouter);      // 기존 내부 API
 app.use('/', pagesRouter);       // Pages는 view 렌더링 + context 체크
 
