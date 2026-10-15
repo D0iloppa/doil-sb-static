@@ -385,11 +385,13 @@ const jamiRouter = require('./routes/jami');
 const blogApiRouter = require('./routes/api/blog');
 const blogAuthRouter = require('./routes/blogAuth');
 const blogRouter = require('./routes/blog');
+const ubiqRouter = require('./routes/api/ubiq');
 app.use('/api/dev', devRouter);        // Plane → dev_context proxy
 app.use('/api/auth', authRouter);      // 공유 로그인(CHATBOT_ID/PW → 토큰)
 app.use('/api/geo/chat', geoChatRouter); // geo 챗봇(인증 + 작업 큐)
 app.use('/api/services', servicesRouter); // 홈페이지 서비스 일람(공개 읽기 + 관리자 CRUD)
 app.use('/api/settings', settingsRouter); // 관리자 콘솔 설정(배경 등)
+app.use('/api/ubiq', ubiqRouter);      // ubiq 기기 승인 대행(HOME-HUB PIN 등록, 루트 전용)
 app.use('/api/dobis', dobisStatusRouter); // DOBIS 워커 상태(host waker 폴링)
 app.use('/api/paint', paintRouter);    // PAINT 앱 — dobis/shared 저장
 app.use('/api/stock', stockRouter);   // Bloomberg terminal — 주식 데이터 프록시
