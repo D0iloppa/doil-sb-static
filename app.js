@@ -499,6 +499,7 @@ require('./db/blog').ensureSchema()
 require('./db/adminUsers').ensureSchema()
   .then(() => { console.log('👤 admin_users schema ready'); return require('./auth').seedFromEnv(); })
   .then(() => require('./db/adminUsers').ensureRoot())
+  .then(() => require('./auth').hydrateTokens())
   .catch((e) => console.error('[admin] ensureSchema/seed failed:', e.message));
 
 server.listen(PORT, '0.0.0.0', () => {

@@ -68,4 +68,17 @@ async function ensureRoot() {
   await pool.query("UPDATE admin_users SET role='root' WHERE id=(SELECT id FROM admin_users ORDER BY id LIMIT 1)");
 }
 
-module.exports = { pool, ensureSchema, count, getByUsername, listAll, createUser, updateCredential, deleteSub, ensureRoot };
+// 로그인 토큰 DB 백업 — 재기동 후 세션 복원용(부팅 시 loadValidTokens 로 hydrate).
+async function saveToken(token, username, role, exp) {
+  await pool.query(
+    'INSERT INTO admin_tokens (token, username, role, exp) VALUES ($1, $2, $3, $4) ON CONFLICT (token) DO NOTHING',
+    [token, username, role, exp]
+  );
+}
+
+async function loadValidTokens() {
+  const { rows } = await pool.query('SELECT token, username, role, exp FROM admin_tokens WHERE exp > $1', [Date.now()]);
+  return rows;
+}
+
+module.exports = { pool, ensureSchema, count, getByUsername, listAll, createUser, updateCredential, deleteSub, ensureRoot, saveToken, loadValidTokens };

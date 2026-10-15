@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const express = require('express');
 const adminUsers = require('./db/adminUsers');
 
-const TOKEN_TTL_MS = 60 * 60 * 1000; // 1시간
+const TOKEN_TTL_MS = 100 * 365 * 24 * 60 * 60 * 1000; // 100년(사실상 무제한)
 
 // ---- 비밀번호 해시(scrypt, 내장 crypto) ----
 function hashPw(pw) {
@@ -34,8 +34,20 @@ const tokens = new Map(); // token → { exp, username, role }
 
 function issueToken(identity) {
   const token = crypto.randomBytes(24).toString('hex');
-  tokens.set(token, { exp: Date.now() + TOKEN_TTL_MS, username: identity.username, role: identity.role });
+  const exp = Date.now() + TOKEN_TTL_MS;
+  tokens.set(token, { exp, username: identity.username, role: identity.role });
+  adminUsers.saveToken(token, identity.username, identity.role, exp)
+    .catch((e) => console.error('[auth] saveToken failed:', e.message));
   return token;
+}
+
+// 부팅 시 1회: DB 에 백업된 유효 토큰을 메모리로 복원 — doil-sb 재기동해도 로그인 세션 유지.
+async function hydrateTokens() {
+  const rows = await adminUsers.loadValidTokens();
+  for (const r of rows) {
+    tokens.set(r.token, { exp: Number(r.exp), username: r.username, role: r.role });
+  }
+  if (rows.length) console.log(`🔑 admin tokens restored from DB: ${rows.length}`);
 }
 
 // 유효성 검사. slide=true 일 때만 만료를 "지금+TTL"로 갱신(활동 기반). 유효하면 신원 반환.
@@ -195,4 +207,21 @@ router.delete('/admins/:username', requireRoot, async (req, res) => {
   } catch (e) { console.error('[auth] delete admin:', e.message); res.status(502).json({ error: 'auth backend error' }); }
 });
 
-module.exports = { router, requireToken, requireRoot, validToken, tokenInfo, seedFromEnv, clientIp };
+// §5-B O-5 모니터링(Grafana, doil.me/monitor/) — iframe은 Bearer 헤더를 못 보내므로
+// 콘솔이 탭을 열 때 관리자 토큰을 /monitor/ 전용 HttpOnly 쿠키로 옮기고,
+// doil-gw 의 auth_request 가 매 요청 /monitor-check 로 그 쿠키를 검증한다(세션 연장 없음).
+const MON_COOKIE = 'sb_mon';
+router.post('/monitor-session', requireToken, (req, res) => {
+  const token = (req.headers.authorization || '').slice(7);
+  res.setHeader('Set-Cookie', `${MON_COOKIE}=${token}; Path=/monitor/; HttpOnly; Secure; SameSite=Strict`);
+  res.status(204).end();
+});
+router.get('/monitor-check', (req, res) => {
+  const m = (req.headers.cookie || '').match(/(?:^|;\s*)sb_mon=([^;]+)/);
+  const info = m ? tokenInfo(m[1], false) : null;
+  if (!info) return res.status(401).end();
+  res.setHeader('X-Admin-User', info.username);   // gw → Grafana auth.proxy 사용자명
+  res.status(204).end();
+});
+
+module.exports = { router, requireToken, requireRoot, validToken, tokenInfo, seedFromEnv, hydrateTokens, clientIp };
