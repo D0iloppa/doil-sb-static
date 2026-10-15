@@ -149,13 +149,30 @@ async function fetchDbGroupProps(rawDbId) {
   }
 }
 
-// DB 페이지의 rich_text 속성 전체를 { 속성명: 값 } 객체로 추출
+// DB 페이지의 rich_text/files/status/select/multi_select/number/checkbox/date 속성을 { 속성명: 값 } 객체로 추출
+// files는 URL이 프리사인드라 만료되므로 저장하지 않고, 파일명(비휘발)만 값으로 남긴다.
+// number는 JSON number, checkbox는 boolean 그대로 저장(그 외는 문자열). title/relation/people/formula/rollup 등은 제외.
 function extractRichTextProps(page) {
   const result = {};
   for (const [name, prop] of Object.entries(page.properties || {})) {
     if (prop.type === 'rich_text' && prop.rich_text?.length) {
       const val = prop.rich_text.map(t => t.plain_text).join('').trim();
       if (val) result[name] = val;
+    } else if (prop.type === 'files' && prop.files?.length) {
+      const val = prop.files.map(f => f.name).filter(Boolean).join(', ');
+      if (val) result[name] = val;
+    } else if (prop.type === 'status' || prop.type === 'select') {
+      const val = prop[prop.type]?.name;
+      if (val) result[name] = val;
+    } else if (prop.type === 'multi_select' && prop.multi_select?.length) {
+      const val = prop.multi_select.map(o => o.name).filter(Boolean).join(', ');
+      if (val) result[name] = val;
+    } else if (prop.type === 'number') {
+      if (typeof prop.number === 'number') result[name] = prop.number;
+    } else if (prop.type === 'checkbox') {
+      result[name] = !!prop.checkbox;
+    } else if (prop.type === 'date' && prop.date?.start) {
+      result[name] = prop.date.end ? `${prop.date.start}/${prop.date.end}` : prop.date.start;
     }
   }
   return result;
