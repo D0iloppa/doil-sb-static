@@ -135,3 +135,8 @@ public/assets/dist/
 
 # MCP 실제 설정(시크릿 포함) — config.example.yml만 커밋한다
 mcp/config.yml
+# 런타임 데이터(bind-mount) / 임시 / 백업 — 커밋 금지
+data/
+_tmp/
+*.bak-*
+.claude/worktrees/
