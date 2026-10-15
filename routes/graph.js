@@ -27,6 +27,19 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const nid = (id) => (id || '').replace(/-/g, '');
 const notionUrl = (id) => `https://www.notion.so/${nid(id)}`;
 
+// 일반 텍스트에 걸린 하이퍼링크(마크다운 링크 등)가 노션 페이지/DB를 가리키면 그 ID를 뽑아낸다.
+// notion.so / notion.com / notion.site 도메인의 URL 경로 끝에 붙은 32자리 hex(대시 유무 무관) ID를 찾는다.
+const NOTION_ID_RE = /([0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{12})(?:[/?#]|$)/;
+function extractNotionPageIdFromUrl(url) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    if (!/(^|\.)notion\.(so|com|site)$/i.test(u.hostname)) return null;
+    const match = (u.pathname + u.search).match(NOTION_ID_RE);
+    return match ? match[1] : null;
+  } catch (_) { return null; }
+}
+
 // nodes: DB 컬럼(grp) ↔ 그래프 객체(group) 변환
 const graphNodeToDb = (n) => ({
   title:    n.title    || '(제목 없음)',
@@ -220,9 +233,14 @@ async function scanPageContent(blockId, blockDepth) {
       if (inner.database_id) mentions.push(inner.database_id);
     }
     for (const rt of inner.rich_text || []) {
-      if (rt.type !== 'mention') continue;
-      if (rt.mention?.type === 'page')     mentions.push(rt.mention.page.id);
-      if (rt.mention?.type === 'database') mentions.push(rt.mention.database.id);
+      if (rt.type === 'mention') {
+        if (rt.mention?.type === 'page')     mentions.push(rt.mention.page.id);
+        if (rt.mention?.type === 'database') mentions.push(rt.mention.database.id);
+        continue;
+      }
+      // 일반 텍스트에 걸린 하이퍼링크(마크다운 링크 등)가 노션 페이지를 가리키면 참조선으로 잡는다
+      const linkedId = extractNotionPageIdFromUrl(rt.href || rt.text?.link?.url);
+      if (linkedId) mentions.push(linkedId);
     }
     if (CONTAINER_TYPES.has(type) && block.has_children) {
       const sub = await scanPageContent(block.id, blockDepth + 1);

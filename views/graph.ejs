@@ -645,41 +645,96 @@
       }
 
       /* ── 그래프 초기화 ── */
-      /* ── 초기 위치: BFS depth 기반 링 배치 (centrifuge 초기값) ── */
+      /* ── 초기 위치: 재귀 방사형 섹터 배치 (subtree 크기 비례 + 참조선 체인 순서) ── */
       function prePositionByDepth(nodes, edges) {
         const root = nodes.find(n => n.group === 'root');
         if (!root) return;
-        const childEdges = edges.filter(e => e.edgeType !== 'mention');
-        const adj = new Map(nodes.map(n => [n.id, []]));
+
+        const byId = new Map(nodes.map(n => [n.id, n]));
+        const childEdges   = edges.filter(e => e.edgeType !== 'mention');
+        const mentionEdges = edges.filter(e => e.edgeType === 'mention');
+
+        const childrenMap = new Map(nodes.map(n => [n.id, []]));
         for (const e of childEdges) {
-          if (adj.has(e.source)) adj.get(e.source).push(e.target);
+          if (childrenMap.has(e.source) && byId.has(e.target)) childrenMap.get(e.source).push(e.target);
         }
-        const depth = new Map([[root.id, 0]]);
-        const queue = [root.id];
-        while (queue.length) {
-          const cur = queue.shift();
-          for (const nxt of (adj.get(cur) || [])) {
-            if (!depth.has(nxt)) { depth.set(nxt, depth.get(cur) + 1); queue.push(nxt); }
+
+        // 같은 부모의 형제들을 참조선(mention) 체인 순서로 정렬 — 체인 순서 = 부채꼴상의 각도 순서
+        const mentionOutMap = new Map();
+        for (const e of mentionEdges) {
+          if (!mentionOutMap.has(e.source)) mentionOutMap.set(e.source, []);
+          mentionOutMap.get(e.source).push(e.target);
+        }
+        function orderByChain(ids) {
+          const idSet = new Set(ids);
+          const outMap = new Map(), inDeg = new Map(ids.map(id => [id, 0]));
+          for (const id of ids) {
+            const outs = (mentionOutMap.get(id) || []).filter(t => idSet.has(t));
+            outMap.set(id, outs);
+            for (const t of outs) inDeg.set(t, (inDeg.get(t) || 0) + 1);
           }
+          const visited = new Set(), ordered = [];
+          const walk = (startId) => {
+            let cur = startId;
+            while (cur !== undefined && !visited.has(cur)) {
+              visited.add(cur); ordered.push(cur);
+              cur = (outMap.get(cur) || []).find(t => !visited.has(t));
+            }
+          };
+          for (const id of ids) if ((inDeg.get(id) || 0) === 0) walk(id);
+          for (const id of ids) if (!visited.has(id)) walk(id);
+          return ordered;
         }
-        const byDepth = new Map();
-        for (const n of nodes) {
-          const d = depth.get(n.id) ?? 5;
-          if (!byDepth.has(d)) byDepth.set(d, []);
-          byDepth.get(d).push(n);
+
+        // subtree 크기 — 형제들의 각도 구간(섹터)을 subtree 크기에 비례 배분하기 위함
+        const sizeCache = new Map();
+        function subtreeSize(id, ancestry) {
+          if (sizeCache.has(id)) return sizeCache.get(id);
+          if (ancestry.has(id)) return 1; // 순환 방어
+          ancestry.add(id);
+          const kids = childrenMap.get(id) || [];
+          const size = kids.length ? kids.reduce((sum, k) => sum + subtreeSize(k, ancestry), 0) : 1;
+          ancestry.delete(id);
+          sizeCache.set(id, size);
+          return size;
         }
-        const RING_R = 70;
+
+        const RING_R = 90;
+        const laidOut = new Set([root.id]);
         root.x = 0; root.y = 0; root.vx = 0; root.vy = 0;
-        for (const [d, grp] of byDepth) {
-          if (d === 0) continue;
-          const r = d * RING_R;
-          grp.forEach((n, i) => {
-            const angle = (i / grp.length) * 2 * Math.PI - Math.PI / 2;
+
+        function layout(id, depth, angleStart, angleEnd) {
+          let kids = (childrenMap.get(id) || []).filter(k => byId.has(k) && !laidOut.has(k));
+          if (!kids.length) return;
+          kids = orderByChain(kids);
+          const sizes = kids.map(k => subtreeSize(k, new Set()));
+          const total = sizes.reduce((a, b) => a + b, 0) || kids.length;
+          const r = (depth + 1) * RING_R;
+          let cursor = angleStart;
+          const span = angleEnd - angleStart;
+          kids.forEach((kId, i) => {
+            laidOut.add(kId);
+            const portion = (sizes[i] / total) * span;
+            const angle = cursor + portion / 2;
+            const n = byId.get(kId);
             n.x = r * Math.cos(angle);
             n.y = r * Math.sin(angle);
             n.vx = 0; n.vy = 0;
+            layout(kId, depth + 1, cursor, cursor + portion);
+            cursor += portion;
           });
         }
+        layout(root.id, 0, -Math.PI, Math.PI);
+
+        // child 엣지로 루트에서 닿지 않는 고아 노드(mention으로만 발견된 페이지 등) 대비
+        const orphans = nodes.filter(n => !laidOut.has(n.id));
+        orphans.forEach((n, i) => {
+          const angle = (i / orphans.length) * 2 * Math.PI - Math.PI / 2;
+          const r = 5 * RING_R;
+          n.x = r * Math.cos(angle);
+          n.y = r * Math.sin(angle);
+          n.vx = 0; n.vy = 0;
+        });
       }
 
       /* ── 커스텀 collision force (d3 미사용) ── */
@@ -795,8 +850,10 @@
         graphInstance.d3Force('charge').strength(n => -nodeValFn(n) * 8);
         graphInstance.d3Force('link').distance(l => {
           const s = l.source || {}, t = l.target || {};
-          return Math.sqrt((nodeValFn(s) || 2) + (nodeValFn(t) || 2)) * 5 + 5;
-        }).strength(0.55);
+          const base = Math.sqrt((nodeValFn(s) || 2) + (nodeValFn(t) || 2)) * 5 + 5;
+          // 참조선(mention)은 형제 노드를 서로 멀찍이 밀어내 체인이 부채꼴로 펼쳐지게 한다
+          return l.edgeType === 'mention' ? base * 4 : base;
+        }).strength(l => l.edgeType === 'mention' ? 0.6 : 0.55);
         graphInstance.d3Force('collision', makeCollisionForce(n => Math.sqrt(nodeValFn(n)) * 5 + 3));
 
         // BFS depth 기반 초기 위치 배정 후 graphData 적용
