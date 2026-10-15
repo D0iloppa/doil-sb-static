@@ -3,6 +3,7 @@ const router  = express.Router();
 const path    = require('path');
 const { Client } = require('@notionhq/client');
 const { DJinn } = require('@d0iloppa/djinn');
+const { createPageScanner } = require('../lib/page-scan');
 
 const notion  = new Client({ auth: process.env.NOTION_TOKEN });
 const ROOT_ID = 'e8553a423a664a31ba97db9c42265972';
@@ -200,56 +201,13 @@ function extractPropValues(page, propName, propType) {
   return [];
 }
 
-const EXCERPT_TYPES = new Set([
-  'paragraph', 'heading_1', 'heading_2', 'heading_3',
-  'callout', 'quote', 'bulleted_list_item', 'numbered_list_item', 'to_do',
-]);
-const EXCERPT_MAX = 300;
-
-// --- 한 페이지 내부 재귀 스캔 ---
-async function scanPageContent(blockId, blockDepth) {
-  if (blockDepth > BLOCK_DEPTH) return { childPages: [], mentions: [], excerpt: '' };
-  await sleep(350);
-  let blocks;
-  try { blocks = await fetchBlocks(blockId); }
-  catch (e) { console.error(`[graph] fetchBlocks(${blockId}) failed:`, e.message); return { childPages: [], mentions: [], excerpt: '' }; }
-
-  const childPages = [], mentions = [];
-  const excerptParts = [];
-
-  for (const block of blocks) {
-    const type = block.type, inner = block[type] || {};
-
-    // depth=0 에서만 텍스트 수집 (300자 이내)
-    if (blockDepth === 0 && EXCERPT_TYPES.has(type)) {
-      const text = (inner.rich_text || []).map(t => t.plain_text).join('').trim();
-      if (text && excerptParts.join(' ').length < EXCERPT_MAX) excerptParts.push(text);
-    }
-
-    if (type === 'child_page')         childPages.push({ id: block.id, title: inner.title || '(제목 없음)', isDb: false });
-    else if (type === 'child_database') childPages.push({ id: block.id, title: inner.title || '(DB)', isDb: true });
-    else if (type === 'link_to_page') {
-      if (inner.page_id)     mentions.push(inner.page_id);
-      if (inner.database_id) mentions.push(inner.database_id);
-    }
-    for (const rt of inner.rich_text || []) {
-      if (rt.type === 'mention') {
-        if (rt.mention?.type === 'page')     mentions.push(rt.mention.page.id);
-        if (rt.mention?.type === 'database') mentions.push(rt.mention.database.id);
-        continue;
-      }
-      // 일반 텍스트에 걸린 하이퍼링크(마크다운 링크 등)가 노션 페이지를 가리키면 참조선으로 잡는다
-      const linkedId = extractNotionPageIdFromUrl(rt.href || rt.text?.link?.url);
-      if (linkedId) mentions.push(linkedId);
-    }
-    if (CONTAINER_TYPES.has(type) && block.has_children) {
-      const sub = await scanPageContent(block.id, blockDepth + 1);
-      childPages.push(...sub.childPages);
-      mentions.push(...sub.mentions);
-    }
-  }
-  return { childPages, mentions, excerpt: excerptParts.join(' ').slice(0, EXCERPT_MAX) };
-}
+// --- 한 페이지 내부 재귀 스캔 (구현은 lib/page-scan.js) ---
+const scanPageContent = createPageScanner({
+  fetchBlocks, sleep,
+  extractLinkId: extractNotionPageIdFromUrl,
+  containerTypes: CONTAINER_TYPES,
+  maxDepth: BLOCK_DEPTH,
+});
 
 // --- 그래프 빌드 ---
 async function buildGraph(rawRootId, onNodeDiscovered = null) {
@@ -257,6 +215,8 @@ async function buildGraph(rawRootId, onNodeDiscovered = null) {
   const nodesMap = new Map();
   // key: 's→t', value: { source, target, edgeType } — child가 mention을 덮어씀
   const edgeMap = new Map();
+  // 페이지 본문 텍스트 — 스캔 범위 메모리 전용(임베딩 입력). DB·로그·파일에 쓰지 않는다.
+  const pageTexts = new Map();
 
   function addEdge(src, tgt, edgeType = 'child') {
     const s = nid(src), t = nid(tgt);
@@ -287,7 +247,8 @@ async function buildGraph(rawRootId, onNodeDiscovered = null) {
 
   async function traversePage(rawPageId, groupLabel, pageDepth) {
     const pageId = nid(rawPageId);
-    const { childPages, mentions, excerpt } = await scanPageContent(pageId, 0);
+    const { childPages, mentions, excerpt, text } = await scanPageContent(pageId, 0);
+    if (text) pageTexts.set(pageId, text);
 
     // 이 페이지의 excerpt 업데이트
     if (excerpt) {
@@ -391,7 +352,7 @@ async function buildGraph(rawRootId, onNodeDiscovered = null) {
   }
   const knownIds = new Set(nodesMap.keys());
   const edges = [...edgeMap.values()].filter(e => knownIds.has(e.source) && knownIds.has(e.target));
-  return { nodes: [...nodesMap.values()], edges };
+  return { nodes: [...nodesMap.values()], edges, texts: pageTexts };
 }
 
 // --- 그룹 재파생 ---
