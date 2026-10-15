@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { DJinn } = require('@d0iloppa/djinn');
-const { embedPages, loadPrivateIds, EMBEDDER, DIM, MAX_INPUT_CHARS, TABLE } = require('../lib/page-embed');
+const { embedPages, loadPrivateIds, EMBEDDER, DIM, MAX_INPUT_CHARS, TABLE, BATCH_SIZE } = require('../lib/page-embed');
 
 const ENV = { OMNIROUTE_URL: 'http://omniroute.test:20128/', OMNIROUTE_API_KEY: 'test-key' };
 const quiet = { log() {}, error() {} };
@@ -39,13 +39,14 @@ const node = (n, extra = {}) => ({ id: id(n), title: `page ${n}`, nodeType: 'pag
 const count = (db) => db.db.prepare(`SELECT COUNT(*) c FROM ${TABLE}`).get().c;
 const run = (db, over) => embedPages({ db, nodes: [], texts: new Map(), privateIds: new Set(), fetchImpl: fakeFetch(), env: ENV, log: quiet, ...over });
 
-test('request shape, batching of 16, meta upserts', async () => {
+test('request shape, batching by BATCH_SIZE, meta upserts', async () => {
   const { db } = tmpDb();
   const f = fakeFetch();
   const nodes = Array.from({ length: 35 }, (_, i) => node(i + 1));
   const st = await run(db, { nodes, fetchImpl: f });
   assert.strictEqual(st.state, 'done'); assert.strictEqual(st.embedded, 35);
-  assert.deepStrictEqual(f.calls.map(c => c.body.input.length), [16, 16, 3]);
+  const sizes = []; for (let left = 35; left > 0; left -= BATCH_SIZE) sizes.push(Math.min(BATCH_SIZE, left));
+  assert.deepStrictEqual(f.calls.map(c => c.body.input.length), sizes);
   assert.strictEqual(f.calls[0].url, 'http://omniroute.test:20128/v1/embeddings');
   assert.strictEqual(f.calls[0].auth, 'Bearer test-key');
   assert.strictEqual(f.calls[0].body.model, 'ollama-local/bge-m3');
@@ -110,7 +111,7 @@ test('partial failure keeps earlier batches', async () => {
   let n = 0;
   const f = async (u, init) => (++n === 2 ? { ok: false, status: 500, json: async () => ({}) } : fakeFetch()(u, init));
   const st = await run(db, { nodes: Array.from({ length: 20 }, (_, i) => node(i + 1)), fetchImpl: f });
-  assert.deepStrictEqual([st.state, st.embedded, st.failed, count(db)], ['error', 16, 4, 16]);
+  assert.deepStrictEqual([st.state, st.embedded, st.failed, count(db)], ['error', BATCH_SIZE, 20 - BATCH_SIZE, BATCH_SIZE]);
 });
 
 test('private pages: skipped, existing rows deleted', async () => {
