@@ -120,6 +120,24 @@ git push origin main
 git pull origin main
 ```
 
+## 🧠 Notion 페이지 임베딩 (page-level retrieval)
+
+6시간 Notion 스캔(`routes/graph.js`) 직후, 페이지마다 bge-m3(1024-d) 벡터 1개를 `data/notion_meta.db`의 `page_vec_bge_m3` 테이블에 쓴다. doil-console 이 이 인덱스를 읽기 전용으로 사용한다. 그래프 노드/엣지 커밋 뒤 비동기로 돌아 스캔을 기다리게 하지 않는다. 기존 `nodes_vec`(3072-d)와 `mcp/djinn.js` 는 건드리지 않는다.
+
+**본문 저장 금지 규칙**: 본문 텍스트는 스캔 중 메모리(`pageTexts`)에만 있고 임베딩 요청 후 버려진다. DB·로그·파일 어디에도 쓰지 않는다(청킹 없음, 저장되는 것은 해시와 벡터뿐). 입력 = `제목 + props + 본문`, 최대 5000자(Ollama bge-m3 로드 컨텍스트 4096 토큰, 초과분은 조용히 잘리므로 한국어 기준 여유를 둔 값).
+
+| 환경변수 | 기본 | 설명 |
+|---|---|---|
+| `OMNIROUTE_URL` | - | 예 `http://omniroute:20128` (`/v1/embeddings` 호출). 없으면 임베딩 skip |
+| `OMNIROUTE_API_KEY` | - | Bearer 키(루트 `.env` 에서 주입). 없으면 skip |
+| `PRIVATE_PAGES_FILE` | `/app/config/notion-private.json` | 콘솔 `config/notion-private.json` 을 읽기 전용 bind mount. `{pages:[{page:<32hex>, subtree:bool}]}` |
+
+- **비공개 페이지 제외**: 위 목록 + `subtree:true` 는 child 엣지로 하위까지 펼쳐 임베딩하지 않고 기존 행도 삭제한다. 파일이 없거나 파싱 불가면 **아무것도 임베딩/삭제하지 않는다**(fail closed).
+- **증분**: `sha256(입력 + embedder)` 가 같으면 건너뜀. 오류(네트워크/4xx/5xx/차원·개수 불일치)는 기존 행을 유지하고 다음 스캔에서 재시도한다. ROOT 스캔 후에는 노드가 사라진 행을 삭제한다.
+- **백필**: `POST /graph/embed/backfill` — 본문을 저장하지 않으므로 ROOT 스캔(크롤)을 다시 돌리며 해시 스킵을 끄고 전 페이지를 재임베딩한다. 보호 방식은 `POST /graph/scan` 과 동일하다.
+- **상태**: `GET /graph/scan/status` 응답의 `embedState` = `{state, embedded, skipped, failed, reason, finished_at}` (`state`: idle/running/done/error/skipped).
+- **테스트**: `npm test` (`node --test`, 가짜 fetch + 임시 SQLite; 실제 omniroute·DB 호출 없음).
+
 ## 🌐 네트워크 구성
 
 - **Docker 네트워크**: dev-net

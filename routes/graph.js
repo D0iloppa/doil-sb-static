@@ -4,6 +4,7 @@ const path    = require('path');
 const { Client } = require('@notionhq/client');
 const { DJinn } = require('@d0iloppa/djinn');
 const { createPageScanner } = require('../lib/page-scan');
+const { embedPages, loadPrivateIds, EMBED_STATE_IDLE } = require('../lib/page-embed');
 
 const notion  = new Client({ auth: process.env.NOTION_TOKEN });
 const ROOT_ID = 'e8553a423a664a31ba97db9c42265972';
@@ -503,7 +504,28 @@ function mergeIntoDb(subPageId, freshData, pageMeta) {
 // --- 스캔 상태 ---
 let scanState = { running: false, rootId: null, startedAt: null, result: null, error: null };
 
-async function _runScan(scanRootId) {
+// --- 페이지 임베딩 (스캔과 분리: 그래프 DB 커밋 후 비동기로 돈다, 스캔은 기다리지 않는다) ---
+const PRIVATE_PAGES_FILE = process.env.PRIVATE_PAGES_FILE || '/app/config/notion-private.json';
+let embedState = { ...EMBED_STATE_IDLE };
+let embedRunning = false;
+
+// nodes/texts 는 이번 스캔의 메모리 값. 본문(texts)은 임베딩 호출 외에 어디에도 쓰지 않는다.
+function startEmbed({ nodes, texts, prune, force }) {
+  if (embedRunning) { console.warn('[graph] 이전 임베딩이 진행 중 — 이번 스캔의 임베딩은 다음 스캔으로 미룸'); return; }
+  embedRunning = true;
+  embedState = { ...EMBED_STATE_IDLE, state: 'running' };
+  (async () => {
+    // 비공개 하위 트리는 방금 커밋된 DB 그래프의 child 엣지로 펼친다(ROOT 스캔에서는 새로 빌드한 그래프와 동일).
+    const edges = db.find('edges').map(e => ({ source: e.source, target: e.target, edgeType: e.edgeType || 'child' }));
+    const privateIds = loadPrivateIds(PRIVATE_PAGES_FILE, edges);
+    embedState = await embedPages({ db, nodes, texts, privateIds, force, pruneOrphans: prune });
+  })().catch((e) => {
+    console.error('[graph] 임베딩 오류:', e.message);
+    embedState = { ...EMBED_STATE_IDLE, state: 'error', failed: 1, reason: e.message, finished_at: new Date().toISOString() };
+  }).finally(() => { embedRunning = false; });
+}
+
+async function _runScan(scanRootId, { forceEmbed = false } = {}) {
   const pageMeta = scanRootId !== ROOT_ID ? await fetchPageMeta(scanRootId) : null;
 
   if (scanRootId === ROOT_ID) {
@@ -531,6 +553,7 @@ async function _runScan(scanRootId) {
       db.put('meta', 'scannedAt', { value: now });
     });
 
+    startEmbed({ nodes: data.nodes, texts: data.texts, prune: true, force: forceEmbed });
     return { nodeCount: db.find('nodes').length, edgeCount: db.find('edges').length, now };
   }
 
@@ -554,15 +577,18 @@ async function _runScan(scanRootId) {
     });
   }
 
+  // 루트 노드 title 은 buildGraph 가 slice(0,8) 로 세팅 — 임베딩 입력에는 pageMeta 로 교정한 값을 쓴다
+  const embedNodes = data.nodes.map(n => (n.id === scanRootNid && pageMeta?.title) ? { ...n, title: pageMeta.title } : n);
+  startEmbed({ nodes: embedNodes, texts: data.texts, prune: false, force: forceEmbed });
   return { nodeCount: db.find('nodes').length, edgeCount: db.find('edges').length, now };
 }
 
-function runScanAsync(scanRootId) {
+function runScanAsync(scanRootId, opts = {}) {
   if (scanState.running) return;
   scanState = { running: true, rootId: scanRootId, startedAt: new Date().toISOString(), result: null, error: null };
   console.log(`[graph] 비동기 스캔 시작: ${scanRootId}`);
 
-  _runScan(scanRootId).then(({ nodeCount, edgeCount, now }) => {
+  _runScan(scanRootId, opts).then(({ nodeCount, edgeCount, now }) => {
     console.log(`[graph] 스캔 완료: ${nodeCount}노드 ${edgeCount}엣지`);
     scanState = { running: false, rootId: scanRootId, startedAt: null, result: { nodes: nodeCount, edges: edgeCount, scannedAt: now }, error: null };
   }).catch((e) => {
@@ -591,7 +617,7 @@ router.get('/data/:id', (req, res) => {
   return res.status(404).json({ error: 'not_scanned', message: '[Scan] 버튼으로 먼저 스캔해주세요.' });
 });
 
-router.get('/scan/status', (req, res) => res.json(scanState));
+router.get('/scan/status', (req, res) => res.json({ ...scanState, embedState }));
 
 router.get('/heatmap', (req, res) => res.json(db.heatmap()));
 
@@ -686,6 +712,15 @@ router.post('/scan', (req, res) => {
   if (scanState.running) return res.json({ status: 'running', startedAt: scanState.startedAt });
   runScanAsync(rootId);
   res.json({ status: 'started', rootId });
+});
+
+// 임베딩 백필: 본문은 저장하지 않으므로 ROOT 스캔(크롤)을 다시 돌리며 해시 스킵을 끄고 전 페이지를 재임베딩한다.
+// 보호 방식은 POST /graph/scan 과 동일(앱 내 별도 인증 없음 — 게이트웨이 뒤 내부 경로).
+router.post('/embed/backfill', (req, res) => {
+  if (!process.env.OMNIROUTE_URL || !process.env.OMNIROUTE_API_KEY) return res.status(503).json({ error: 'omniroute_not_configured' });
+  if (scanState.running || embedRunning) return res.json({ status: 'running', startedAt: scanState.startedAt });
+  runScanAsync(ROOT_ID, { forceEmbed: true });
+  res.json({ status: 'started', rootId: ROOT_ID, forceEmbed: true });
 });
 
 router.post('/scan/:id', (req, res) => {
