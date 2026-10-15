@@ -4250,6 +4250,317 @@
       letter-spacing: .04em;
     }
 
+    /* ===== HOME-HUB (ubiq 기기 패널) ===== */
+    .hub-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .hub-meta {
+      color: var(--dim);
+      font-size: 10px;
+    }
+
+    .hub-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .hub-stat {
+      border: 1px solid var(--dim);
+      border-radius: 6px;
+      padding: 7px 14px;
+      min-width: 108px;
+    }
+
+    .hub-stat-val {
+      font-size: 17px;
+      font-weight: 700;
+      color: #b6ffd6;
+    }
+
+    .hub-stat-val small {
+      font-size: 10px;
+      margin-left: 2px;
+      color: var(--dim);
+    }
+
+    .hub-stat-key {
+      display: block;
+      font-size: 9px;
+      color: var(--dim);
+      margin-top: 2px;
+    }
+
+    .hub-stat.is-error,
+    .hub-stat-val.alert {
+      color: #FF3333;
+      border-color: #7a2020;
+    }
+
+    .hub-scenes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .hub-scene {
+      border: 1px solid var(--dim);
+      border-radius: 999px;
+      padding: 4px 14px;
+      cursor: pointer;
+      font-size: 11px;
+      color: #b6ffd6;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .hub-scene:hover:not(:disabled) {
+      border-color: var(--grn);
+      box-shadow: 0 0 10px rgba(77, 255, 143, .25);
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .hub-card {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: rgba(77, 255, 143, .03);
+    }
+
+    .hub-card.span2 {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 720px) {
+      .hub-card.span2 {
+        grid-column: span 1;
+      }
+    }
+
+    .hub-card.is-failed {
+      border-color: #7a2020;
+    }
+
+    .hub-card-head {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 9px;
+      font-size: 11px;
+      color: #b6ffd6;
+    }
+
+    .hub-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #123;
+      border: 1px solid var(--dim);
+      flex: none;
+    }
+
+    .hub-dot.on {
+      background: var(--grn);
+      box-shadow: 0 0 7px var(--grn);
+      border-color: var(--grn);
+    }
+
+    .hub-dot.failed {
+      background: #FF3333;
+      border-color: #FF3333;
+    }
+
+    .hub-card-state {
+      margin-left: auto;
+      font-size: 9px;
+      color: var(--dim);
+    }
+
+    .hub-card-state.is-error {
+      color: #FF3333;
+    }
+
+    .hub-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .hub-row+.hub-row {
+      margin-top: 7px;
+    }
+
+    .hub-btn {
+      border: 1px solid var(--dim);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      color: var(--grn);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+
+    .hub-btn:hover:not(:disabled) {
+      border-color: var(--grn);
+      box-shadow: 0 0 8px rgba(77, 255, 143, .3);
+    }
+
+    .hub-btn:disabled {
+      opacity: .4;
+      cursor: default;
+    }
+
+    .hub-btn.pow.on {
+      background: var(--grn);
+      color: #03150c;
+      border-color: var(--grn);
+      box-shadow: 0 0 10px rgba(77, 255, 143, .5);
+    }
+
+    .hub-btn.sm {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+
+    .hub-label {
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    .hub-link {
+      margin-left: auto;
+      font-size: 10px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      font-family: inherit;
+      color: var(--grn);
+      cursor: pointer;
+    }
+
+    .hub-link:hover {
+      color: #d6ffe8;
+      text-shadow: 0 0 8px var(--grn);
+    }
+
+    .hub-sub {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .hub-sub-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 0;
+      border-top: 1px solid #10381f;
+    }
+
+    .hub-sub-row:first-child {
+      border-top: 0;
+    }
+
+    .hub-sub-name {
+      font-size: 11px;
+      color: #b6ffd6;
+    }
+
+    .hub-sub-val {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    .hub-temp {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hub-temp-val {
+      font-size: 11px;
+      color: #b6ffd6;
+      min-width: 52px;
+      text-align: center;
+    }
+
+    .hub-temp-val small {
+      display: block;
+      font-size: 8px;
+      color: var(--dim);
+    }
+
+    .hub-log {
+      border: 1px solid var(--dim);
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-top: 12px;
+    }
+
+    .hub-log-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .hub-log-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 10px;
+      padding: 3px 0;
+      color: #b6ffd6;
+    }
+
+    .hub-log-list li.is-error {
+      color: #FF3333;
+    }
+
+    .hub-log-list li.is-pending {
+      color: var(--dim);
+    }
+
+    .hub-log-ts {
+      color: var(--dim);
+      flex: none;
+    }
+
+    .hub-hint {
+      color: var(--dim);
+      font-size: 11px;
+      padding: 10px 0;
+    }
+
+    .hub-hint.is-error {
+      color: #FF3333;
+    }
+
+    .hub-pin .hub-row {
+      gap: 10px;
+    }
+
     /* CRT 곡면 유리 느낌 — 데스크톱 모니터 모드 한정(전체화면/모바일 제외) */
     @media (min-width: 821px) {
       body:not(.fullscreen) .screen {
@@ -4682,7 +4993,11 @@
               <span class="cmd navtab" id="tabSsh" onclick="showView('ssh')">[ SSH ]</span>
               <span class="cmd navtab" id="tabDobis" onclick="showView('dobis')">[ 🤖 DOBIS ]</span>
               <span class="cmd navtab" id="tabBlog" onclick="showView('blog')">[ ✍️ BLOG ]</span>
-              <span class="cmd navtab" id="tabOrca" onclick="showView('orca')">[ 🐋 ORCA ]</span>
+              <!-- ORCA 비활성화(2026-09-18, 사용자 요청) — 삭제가 아니라 숨김만. showView 가
+                   TABS 를 id 로 돌기 때문에 엘리먼트 자체는 남겨둔다(제거하면 null 참조로 깨짐). -->
+              <span class="cmd navtab" id="tabOrca" onclick="showView('orca')" style="display:none">[ 🐋 ORCA ]</span>
+              <span class="cmd navtab" id="tabHub" onclick="showView('hub')">[ 🏠 HOME-HUB ]</span>
+              <span class="cmd navtab" id="tabMonitor" onclick="showView('monitor')">[ 📈 MONITOR ]</span>
               <span class="cmd navtab" id="tabGeo" onclick="openGeoWindow()">[ 🗺️ GEO ]</span>
               <span class="cmd navtab" id="tabTimes" onclick="openTimesWindow()">[ 📰 TIMES ]</span>
               <label class="navtab music-cb" title="음악 패널 토글"><input type="checkbox" id="musicToggleCb"
@@ -4765,10 +5080,14 @@
                     class="app-ico">🗂️</span><span class="app-label">WORKS</span></div>
                 <div class="app-card" onclick="showView('ssh')" title="호스트 SSH 터미널"><span
                     class="app-ico">🖥️</span><span class="app-label">SSH</span></div>
+                <!-- ORCA 비활성화(2026-09-18, 사용자 요청) — 삭제가 아니라 주석 처리만.
                 <div class="app-card" onclick="showView('orca')" title="Orca 데스크톱 원격 접속 (VPN 전용)"><span
                     class="app-ico">🐋</span><span class="app-label">ORCA</span></div>
+                -->
                 <div class="app-card" onclick="showView('dobis')" title="DOBIS 챗봇"><span class="app-ico">🤖</span><span
                     class="app-label">DOBIS</span></div>
+                <a class="app-card" href="https://doil.me/d_tools/ubiq/desktop" target="_blank" rel="noreferrer"
+                  title="UBIQ 데스크톱"><span class="app-ico">🪟</span><span class="app-label">UBIQ</span></a>
                 <div class="app-card" onclick="openGeoWindow()" title="지리 학습 도구"><span class="app-ico">🗺️</span><span
                     class="app-label">GEO</span></div>
                 <a class="app-card" href="https://doil.me/" target="_blank" rel="noreferrer" title="홈페이지 새 탭"><span
@@ -5061,6 +5380,43 @@
               </div>
             </div>
 
+            <!-- MONITOR 뷰 (§5-B O-5) — doil-observe Grafana 를 same-origin(/monitor/)으로 임베드.
+                 인증은 doil-gw auth_request → doil-sb /api/auth/monitor-check(HttpOnly 쿠키) -->
+            <div id="monitorView" class="hidden">
+              <div class="ssh-form">
+                <span class="muted">&gt; MONITOR · doil-gw 게이트웨이 (Grafana)</span>
+                <span class="cmd" onclick="monitorInit(true)">[ RELOAD ]</span>
+                <span class="cmd" onclick="window.open('/monitor/', '_blank', 'noopener')">[ 새 창 ]</span>
+                <span id="monitorStatus" class="muted"></span>
+              </div>
+              <iframe id="monitorFrame" title="Grafana" style="width:100%;height:78vh;border:1px solid currentColor;margin-top:8px;background:#111"></iframe>
+            </div>
+
+            <!-- HOME-HUB 뷰 (집 안 IoT — ubiq FastAPI(/d_tools/ubiq/api/*) 를 same-origin 으로
+                 직접 호출한다. iframe 임베드가 아니라 컴포넌트를 여기서 그린다. 기기 승인은
+                 ubiq 의 디바이스 쿠키(host-only)를 그대로 쓰므로, 이 호스트에서 한 번
+                 /d_tools/ubiq/desktop 으로 승인받은 기기라야 200 이 온다. -->
+            <div id="hubView" class="hidden">
+              <div class="hub-head">
+                <span class="muted">&gt; HOME-HUB · ubiq</span>
+                <span id="hubMeta" class="hub-meta"></span>
+                <span class="spacer"></span>
+                <span class="cmd" onclick="hubLoadState()">[ REFRESH ]</span>
+                <a class="cmd" href="/d_tools/ubiq/desktop" target="_blank" rel="noreferrer">[ UBIQ ↗ ]</a>
+              </div>
+              <div id="hubStats" class="hub-stats"></div>
+              <div id="hubScenes" class="hub-scenes"></div>
+              <div id="hubGrid" class="hub-grid"></div>
+              <div id="hubLogWrap" class="hub-log hidden">
+                <div class="hub-card-head">
+                  <span>실행 로그</span>
+                  <span class="spacer"></span>
+                  <span class="cmd" onclick="hubClearLogs()">[ CLEAR ]</span>
+                </div>
+                <ul id="hubLogList" class="hub-log-list"></ul>
+              </div>
+            </div>
+
             <!-- DOBIS 챗봇 뷰 (말풍선 + 우측 마스코트, 스크롤은 로그 내부) -->
             <div id="dobisView" class="hidden">
               <div class="dobis-bubble">
@@ -5185,6 +5541,29 @@
               </div>
               <div class="appwin-body">
                 <iframe id="jamiFrame" class="geo-frame" title="자미두수 명반"
+                  referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <div class="appwin-scan" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- ubiq 모바일 리모컨 윈도우 — HOME-HUB 카드의 [리모컨 →] 가 띄운다.
+                 크기는 폰(390×780)을 가정하고 고정한다(win-max 기본값을 주지 않음).
+                 src 는 **상대경로**다 — ubiq 쿠키가 host-only 라서 www/무www 를 절대경로로
+                 박으면 다른 기기로 취급돼 승인이 풀린다. frame-ancestors 'self' 도 동일 조건.
+                 CRT 틴트는 기본 끔 — ubiq 화면이 라이트 테마라 초록 필터가 씌면 읽기 어렵다. -->
+            <div id="ubiqWindow" class="appwin hidden"
+              style="left:calc(50% - 195px);top:4%;width:390px;height:780px;max-height:92%;">
+              <div class="appwin-bar" id="ubiqBar">
+                <span class="appwin-title">🏠 ubiq 리모컨</span>
+                <span class="appwin-btns">
+                  <span class="awb tint" id="ubiqTintBtn" onclick="ubiqTint()" title="CRT 톤 틴트">◐</span>
+                  <span class="awb" onclick="ubiqMin()" title="최소화">_</span>
+                  <span class="awb" onclick="ubiqMax()" title="전체화면 / 복원">▢</span>
+                  <span class="awb close" onclick="ubiqClose()" title="닫기">✕</span>
+                </span>
+              </div>
+              <div class="appwin-body">
+                <iframe id="ubiqFrame" class="geo-frame" title="ubiq 모바일 리모컨"
                   referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 <div class="appwin-scan" aria-hidden="true"></div>
               </div>
@@ -5953,6 +6332,49 @@
     }
     (function geoDrag() {   // 타이틀바 드래그(전체화면 아닐 때만)
       const w = document.getElementById('geoWindow'), bar = document.getElementById('geoBar');
+      if (!w || !bar) return;
+      let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
+      bar.addEventListener('mousedown', (e) => {
+        if (w.classList.contains('win-max') || e.target.closest('.awb')) return;
+        on = true; sx = e.clientX; sy = e.clientY; ol = w.offsetLeft; ot = w.offsetTop;
+        w.style.left = ol + 'px'; w.style.top = ot + 'px'; e.preventDefault();
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!on) return;
+        w.style.left = (ol + e.clientX - sx) + 'px';
+        w.style.top = Math.max(0, ot + e.clientY - sy) + 'px';
+      });
+      window.addEventListener('mouseup', () => { on = false; });
+    })();
+
+    // ===== ubiq 리모컨 윈도우 (HOME-HUB 카드의 [리모컨 →]) =====
+    // 기기를 바꿔 열면 src 를 다시 박는다 — ubiq 의 딥링크 계약
+    // (?device=<id>&view=remote&embed=1) 이 쿼리로만 기기를 고르기 때문.
+    let ubiqWinDevice = null;
+    function openUbiqWindow(deviceId) {
+      touchSession();
+      const w = document.getElementById('ubiqWindow'), f = document.getElementById('ubiqFrame');
+      const url = '/d_tools/ubiq/?view=remote&embed=1' + (deviceId ? '&device=' + encodeURIComponent(deviceId) : '');
+      if (f && (!f.getAttribute('src') || ubiqWinDevice !== (deviceId || null))) f.src = url;
+      ubiqWinDevice = deviceId || null;
+      w.classList.remove('hidden');
+    }
+    function ubiqMin() { document.getElementById('ubiqWindow').classList.add('hidden'); }
+    function ubiqMax() { document.getElementById('ubiqWindow').classList.toggle('win-max'); }
+    function ubiqClose() {
+      const w = document.getElementById('ubiqWindow'), f = document.getElementById('ubiqFrame');
+      w.classList.add('hidden'); w.classList.remove('win-max');
+      if (f) { f.src = 'about:blank'; f.removeAttribute('src'); }
+      ubiqWinDevice = null;
+      // 리모컨에서 조작한 결과를 HOME-HUB 카드에 반영한다.
+      if (hubInited) hubLoadState();
+    }
+    function ubiqTint() {
+      const w = document.getElementById('ubiqWindow'), b = document.getElementById('ubiqTintBtn');
+      const on = w.classList.toggle('tinted'); if (b) b.classList.toggle('on', on);
+    }
+    (function ubiqDrag() {
+      const w = document.getElementById('ubiqWindow'), bar = document.getElementById('ubiqBar');
       if (!w || !bar) return;
       let sx = 0, sy = 0, ol = 0, ot = 0, on = false;
       bar.addEventListener('mousedown', (e) => {
@@ -7522,8 +7944,8 @@
     }
 
     // ===== 뷰 전환 (한 번에 한 스크롤 영역만) =====
-    const VIEWS = { home: 'homeView', registry: 'registryView', ssh: 'sshView', dobis: 'dobisView', blog: 'blogView', orca: 'orcaView' };
-    const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis', blog: 'tabBlog', orca: 'tabOrca' };
+    const VIEWS = { home: 'homeView', registry: 'registryView', ssh: 'sshView', dobis: 'dobisView', blog: 'blogView', orca: 'orcaView', hub: 'hubView', monitor: 'monitorView' };
+    const TABS = { home: 'tabHome', registry: 'tabRegistry', ssh: 'tabSsh', dobis: 'tabDobis', blog: 'tabBlog', orca: 'tabOrca', hub: 'tabHub', monitor: 'tabMonitor' };
     function showView(v) {
       touchSession();   // 페이지 이동 = 활동 → 세션 갱신
       try { localStorage.setItem('dobisLastView', v); } catch (e) { }   // 새로고침 시 마지막 뷰 복원용
@@ -7535,6 +7957,334 @@
       if (v === 'dobis') { ensureSocket(); _restoreDraft(); setChatName(); requestAnimationFrame(() => { const i = document.getElementById('dobisInput'); if (i) i.focus(); }); }
       if (v === 'blog') blogInit();
       if (v === 'orca') orcaInit();
+      if (v === 'hub') hubInit();
+      if (v === 'monitor') monitorInit();
+    }
+
+    // ===== MONITOR (§5-B O-5) — 관리자 토큰을 /monitor/ 전용 HttpOnly 쿠키로 옮긴 뒤 Grafana 를 띄운다 =====
+    let monitorLoaded = false;
+    async function monitorInit(force) {
+      const st = document.getElementById('monitorStatus');
+      if (monitorLoaded && !force) return;
+      st.textContent = 'auth…';
+      try {
+        const r = await fetch(API + '/auth/monitor-session', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+      } catch (e) { st.textContent = '인증 실패: ' + e.message; return; }
+      document.getElementById('monitorFrame').src = '/monitor/d/doil-gw/?orgId=1&kiosk';
+      monitorLoaded = true;
+      st.textContent = '';
+    }
+
+    // ===== HOME-HUB (집 안 IoT — ubiq FastAPI 를 same-origin 으로 직접 호출) =====
+    // 임베드가 아니라 컴포넌트 배선이다: /api/remote/{devices,state,summary,scenes,action,scene}
+    // 계약만 쓰고 UI 는 여기서 그린다. 허용목록·confirm·감사로그는 서버(ubiq)에 그대로 걸린다.
+    // 전원은 항상 power_toggle 로 보낸다 — 화면 캐시로 !on 을 계산하면 캐시가 비었을 때
+    // 늘 같은 값만 나가서 "켜기는 되는데 끄기가 안 되는" 증상이 난다(ubiq 쪽 실측 이력).
+    const HUB_BASE = '/d_tools/ubiq';
+    const HUB_RUNMODE = { cool: '냉방', heat: '난방', fan: '송풍', dry: '제습' };
+    const HUB_FAN = { low: '약풍', medium: '중풍', high: '강풍', auto: '자동' };
+    let hubDevices = [], hubState = {}, hubScenes = [], hubSummary = null;
+    let hubStateLoaded = false, hubBusy = false, hubInited = false;
+    let hubLogs = [], hubLogSeq = 0;
+    // 온도는 서버 setpoint 를 그대로 쓰되, 연타 시 응답을 기다리지 않도록 화면값을 따로 둔다.
+    const hubTempDraft = {};
+
+    async function hubApi(path, options) {
+      options = options || {};
+      const res = await fetch(HUB_BASE + path, Object.assign({ credentials: 'same-origin' }, options, {
+        headers: Object.assign({ 'Content-Type': 'application/json', 'X-Ubiq-Request': '1' }, options.headers || {})
+      }));
+      const text = await res.text();
+      let body; try { body = text ? JSON.parse(text) : {}; } catch (e) { body = text; }
+      if (!res.ok) {
+        const d = body && typeof body === 'object' ? body.detail : null;
+        const err = new Error(typeof d === 'string' ? d : ('HTTP ' + res.status));
+        err.status = res.status;
+        throw err;
+      }
+      return body;
+    }
+
+    function hubInit() {
+      if (hubInited) { hubLoadState(); return; }
+      hubInited = true;
+      document.getElementById('hubGrid').innerHTML = '<div class="hub-hint">불러오는 중…</div>';
+      (async () => {
+        try {
+          const out = await hubApi('/api/remote/devices');
+          hubDevices = out.devices || [];
+        } catch (e) {
+          hubInited = false;   // 다음에 탭을 다시 열면 재시도한다
+          // 승인 안 된 기기(403)는 실패 이유가 분명하다 — 안내로 끝내지 않고 그 자리에서
+          // PIN 을 등록할 수 있게 한다(루트 관리자만).
+          document.getElementById('hubGrid').innerHTML = e.status === 403
+            ? hubPinForm()
+            : '<div class="hub-hint is-error">기기 목록을 불러오지 못했습니다: ' + escHtml(e.message) + '</div>';
+          return;
+        }
+        try {
+          const sc = await hubApi('/api/remote/scenes');
+          hubScenes = sc.scenes || [];
+        } catch (e) { /* 씬은 없어도 화면이 동작해야 한다 */ }
+        hubRender();
+        await hubLoadState();
+      })();
+    }
+
+    // 미승인 브라우저용 승인 폼. 코드는 ubiq 화면(/d_tools/ubiq/)에 떠 있는 6자리
+    // 승인 코드다 — 그걸 그대로 옮겨 적으면 루트 관리자 권한으로 허용목록에 넣는다.
+    // 승인 자체는 ubiq 이 하고(doil-sb 가 토큰으로 대신 호출), 브라우저는 토큰을 모른다.
+    function hubPinForm() {
+      if (myRole !== 'root') {
+        return '<div class="hub-hint is-error">이 브라우저는 ubiq 승인을 받지 않았습니다 — 기기 승인은 루트 관리자만 할 수 있습니다.</div>';
+      }
+      return '<div class="hub-pin">'
+        + '<div class="hub-hint">이 브라우저는 ubiq 승인을 받지 않았습니다. [ UBIQ ↗ ] 로 접속해 화면에 표시된 승인 코드를 확인한 뒤 아래에 입력하세요.</div>'
+        + '<div class="hub-row">'
+        + '<input id="hubPin" maxlength="12" placeholder="예: 23JM4C" autocomplete="off" spellcheck="false"'
+        + ' style="width:130px;text-transform:uppercase;letter-spacing:.12em" onkeydown="if(event.key===\'Enter\')hubApprove()">'
+        + '<span class="cmd" onclick="hubApprove()">[ 등록 ]</span>'
+        + '<span id="hubPinMsg" class="hub-hint" style="padding:0"></span>'
+        + '</div></div>';
+    }
+
+    async function hubApprove() {
+      const el = document.getElementById('hubPin'), msg = document.getElementById('hubPinMsg');
+      const code = (el.value || '').trim().toUpperCase();
+      if (!code) { el.focus(); return; }
+      msg.className = 'hub-hint'; msg.style.padding = '0'; msg.textContent = '승인 중…';
+      try {
+        const r = await fetch(API + '/ubiq/approve', { method: 'POST', headers: H(), body: JSON.stringify({ code: code }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { msg.className = 'hub-hint is-error'; msg.textContent = '✗ ' + (j.message || ('HTTP ' + r.status)); return; }
+        msg.textContent = '✓ 승인됨 — 기기 목록을 불러옵니다…';
+        hubInited = false;
+        hubInit();
+      } catch (e) {
+        msg.className = 'hub-hint is-error'; msg.textContent = '✗ ' + e.message;
+      }
+    }
+
+    async function hubLoadState() {
+      if (!hubInited) return;
+      try {
+        const [st, sum] = await Promise.all([
+          hubApi('/api/remote/state'),
+          hubApi('/api/remote/summary').catch(() => null)
+        ]);
+        hubState = st.state || {};
+        hubStateLoaded = true;
+        hubSummary = sum;   // null 이면 "요약을 불러오지 못했습니다" 를 띄운다
+      } catch (e) {
+        // 상태 조회 실패를 삼키면 조작 결과가 엉뚱해진다 — 카드에 그대로 드러낸다.
+      }
+      hubRender();
+    }
+
+    function hubCounts() {
+      let total = 0, on = 0;
+      for (const d of hubDevices) {
+        if (d.type === 'commax') {
+          const items = (hubState[d.id] || {}).items || {};
+          for (const k of Object.keys(items)) { total++; if (items[k] && items[k].power === 'on') on++; }
+        } else {
+          total++;
+          const st = hubState[d.id] || {};
+          if (st.power === 'on' || (st.power == null && st.volume != null)) on++;
+        }
+      }
+      return { total, on };
+    }
+
+    function hubRender() {
+      const c = hubCounts();
+      document.getElementById('hubMeta').textContent = c.total ? ('기기 ' + c.total + ' · 켜짐 ' + c.on) : '';
+      hubRenderStats(c);
+      hubRenderScenes();
+      hubRenderGrid();
+      hubRenderLogs();
+    }
+
+    function hubRenderStats(c) {
+      const el = document.getElementById('hubStats');
+      if (!hubStateLoaded && !hubSummary) { el.innerHTML = '<div class="hub-stat"><span class="hub-stat-val">…</span><span class="hub-stat-key">불러오는 중</span></div>'; return; }
+      if (!hubSummary) { el.innerHTML = '<div class="hub-stat is-error"><span class="hub-stat-val">—</span><span class="hub-stat-key">요약을 불러오지 못했습니다</span></div>'; return; }
+      if (hubSummary.error) { el.innerHTML = '<div class="hub-stat is-error"><span class="hub-stat-val">—</span><span class="hub-stat-key">코맥스 조회 실패 · ' + escHtml(hubSummary.error) + '</span></div>'; return; }
+      let h = '';
+      for (const t of (hubSummary.temps || [])) {
+        h += '<div class="hub-stat"><span class="hub-stat-val">' + escHtml(String(t.value)) + '<small>°C</small></span><span class="hub-stat-key">' + escHtml(t.label) + '</span></div>';
+      }
+      if (hubSummary.power_w != null) {
+        h += '<div class="hub-stat"><span class="hub-stat-val">' + escHtml(String(hubSummary.power_w)) + '<small>W</small></span><span class="hub-stat-key">대기전력</span></div>';
+      }
+      h += '<div class="hub-stat"><span class="hub-stat-val">' + c.on + '<small>/' + c.total + '</small></span><span class="hub-stat-key">켜짐</span></div>';
+      if (hubSummary.sensor) {
+        const ok = hubSummary.sensor === 'undetected';
+        h += '<div class="hub-stat"><span class="hub-stat-val' + (ok ? '' : ' alert') + '">' + (ok ? '이상 없음' : '감지') + '</span><span class="hub-stat-key">방범</span></div>';
+      }
+      el.innerHTML = h;
+    }
+
+    function hubRenderScenes() {
+      const el = document.getElementById('hubScenes');
+      el.innerHTML = hubScenes.map((sc, i) =>
+        '<button type="button" class="hub-scene" ' + (hubBusy ? 'disabled ' : '') + 'onclick="hubRunScene(' + i + ')">' + escHtml(sc.label) + '</button>'
+      ).join('');
+    }
+
+    function hubRenderGrid() {
+      document.getElementById('hubGrid').innerHTML = hubDevices.map(d =>
+        d.type === 'commax' ? hubCommaxCard(d) : hubDeviceCard(d)
+      ).join('');
+    }
+
+    function hubDeviceCard(d) {
+      const st = hubState[d.id] || {};
+      const failed = !!st.error;
+      const pending = !hubStateLoaded && !failed;
+      const on = st.power === 'on';
+      const locked = hubBusy || pending || failed;
+      const dis = locked ? 'disabled ' : '';
+      const bits = [];
+      if (st.power) bits.push(on ? '켜짐' : '꺼짐');
+      if (st.volume != null) bits.push('음량 ' + st.volume);
+      if (st.app) bits.push(String(st.app));
+      const step = d.type === 'cast' ? 5 : 1;
+      const L = d.layout || {};
+
+      let rows = '<div class="hub-row">';
+      if (L.power) rows += '<button type="button" class="hub-btn pow' + (on ? ' on' : '') + '" ' + dis + 'title="' + (on ? '끄기' : '켜기') + '" onclick="hubAct(\'' + d.id + '\',\'power_toggle\')">⏻</button>';
+      if (L.volume) {
+        rows += '<span class="hub-label">음량</span>'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="음량 내리기" onclick="hubAct(\'' + d.id + '\',\'volume\',' + (-step) + ')">−</button>'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="음량 올리기" onclick="hubAct(\'' + d.id + '\',\'volume\',' + step + ')">＋</button>'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="음소거" onclick="hubAct(\'' + d.id + '\',\'mute\',' + (d.type === 'cast' ? 'true' : 'null') + ')">🔇&#xFE0E;</button>';
+      }
+      // 방향키·채널·키 같은 전체 리모컨은 여기서 복제하지 않는다 — ubiq 모바일 화면이
+      // 정본이므로 폰 크기 모달(iframe)로 그 기기의 리모컨을 띄운다.
+      rows += '<button type="button" class="cmd hub-link" onclick="openUbiqWindow(\'' + d.id + '\')">[ 리모컨 → ]</button>';
+      rows += '</div>';
+      if (L.media) {
+        rows += '<div class="hub-row">'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="이전" onclick="hubAct(\'' + d.id + '\',\'prev\')">⏮&#xFE0E;</button>'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="재생/일시정지" onclick="hubAct(\'' + d.id + '\',\'play\')">⏯&#xFE0E;</button>'
+          + '<button type="button" class="hub-btn" ' + dis + 'title="다음" onclick="hubAct(\'' + d.id + '\',\'next\')">⏭&#xFE0E;</button>'
+          + '</div>';
+      }
+      return '<article class="hub-card' + (failed ? ' is-failed' : '') + '">'
+        + '<div class="hub-card-head"><span class="hub-dot' + (failed ? ' failed' : (on || st.volume != null) ? ' on' : '') + '"></span>'
+        + '<span>' + escHtml(d.name) + '</span>'
+        + '<span class="hub-card-state' + (failed ? ' is-error' : '') + '">' + (pending ? '불러오는 중…' : failed ? '연결 실패' : escHtml(bits.join(' · '))) + '</span></div>'
+        + rows + '</article>';
+    }
+
+    function hubCommaxCard(d) {
+      const st = hubState[d.id] || {};
+      const items = st.items || {};
+      const failed = !!st.error || (hubStateLoaded && !st.items);
+      const pending = !hubStateLoaded && !failed;
+      const locked = hubBusy || pending || failed;
+      const dis = locked ? 'disabled ' : '';
+      const anyOn = Object.keys(items).some(k => items[k] && items[k].power === 'on');
+
+      const rows = (d.items || []).map(item => {
+        const s = items[item.id] || {};
+        const on = s.power === 'on';
+        let mid;
+        if (item.kind === 'thermo') {
+          const lo = item.temp_min != null ? item.temp_min : 5;
+          const hi = item.temp_max != null ? item.temp_max : 40;
+          const sp = Number(s.thermostatSetpoint);
+          const key = d.id + '.' + item.id;
+          if (Number.isFinite(sp)) hubTempDraft[key] = sp;
+          const cur = hubTempDraft[key];
+          const meta = [HUB_RUNMODE[s.thermostatRunMode], HUB_FAN[s.fanSpeed]].filter(Boolean).join(' · ');
+          // 값을 모를 때 temp_min 을 보여주면(에어컨 18 / 보일러 5) 실제 설정처럼 읽힌다 → '—'.
+          const unknown = pending || failed || cur == null;
+          mid = '<span class="hub-temp">'
+            + '<button type="button" class="hub-btn sm" ' + (locked || unknown ? 'disabled ' : '') + 'title="온도 내리기" onclick="hubBumpTemp(\'' + d.id + '\',\'' + item.id + '\',-1,' + lo + ',' + hi + ')">−</button>'
+            + '<span class="hub-temp-val">' + (unknown ? '—' : (cur + '°C')) + (!unknown && meta ? '<small>' + escHtml(meta) + '</small>' : '') + '</span>'
+            + '<button type="button" class="hub-btn sm" ' + (locked || unknown ? 'disabled ' : '') + 'title="온도 올리기" onclick="hubBumpTemp(\'' + d.id + '\',\'' + item.id + '\',1,' + lo + ',' + hi + ')">＋</button>'
+            + '</span>';
+        } else {
+          mid = '<span class="hub-sub-val">' + (pending ? '…' : failed ? '—' : on ? '켜짐' : '꺼짐') + '</span>';
+        }
+        return '<li class="hub-sub-row"><span class="hub-sub-name">' + escHtml(item.name) + '</span>' + mid
+          + '<button type="button" class="hub-btn pow' + (on ? ' on' : '') + '" ' + dis
+          + 'title="' + (on ? '끄기' : '켜기') + '" onclick="hubAct(\'' + d.id + '\',\'power_toggle\',null,\'' + item.id + '\')">⏻</button></li>';
+      }).join('');
+
+      return '<article class="hub-card span2' + (failed ? ' is-failed' : '') + '">'
+        + '<div class="hub-card-head"><span class="hub-dot' + (failed ? ' failed' : anyOn ? ' on' : '') + '"></span>'
+        + '<span>' + escHtml(d.name) + '</span>'
+        + ((pending || failed) ? '<span class="hub-card-state' + (failed ? ' is-error' : '') + '">' + (pending ? '불러오는 중…' : '연결 실패') + '</span>' : '')
+        + '</div><ul class="hub-sub">' + rows + '</ul></article>';
+    }
+
+    function hubBumpTemp(device, item, delta, lo, hi) {
+      const key = device + '.' + item;
+      const next = Math.max(lo, Math.min(hi, (hubTempDraft[key] || lo) + delta));
+      hubTempDraft[key] = next;
+      hubRenderGrid();
+      hubAct(device, 'temperature', next, item);
+    }
+
+    async function hubAct(device, action, value, item) {
+      hubBusy = true;
+      const label = (hubDevices.find(d => d.id === device) || {}).name || device;
+      const logId = hubStartLog(label + (item ? ' · ' + item : '') + ' — ' + action + ' 전송 중…');
+      hubRender();
+      try {
+        const body = { device: device, action: action, value: value === undefined ? null : value };
+        if (item) body.item = item;
+        const out = await hubApi('/api/remote/action', { method: 'POST', body: JSON.stringify(body) });
+        hubFinishLog(logId, out.result || '완료');
+        if (action.indexOf('power') === 0 || action === 'temperature') setTimeout(hubLoadState, 2500);
+      } catch (e) {
+        hubFinishLog(logId, '오류: ' + e.message, true);
+      } finally {
+        hubBusy = false;
+        hubRender();
+      }
+    }
+
+    async function hubRunScene(idx) {
+      const sc = hubScenes[idx];
+      if (!sc) return;
+      hubBusy = true;
+      const logId = hubStartLog('씬 ' + sc.label + ' 실행 중…');
+      hubRender();
+      try {
+        const out = await hubApi('/api/remote/scene', { method: 'POST', body: JSON.stringify({ scene_id: sc.id }) });
+        hubFinishLog(logId, out.result || (sc.label + ' 실행됨'));
+        setTimeout(hubLoadState, 3000);
+      } catch (e) {
+        hubFinishLog(logId, '오류: ' + e.message, true);
+      } finally {
+        hubBusy = false;
+        hubRender();
+      }
+    }
+
+    // 실행을 시작할 때 줄을 먼저 만들고, 끝나면 같은 줄을 결과로 바꾼다(최근 12건).
+    function hubStartLog(text) {
+      const id = ++hubLogSeq;
+      hubLogs = [{ id: id, ts: Date.now(), text: text, pending: true }].concat(hubLogs).slice(0, 12);
+      return id;
+    }
+    function hubFinishLog(id, text, error) {
+      hubLogs = hubLogs.map(l => l.id === id ? { id: id, ts: Date.now(), text: text, error: error, pending: false } : l);
+    }
+    function hubClearLogs() { hubLogs = []; hubRenderLogs(); }
+    function hubRenderLogs() {
+      const wrap = document.getElementById('hubLogWrap');
+      wrap.classList.toggle('hidden', hubLogs.length === 0);
+      document.getElementById('hubLogList').innerHTML = hubLogs.map(l =>
+        '<li class="' + (l.error ? 'is-error' : l.pending ? 'is-pending' : '') + '">'
+        + '<span class="hub-log-ts">' + new Date(l.ts).toLocaleTimeString('ko-KR', { hour12: false }) + '</span>'
+        + '<span>' + escHtml(l.text) + '</span></li>'
+      ).join('');
     }
 
     // ===== ORCA (Orca 데스크톱 원격 접속 — /orca 네임스페이스 경유 E2EE relay) =====
@@ -8332,8 +9082,14 @@
     let dobisSock = null, dobisModel = 'sonnet', streamBubble = null, typer = null, dobisThink = false, dobisEffort = 'medium', _dobisCancelled = false;
     let dobisBusy = false, _dobisT0 = 0, _dobisLen = 0, _dobisTick = null, _dobisWatch = null;
     let _chatAllMsgs = [], _chatLoaded = 0;
-    let _chatHeadMsgs = [];   // DOM에 안 올라온 이전 대화 — botSend가 _chatAllMsgs를 비워도 저장 시 유실 방지
+    let _chatHeadMsgs = [];   // 렌더 최적화 전용(DOM 트리밍으로 떼어낸 노드 임시 보관) — 저장 정확성과 무관. 진실의 원천은 _chatMsgs
     const _CHAT_PAGE = 30;
+    // ===== 2단계: _chatMsgs 를 진실의 원천으로 — DOM 순회 대신 이 배열이 md/append 의 기준 =====
+    // 원소: { role:'user'|'bot', text, ts, model?, effort?, think?, emo?, tokens? }  (role 은 저장/전송 경계에서 항상 user/bot)
+    let _chatMsgs = [];
+    let _chatCreateInFlight = false;   // 새 채팅 첫 chat:append(create:true) 응답 대기 중 — slug 확정 전 중복 create 방지
+    let _chatCreateGen = 0;            // create 요청 시점의 _chatGen — 응답 도착 시 세대가 바뀌었으면(새채팅/불러오기 전환) 폐기
+    let _chatAppendQueue = [];         // create in-flight 중 쌓인 메시지 — slug 확정 후 순서대로 append
     const _dobisQueue = [];  // {msg, img, hidden?} — busy 중 입력/생성된 메시지 큐(hidden=화면 비노출 메타, 예: 주사위 결과)
     const DOBIS_WATCH_MS = 210000;   // 응답 무소식 시 UI 가 영원히 매달리지 않도록 하는 백스톱(워커 180s 타임아웃보다 길게)
     let dobisSession = 'dob-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -8341,62 +9097,106 @@
 
     function newSessionId() { return 'dob-' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
     function setChatName() { const el = document.getElementById('chatName'); const t = chatTitle ? ('저장됨: ' + chatTitle) : '(미저장)'; el.textContent = t; el.title = t; }
-    function buildChatMd(title) {
+    // md 렌더는 _chatMsgs(진실의 원천)에서 만든다 — DOM 순회 없음. 서버 to_md() 와 동일한 포맷을 재현.
+    function _msgsToMd(title, msgs) {
       const lines = ['# ' + title, '', '> DOBIS chat · ' + new Date().toLocaleString('ko-KR'), ''];
-      // 아직 DOM에 올라오지 않은 이전 대화를 먼저 추가 — tail만 로드된 채 저장해도 유실 방지
-      // (_chatAllMsgs는 botSend가 비우므로 별도 보관한 _chatHeadMsgs 사용)
-      _chatHeadMsgs.forEach(msg => {
-        lines.push((msg.role === 'you' ? '**YOU:** ' : '**DOBIS:** ') + msg.text, '');
-      });
-      document.querySelectorAll('#dobisLog .dobis-msg').forEach((m) => {
-        const you = m.classList.contains('you');
-        const txt = you ? m.textContent.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim() : (m.dataset.raw || '');
-        if (!txt || txt.startsWith('──')) return;   // 불러오기 헤더·빈 줄 스킵
-        lines.push((you ? '**YOU:** ' : '**DOBIS:** ') + txt, '');
+      (msgs || []).forEach(msg => {
+        lines.push((msg.role === 'user' ? '**YOU:** ' : '**DOBIS:** ') + msg.text, '');
       });
       return lines.join('\n');
+    }
+    function buildChatMd(title) { return _msgsToMd(title, _chatMsgs); }
+    // md 원문 -> [{role:'user'|'bot',text}] — loadChatMd 정규식의 유일한 구현(구버전 초안/서버 폴백 공용, 중복 금지)
+    function _mdToMsgs(md) {
+      const body = (md || '').replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
+      const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
+      const out = [];
+      let m;
+      while ((m = re.exec(body)) !== null) {
+        const txt = m[2].replace(/\s+$/, '');
+        if (txt) out.push({ role: m[1] === 'YOU' ? 'user' : 'bot', text: txt });
+      }
+      return out;
+    }
+    function _autoChatTitle() {
+      const first = _chatMsgs.find(m => m.role === 'user');
+      return (first && String(first.text || '').slice(0, 40)) || 'DOBIS chat';
+    }
+    // _chatMsgs 에 메시지 하나를 기록 + (복원 리플레이 중이 아니면) 초안저장·서버 append 를 트리거
+    function _chatRecord(role, text, meta) {
+      if (!text) return null;
+      const msg = Object.assign({ role: role, text: text, ts: new Date().toISOString() }, meta || {});
+      _chatMsgs.push(msg);
+      if (!_restoring) { _saveDraft(); _chatEmitAppend(msg); }
+      return msg;
+    }
+    // 서버에 chat:append emit — slug 가 아직 없으면(첫 메시지) create:true 로 확정 요청, 확정 전엔 큐잉해 중복 create 방지
+    function _chatEmitAppend(msg) {
+      const payload = { msg: msg };
+      if (!chatTitle) {
+        if (_chatCreateInFlight) { _chatAppendQueue.push(msg); return; }
+        payload.title = _autoChatTitle();
+        payload.create = true;
+        _chatCreateInFlight = true;
+        _chatCreateGen = _chatGen;
+      } else {
+        payload.slug = chatTitle;
+      }
+      ensureSocket().emit('chat:append', payload);
     }
     // ===== 대화 초안 자동저장(localStorage) — 새로고침 복구용. '새 채팅' 전엔 보존, 새 채팅 시 클리어 =====
     // username별 키 분리: 서브관리자끼리 초안이 섞이지 않도록. myName은 login() 완료 후 설정됨.
     function getDraftKey() { return 'dobisChatDraft' + (myName ? '_' + myName : ''); }
     let _restoring = false;
-    let _pendingRestoreMd = '';   // 복원 직후 다음 메시지에 1회 실어 워커 맥락 재주입(세션 유실 대비)
+    let _pendingRestoreMsgs = [];   // 복원 직후 다음 메시지에 1회 실어 워커 맥락 재주입(세션 유실 대비) — 전송 시 restore_md 문자열로 렌더
+    const _DRAFT_MAX_MSGS = 200;    // 초안은 최근 N개만 보관(용량 절감 — 최대 채팅 391개/272KB를 매턴 통째로 쓰지 않도록).
+                                     // 391개보다 작아 일부 절단될 수 있으나, 서버가 진본(jsonl)을 append로 이미 갖고 있으므로
+                                     // 초안은 '새로고침 직후 화면 복구'용 캐시일 뿐 — 손실은 새로고침 시 앞부분 미표시로만 나타난다.
     function _saveDraft() {
       if (_restoring) return;
       try {
-        if (!document.querySelector('#dobisLog .dobis-msg')) { localStorage.removeItem(getDraftKey()); return; }
-        localStorage.setItem(getDraftKey(), JSON.stringify({ md: buildChatMd(chatTitle || ''), title: chatTitle, ts: Date.now() }));
+        if (!_chatMsgs.length) { localStorage.removeItem(getDraftKey()); return; }
+        const msgs = _chatMsgs.length > _DRAFT_MAX_MSGS ? _chatMsgs.slice(-_DRAFT_MAX_MSGS) : _chatMsgs;
+        localStorage.setItem(getDraftKey(), JSON.stringify({ v: 2, msgs: msgs, title: chatTitle, ts: Date.now() }));
       } catch (e) { }
     }
     function _restoreDraft() {
       const log = document.getElementById('dobisLog');
       if (!log || log.querySelector('.dobis-msg')) return false;   // 이미 내용 있으면 복원 안 함
       let d; try { d = JSON.parse(localStorage.getItem(getDraftKey()) || 'null'); } catch (e) { return false; }
-      if (!d || !d.md) return false;
+      if (!d) return false;
+      // v2(배열) 우선, 없으면 구버전(v1, md 문자열) 폴백 — 사용자 브라우저의 기존 초안을 깨지 않는다
+      const msgs = Array.isArray(d.msgs) ? d.msgs : (d.md ? _mdToMsgs(d.md) : null);
+      if (!msgs || !msgs.length) return false;
       _restoring = true;
       try {
-        const body = d.md.replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
-        const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
-        let m, any = false;
-        while ((m = re.exec(body)) !== null) {
-          const txt = m[2].replace(/\s+$/, ''); if (!txt) continue; any = true;
-          dobisAppend(m[1] === 'YOU' ? 'you' : 'bot', txt);
-        }
-        if (any) { chatTitle = d.title || ''; setChatName(); log.scrollTop = log.scrollHeight; _pendingRestoreMd = d.md; }
-        return any;
+        _chatMsgs = msgs.slice();
+        const frag = document.createDocumentFragment();
+        msgs.forEach(m => frag.appendChild(_makeMsgEl(m.role, m.text)));
+        log.appendChild(frag);
+        chatTitle = d.title || '';
+        setChatName();
+        log.scrollTop = log.scrollHeight;
+        _pendingRestoreMsgs = msgs.slice();
       } finally { _restoring = false; }
+      // 복원 직후는 예외 경로 — 전체를 한 번 chat:save 로 서버와 동기화하고, 이후는 다시 턴당 chat:append
+      _saveAuto = true;
+      ensureSocket().emit('chat:save', { title: chatTitle || _autoChatTitle(), md: buildChatMd(chatTitle || ''), create: !chatTitle });
+      return true;
     }
     async function dobisNewChat() {
-      _autoSaveChat();   // 남은 미저장분(초안 복원 직후 등) 마지막 반영 — 평소엔 턴마다 이미 저장됨
+      // 턴마다 이미 chat:append 로 저장돼 있으므로 '떠나기 전 마지막 flush' 는 필요 없다.
+      // _chatGen++ 로 세대를 올려, 아직 응답 안 온 create-in-flight 콜백이 이 새 채팅의 chatTitle 을 오염시키지 않게 한다.
       try { localStorage.removeItem(getDraftKey()); } catch (e) { }   // 초안 비움
-      _pendingRestoreMd = '';   // 복원 대기 맥락도 폐기
+      _pendingRestoreMsgs = [];   // 복원 대기 맥락도 폐기
       setDobisBusy(false); stopDobisTimers(); dobisStatus(''); _dobisCancelled = true;   // 진행 중 응답의 잔여 delta/done 무시
       // 워커 상주 claude 세션은 (model,game,think) 키라 브라우저가 sid 만 바꿔선 맥락이 안 끊긴다.
       // 소켓을 끊으면 이 신호가 flush 전에 유실될 수 있으므로, 연결을 유지한 채 'newchat' 으로 워커 세션을 초기화한다.
       const _s = ensureSocket();
       try { _s && _s.emit('newchat', { sessionId: dobisSession }); } catch (e) { }
       dobisSession = newSessionId(); chatTitle = ''; streamBubble = null;
-      _chatAllMsgs = []; _chatLoaded = 0; _chatHeadMsgs = []; _chatGen++;
+      _chatAllMsgs = []; _chatLoaded = 0; _chatHeadMsgs = []; _chatMsgs = []; _chatGen++;
+      _chatCreateInFlight = false; _chatAppendQueue = [];
       document.getElementById('dobisLog').innerHTML = '';
       document.getElementById('chatList').classList.add('hidden');
       hideDomoji(); setChatName();
@@ -8458,34 +9258,19 @@
     }
 
     async function dobisSaveChat() {
-      if (!document.querySelector('#dobisLog .dobis-msg')) { flash('저장할 대화가 없습니다', false); return; }
+      if (!_chatMsgs.length) { flash('저장할 대화가 없습니다', false); return; }
       let title = chatTitle;
       if (!title) {
-        const first = (document.querySelector('#dobisLog .dobis-msg.you') || {}).textContent || '';
-        title = await dlgPrompt('채팅 제목을 입력하세요', first.replace(/^YOU:\s?/, '').slice(0, 40) || 'DOBIS chat', '채팅 저장');
+        title = await dlgPrompt('채팅 제목을 입력하세요', _autoChatTitle(), '채팅 저장');
         if (!title) return;
       }
       _saveAuto = false;
       ensureSocket().emit('chat:save', { title, md: buildChatMd(title) });
     }
-    // ===== 서버 자동 저장 — 새 채팅은 첫 발화에 자동 생성, 이후 턴마다 같은 파일에 덮어쓰기 =====
-    let _saveInFlight = 0;    // 마지막 emit 시각(ms). 응답 수신 시 0 — 응답 전 중복 create 방지
-    let _saveDirty = false;   // in-flight 중 새 변경 발생 → 응답 후 재저장
-    let _saveAuto = false;    // 마지막 저장이 자동인지(성공 플래시 생략용)
-    let _chatGen = 0;         // 새 채팅/불러오기 세대 — 늦게 도착한 chat:saved가 새 채팅 제목을 오염시키지 않게
-    let _saveGen = 0;
-    function _autoSaveChat() {
-      if (_restoring) return;
-      if (!document.querySelector('#dobisLog .dobis-msg')) return;
-      if (_saveInFlight && Date.now() - _saveInFlight < 10000) { _saveDirty = true; return; }
-      let title = chatTitle;
-      if (!title) {
-        const first = (document.querySelector('#dobisLog .dobis-msg.you') || {}).textContent || '';
-        title = first.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim().slice(0, 40) || 'DOBIS chat';
-      }
-      _saveInFlight = Date.now(); _saveDirty = false; _saveAuto = true; _saveGen = _chatGen;
-      ensureSocket().emit('chat:save', { title, md: buildChatMd(title), create: !chatTitle });
-    }
+    // ===== 서버 저장 — 평소엔 턴마다 _chatRecord()→chat:append 로 이미 저장됨(위 참조).
+    // chat:save(전체 재작성)는 제목 지정 저장(dobisSaveChat)·초안 복원 직후 같은 예외 경로에만 쓴다. =====
+    let _saveAuto = false;    // 마지막 chat:save 가 자동(복원 직후)인지 — 성공 플래시 생략용
+    let _chatGen = 0;         // 새 채팅/불러오기 세대 — 늦게 도착한 chat:appended/chat:saved 응답이 새 채팅을 오염시키지 않게
     function dobisListChats() {
       const box = document.getElementById('chatList');
       if (!box.classList.contains('hidden')) { box.classList.add('hidden'); return; }
@@ -9137,7 +9922,7 @@
         d.dataset.raw = text;
       }
       log.appendChild(d); log.scrollTop = log.scrollHeight;
-      if (role === 'you') { _saveDraft(); _autoSaveChat(); }   // 유저 발화 즉시 초안+서버 저장(응답 실패해도 입력 보존)
+      if (role === 'you') _chatRecord('user', text, {});   // 유저 발화 즉시 _chatMsgs 기록 + 초안/서버 append(응답 실패해도 입력 보존)
       return d;
     }
     function setBotBubble(bubble, text, live) {
@@ -9386,7 +10171,7 @@
     function dobisFail(m) {
       stopTyper(); _stopStream();
       if (streamBubble) { streamBubble.textContent = 'DOBIS: (' + m + ')'; streamBubble = null; }
-      else dobisAppend('bot', '(' + m + ')');
+      else { dobisAppend('bot', '(' + m + ')'); _chatRecord('bot', '(' + m + ')', {}); }
       setDobisBusy(false); stopDobisTimers(); dobisStatus('⚠ ' + m);
     }
     // 감정/HUD 태그 제거: 완성 [emo:NAME]·[hud]…[/hud] + 스트리밍 중 말미의 미완성 조각
@@ -9582,18 +10367,37 @@
         const log = document.getElementById('dobisLog');
         if (log) log.scrollTop = log.scrollHeight;
       });
-      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _saveDraft(); _autoSaveChat(); _trimLiveChat(); const _fmtTok = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k' : String(n); const _tk = d && d.tokens; const _statTok = (_tk && (_tk.out || _tk.in)) ? _fmtTok((_tk.out || 0) + (_tk.in || 0)) + ' Tokens' : ((d && d.text) || '').length + '자'; dobisStatus('완료 · ' + _statTok + ' · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
+      dobisSock.on('dobis:done', (d) => { if (_dobisCancelled) return; stopTyper(); _stopStream(); document.getElementById('dobisStatus').classList.remove('thinking-on'); if (streamBubble) { setBotBubble(streamBubble, d.text || '', false); if (d && d.dls) d.dls.forEach(dl => appendDlCard(streamBubble, dl)); else if (d && d.dl) appendDlCard(streamBubble, d.dl); if (d && d.chart) appendChartCard(streamBubble, d.chart); if (d && d.drec) appendDrecCard(streamBubble, d.drec); if (/\[charchat-header:|\[n\]|\[s:|\[status\]/.test((d && d.text) || '')) appendImggenCard(streamBubble); streamBubble = null; const _botMeta = { effort: dobisEffort }; if (d && d.model) _botMeta.model = d.model; if (d && d.think !== undefined) _botMeta.think = d.think; if (d && d.emo) _botMeta.emo = d.emo; if (d && d.tokens) _botMeta.tokens = d.tokens; _chatRecord('bot', (d && d.text) || '', _botMeta); } if (d && d.model) setModelChip(d.model); if (d && d.think !== undefined) setThinkChip(d.think); if (d && d.emo) showDomoji(d.emo); if (d && d.hud) applyHud(d.hud); if (d && d.music) handleMusic(d.music); setAiSuggest(d && d.suggest); setDobisBusy(false); stopDobisTimers(); touchSession(); _trimLiveChat(); const _fmtTok = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'm' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k' : String(n); const _tk = d && d.tokens; const _statTok = (_tk && (_tk.out || _tk.in)) ? _fmtTok((_tk.out || 0) + (_tk.in || 0)) + ' Tokens' : ((d && d.text) || '').length + '자'; dobisStatus('완료 · ' + _statTok + ' · ' + ((Date.now() - _dobisT0) / 1000).toFixed(1) + 's'); });
       dobisSock.on('dobis:error', (m) => { if (_dobisCancelled) return; document.getElementById('dobisStatus').classList.remove('thinking-on'); dobisFail(m); });
+      // 턴당 저장은 chat:append(아래)가 담당. chat:saved 는 예외 경로(dobisSaveChat 제목저장 / 초안복원 직후 전체동기화)의 응답.
       dobisSock.on('chat:saved', (d) => {
-        _saveInFlight = 0;
         const auto = _saveAuto; _saveAuto = false;
         if (d && d.error) return flash('저장 실패: ' + d.error, false);
-        if (!auto || _saveGen === _chatGen) { chatTitle = d.slug || chatTitle; setChatName(); }
+        chatTitle = d.slug || chatTitle; setChatName();
         if (!auto) flash('채팅 저장됨: ' + (d.slug || chatTitle), true);
-        if (_saveDirty) _autoSaveChat();   // in-flight 중 쌓인 변경 반영
+      });
+      // 턴마다 append 된 메시지 하나의 응답 — 새 채팅 첫 메시지면 서버가 확정한 slug 로 chatTitle 을 고정한다.
+      dobisSock.on('chat:appended', (d) => {
+        if (!d) return;
+        if (d.error) {
+          flash('채팅 저장 실패: ' + d.error, false);
+          if (_chatCreateGen === _chatGen) { _chatCreateInFlight = false; _chatAppendQueue = []; }
+          return;
+        }
+        // create 응답이 아니거나(일반 append) 그 사이 새 채팅/불러오기로 세대가 바뀌었으면 무시
+        // — 세대가 바뀐 경우 새 채팅이 이미 자기 자신의 create in-flight 를 새로 시작했을 수 있어, 여기서 플래그를 건드리면 그걸 깨뜨린다.
+        if (!_chatCreateInFlight || _chatCreateGen !== _chatGen) return;
+        _chatCreateInFlight = false;
+        chatTitle = d.slug || chatTitle; setChatName();
+        const q = _chatAppendQueue; _chatAppendQueue = [];
+        q.forEach(m => _chatEmitAppend(m));
       });
       dobisSock.on('chat:listed', (d) => renderChatList((d && d.items) || []));
-      dobisSock.on('chat:loaded', (d) => { if (!d || d.error) return flash('불러오기 실패', false); loadChatMd(d.slug, d.md); });
+      dobisSock.on('chat:loaded', (d) => {
+        if (!d || d.error) return flash('불러오기 실패', false);
+        const msgs = Array.isArray(d.msgs) ? d.msgs : _mdToMsgs(d.md);   // 신버전(msgs) 우선, 구버전 서버는 md 정규식 폴백
+        loadChatMd(d.slug, msgs);
+      });
       dobisSock.on('chat:renamed', (d) => {
         if (d && d.error) return flash('이름 변경 실패: ' + d.error, false);
         flash('이름 변경됨: ' + d.new, true);
@@ -9664,11 +10468,11 @@
       ensureSocket().emit('chat:delete', { slug });
       if (rowEl) rowEl.remove();
     }
-    // 메시지 엘리먼트 생성(dobisAppend 와 동일하나 log 에 직접 append 하지 않음)
+    // 메시지 엘리먼트 생성(dobisAppend 와 동일하나 log 에 직접 append 하지 않음). role: 'user'|'bot'(_chatMsgs 표기와 동일)
     function _makeMsgEl(role, text) {
       const d = document.createElement('div');
-      d.className = 'dobis-msg ' + (role === 'you' ? 'you' : 'bot');
-      if (role === 'you') {
+      d.className = 'dobis-msg ' + (role === 'user' ? 'you' : 'bot');
+      if (role === 'user') {
         d.appendChild(document.createTextNode('YOU: ' + text));
         const cp = document.createElement('span'); cp.className = 'msg-copy'; cp.textContent = '⧉'; cp.title = '복사';
         cp.onclick = () => copyToClip(text, cp, '⧉');
@@ -9717,13 +10521,11 @@
           _chatHeadMsgs = [];   // 전부 DOM에 올라옴 — 저장 시 중복 방지
         }
         btn.remove();
-        // DOM에 전체 대화가 올라왔으니 다음 turn restore_md에 반영
-        _pendingRestoreMd = buildChatMd(chatTitle || '');
       }, 16));
     }
     // ===== 라이브 채팅 DOM 트리밍 — 채팅이 길어지면 DOM 노드 수가 늘어 렌더링이 느려지므로,
     // 오래된 메시지를 주기적으로 DOM에서 떼어 _chatHeadMsgs 로 옮기고 '▲ 이전 채팅 불러오기' 버튼으로 대체한다.
-    // (buildChatMd 는 이미 _chatHeadMsgs + 라이브 DOM 을 합쳐 저장하므로 트리밍해도 대화 저장엔 손실 없음)
+    // 순수 렌더 최적화다 — 저장 정확성과는 무관(진실의 원천 _chatMsgs 는 트리밍과 별개로 항상 전체를 갖고 있음).
     const _LIVE_TRIM_MAX = 60;    // DOM 메시지가 이 개수를 넘으면 트리밍 실행
     const _LIVE_TRIM_KEEP = 30;   // 트리밍 후 DOM에 남길 최근 메시지 수
     function _trimLiveChat() {
@@ -9735,7 +10537,7 @@
       removed.forEach(m => {
         const you = m.classList.contains('you');
         const txt = you ? m.textContent.replace(/^YOU:\s?/, '').replace(/⧉$/, '').trim() : (m.dataset.raw || '');
-        if (txt && !txt.startsWith('──')) _chatHeadMsgs.push({ role: you ? 'you' : 'bot', text: txt });
+        if (txt && !txt.startsWith('──')) _chatHeadMsgs.push({ role: you ? 'user' : 'bot', text: txt });
         m.remove();
       });
       let btn = document.getElementById('_liveChatMoreBtn');
@@ -9759,21 +10561,18 @@
         if (btn) btn.remove();
       }, 16));
     }
-    function loadChatMd(slug, md) {
+    // msgs: [{role:'user'|'bot',text,ts?}] — chat:loaded 가 서버 msgs 를 그대로(또는 md 폴백 파싱 결과를) 넘긴다.
+    function loadChatMd(slug, msgs) {
       const prev = document.getElementById('_chatLoadSpin');
       if (prev && prev._iv) { clearInterval(prev._iv); }
       const log = document.getElementById('dobisLog'); log.innerHTML = '';
       chatTitle = slug; setChatName();
-      const body = (md || '').replace(/^#[^\n]*\n+/, '').replace(/^>[^\n]*\n+/, '');
-      const re = /\*\*(YOU|DOBIS):\*\*[ \t]?([\s\S]*?)(?=\n\*\*(?:YOU|DOBIS):\*\*|$)/g;
-      _chatAllMsgs = []; _chatLoaded = 0; _chatHeadMsgs = []; _chatGen++;
-      let m;
-      while ((m = re.exec(body)) !== null) {
-        const txt = m[2].replace(/\s+$/, '');
-        if (txt) _chatAllMsgs.push({ role: m[1] === 'YOU' ? 'you' : 'bot', text: txt });
-      }
+      _chatAllMsgs = (msgs || []).filter(m => m && m.text);
+      _chatMsgs = _chatAllMsgs.slice();   // 진실의 원천도 불러온 대화로 교체 — 이어서 append 가능
+      _chatLoaded = 0; _chatHeadMsgs = []; _chatGen++;
+      _chatCreateInFlight = false; _chatAppendQueue = [];
       if (!_chatAllMsgs.length) {
-        const d = document.createElement('div'); d.className = 'dobis-msg bot'; d.textContent = md || '';
+        const d = document.createElement('div'); d.className = 'dobis-msg bot'; d.textContent = '';
         log.appendChild(d); log.scrollTop = log.scrollHeight; return;
       }
       const h = document.createElement('div'); h.className = 'dobis-msg you'; h.style.opacity = '.55';
@@ -9804,8 +10603,9 @@
       if (Array.isArray(files) && files.length) {
         payload.files = files.map(f => ({ data: f.data, type: f.type, name: f.name, kind: f.kind }));
       }
-      payload.restore_md = _pendingRestoreMd || buildChatMd(chatTitle || '');   // 매 턴 현재 대화 동봉 — 워커 세션이 죽었을 때(idle정리/크래시/모드전환)만 자동 재주입
-      _pendingRestoreMd = '';
+      // 매 턴 현재 대화 동봉(문자열) — 워커 세션이 죽었을 때(idle정리/크래시/모드전환)만 자동 재주입. 서버 계약(restore_md 문자열)은 그대로 유지.
+      payload.restore_md = _pendingRestoreMsgs.length ? _msgsToMd(chatTitle || '', _pendingRestoreMsgs) : buildChatMd(chatTitle || '');
+      _pendingRestoreMsgs = [];
       s.emit('dobis:msg', payload);
     }
     // STATUS PANEL 가변 높이 요청 — 현재 가용 행 수(compact/expanded) + 직전 패널 텍스트 그대로 전달
