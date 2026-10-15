@@ -139,4 +139,4 @@ mcp/config.yml
 data/
 _tmp/
 *.bak-*
-.claude/worktrees/
+.claude/
