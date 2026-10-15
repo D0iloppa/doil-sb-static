@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dGraph Canvas</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root[data-theme="dark"] {
+      --bg: #0d0d1a; --fg: #e0e0f0; --fg-dim: rgba(200,200,230,0.45);
+      --ctrl-bg: rgba(255,255,255,0.07); --ctrl-border: rgba(255,255,255,0.16);
+      --ctrl-focus: rgba(150,150,255,0.45); --panel-bg: rgba(14,14,30,0.94);
+      --btn-bg: rgba(255,255,255,0.1); --btn-hover: rgba(255,255,255,0.18);
+      --accent: rgba(120,160,255,0.85); --danger: #d44e4e;
+    }
+    :root[data-theme="light"] {
+      --bg: #f0f0f5; --fg: #1a1a2e; --fg-dim: rgba(30,30,60,0.45);
+      --ctrl-bg: rgba(0,0,0,0.06); --ctrl-border: rgba(0,0,0,0.18);
+      --ctrl-focus: rgba(80,80,200,0.45); --panel-bg: rgba(245,245,250,0.96);
+      --btn-bg: rgba(0,0,0,0.08); --btn-hover: rgba(0,0,0,0.14);
+      --accent: rgba(50,90,200,0.85); --danger: #b02020;
+    }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--fg);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background 0.25s, color 0.25s;
+    }
+    #graph-container { position: absolute; inset: 0; }
+
+    /* ── 상단 툴바 ── */
+    #toolbar {
+      position: absolute; top: 12px; left: 12px; z-index: 100;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #canvas-title { font-size: 13px; color: var(--fg-dim); padding-left: 2px; }
+    #canvas-title b { color: var(--fg); }
+    .ctrl-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; max-width: 420px; }
+    .btn {
+      background: var(--btn-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 7px; color: var(--fg); padding: 6px 11px;
+      font-size: 12px; cursor: pointer; transition: background 0.15s;
+      user-select: none; white-space: nowrap;
+    }
+    .btn:hover { background: var(--btn-hover); }
+    .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    #stats { font-size: 11px; color: var(--fg-dim); padding-left: 2px; }
+    #search {
+      width: 200px; background: var(--ctrl-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 8px; color: var(--fg); padding: 7px 12px; font-size: 13px;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    #search::placeholder { color: var(--fg-dim); }
+    #search:focus { outline: none; border-color: var(--ctrl-focus); }
+
+    /* ── 편집 패널 ── */
+    #panel {
+      position: absolute; top: 12px; right: 12px; z-index: 120; width: 264px;
+      background: var(--panel-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 12px; padding: 14px; backdrop-filter: blur(10px);
+      display: none; box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+      max-height: calc(100vh - 24px); overflow-y: auto;
+    }
+    #panel.open { display: block; }
+    #panel h3 { font-size: 13px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    #panel .pid { font-size: 10px; color: var(--fg-dim); font-weight: normal; }
+    .fld { margin-bottom: 10px; }
+    .fld label { display: block; font-size: 11px; color: var(--fg-dim); margin-bottom: 4px; }
+    .fld input[type=text], .fld select, .fld textarea, .fld input[type=number] {
+      width: 100%; background: var(--ctrl-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 7px; color: var(--fg); padding: 6px 9px; font-size: 12px;
+      font-family: inherit;
+    }
+    .fld textarea { resize: vertical; min-height: 44px; }
+    .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--ctrl-focus); }
+    .fld-row { display: flex; gap: 8px; }
+    .fld-row > .fld { flex: 1; }
+    .fld input[type=color] { width: 100%; height: 30px; background: var(--ctrl-bg); border: 1px solid var(--ctrl-border); border-radius: 7px; cursor: pointer; }
+    .panel-actions { display: flex; gap: 8px; margin-top: 4px; }
+    .panel-actions .btn { flex: 1; text-align: center; }
+    .btn.danger { color: var(--danger); border-color: var(--danger); }
+    .btn.danger:disabled { opacity: 0.35; cursor: default; }
+    #panel-err { font-size: 10px; color: var(--danger); min-height: 12px; margin-bottom: 6px; }
+
+    /* ── 좌측 사이드바 (캔버스 목록) ── */
+    #sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0; z-index: 130; width: 240px;
+      background: var(--panel-bg); border-right: 1px solid var(--ctrl-border);
+      backdrop-filter: blur(10px); transform: translateX(-100%);
+      transition: transform 0.22s; display: flex; flex-direction: column;
+      box-shadow: 2px 0 18px rgba(0,0,0,0.28);
+    }
+    #sidebar.open { transform: translateX(0); }
+    .sb-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 8px; }
+    .sb-head h2 { font-size: 14px; font-weight: 600; }
+    #sb-close { cursor: pointer; opacity: 0.7; font-size: 14px; }
+    #sb-close:hover { opacity: 1; }
+    .sb-new { margin: 2px 14px 8px; text-align: center; }
+    #canvas-search {
+      margin: 0 14px 10px; background: var(--ctrl-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 8px; color: var(--fg); padding: 6px 10px; font-size: 12px; font-family: inherit;
+    }
+    #canvas-search::placeholder { color: var(--fg-dim); }
+    #canvas-search:focus { outline: none; border-color: var(--ctrl-focus); }
+    #canvas-listing { flex: 1; overflow-y: auto; padding: 4px 8px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .cv-item { padding: 8px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: background 0.12s; }
+    .cv-item:hover { background: var(--ctrl-bg); }
+    .cv-item.current { border-color: var(--ctrl-focus); background: var(--ctrl-bg); }
+    .cv-title { color: var(--fg); font-weight: 600; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cv-meta { color: var(--fg-dim); font-size: 10px; margin-top: 2px; }
+    .sb-empty { padding: 12px; color: var(--fg-dim); font-size: 11px; }
+
+    /* ── 토스트 ── */
+    #toast {
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 300; background: var(--panel-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 9px; padding: 8px 16px; font-size: 12px; color: var(--fg);
+      display: none; backdrop-filter: blur(8px);
+    }
+    /* ── 힌트 ── */
+    #hint {
+      position: absolute; bottom: 12px; right: 12px; z-index: 100;
+      font-size: 10px; color: var(--fg-dim); text-align: right; line-height: 1.8;
+      pointer-events: none;
+    }
+    #overlay {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      z-index: 400; background: var(--bg); font-size: 14px; color: var(--fg-dim);
+    }
+
+    /* ── 도구 접기 ── */
+    #tools { display: none; }
+    #tools.open { display: flex; }
+
+    /* ── 노드 컨텍스트 메뉴 ── */
+    #ctx-menu {
+      position: fixed; z-index: 250; display: none; min-width: 150px;
+      background: var(--panel-bg); border: 1px solid var(--ctrl-border);
+      border-radius: 9px; padding: 4px; backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+    #ctx-menu .ctx-item { padding: 7px 12px; font-size: 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; user-select: none; }
+    #ctx-menu .ctx-item:hover { background: var(--btn-hover); }
+    #ctx-menu .ctx-item.danger { color: var(--danger); }
+    #ctx-menu .ctx-item.disabled { opacity: .35; cursor: default; }
+    #ctx-menu .ctx-item.disabled:hover { background: none; }
+
+    /* ── 노드 디테일 모달 ── */
+    #detail-backdrop { position: fixed; inset: 0; z-index: 240; background: rgba(0,0,0,0.45); display: none; }
+    #detail-modal {
+      position: fixed; z-index: 245; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(760px, calc(100vw - 40px)); max-height: 88vh; overflow-y: auto;
+      background: var(--panel-bg); border: 1px solid var(--ctrl-border); border-radius: 14px;
+      padding: 20px; display: none; backdrop-filter: blur(12px); box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+    #detail-modal h3 { font-size: 15px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    #dm-title { word-break: break-word; }
+    #dm-close { cursor: pointer; opacity: .7; font-weight: normal; flex: none; }
+    #dm-close:hover { opacity: 1; }
+    .dm-meta { font-size: 11px; color: var(--fg-dim); margin-bottom: 8px; }
+    .dm-sec { margin-top: 10px; }
+    .dm-sec label { display: block; font-size: 11px; color: var(--fg-dim); margin-bottom: 4px; }
+    .dm-sec .dm-val { font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+    #dm-extra {
+      background: var(--ctrl-bg); border: 1px solid var(--ctrl-border); border-radius: 8px;
+      padding: 12px; font-size: 12px; line-height: 1.55;
+      font-family: Consolas, 'D2Coding', monospace;
+      white-space: pre-wrap; word-break: break-word;
+      min-height: 7.8em;              /* 최소 5줄 확보 */
+      max-height: 48vh; overflow-y: auto;
+    }
+    .dm-actions { display: flex; gap: 8px; margin-top: 14px; }
+
+    /* ── hover 툴팁 (force-graph .graph-tooltip 보강) ── */
+    .graph-tooltip {
+      background: var(--panel-bg) !important; color: var(--fg) !important;
+      border: 1px solid var(--ctrl-border); border-radius: 8px !important;
+      font-size: 11.5px !important; padding: 8px 10px !important; max-width: 320px;
+      font-family: 'Segoe UI', system-ui, sans-serif !important;
+    }
+
+    /* ── 사이드바 아이템 액션 (lock/삭제) ── */
+    .cv-item { display: flex; align-items: center; gap: 4px; }
+    .cv-main { flex: 1; min-width: 0; }
+    .cv-act { flex: none; font-size: 12px; opacity: .55; cursor: pointer; padding: 3px 4px; border-radius: 5px; }
+    .cv-act:hover { opacity: 1; background: var(--ctrl-bg); }
+    .cv-act.del:hover { color: var(--danger); }
+  </style>
+</head>
+
+<body>
+  <div id="overlay">캔버스 불러오는 중…</div>
+
+  <div id="sidebar">
+    <div class="sb-head"><h2>Canvases</h2><span id="sb-close" title="닫기">✕</span></div>
+    <button class="btn sb-new" id="sb-new">＋ 새 캔버스</button>
+    <input id="canvas-search" type="text" placeholder="캔버스 검색…" autocomplete="off" />
+    <div id="canvas-listing"></div>
+  </div>
+
+  <div id="toolbar">
+    <div id="canvas-title"></div>
+    <input id="search" type="text" placeholder="노드 검색…" autocomplete="off" />
+    <div class="ctrl-row">
+      <button class="btn" id="sb-toggle" title="캔버스 목록">☰ 사이드바</button>
+      <button class="btn" id="tools-toggle" title="도구 목록 펼치기/접기">🧰 도구</button>
+    </div>
+    <div class="ctrl-row" id="tools">
+      <button class="btn" id="add-node">＋ 노드</button>
+      <button class="btn" id="add-group">＋ 그룹</button>
+      <button class="btn" id="add-orphan">＋ 독립</button>
+      <button class="btn" id="edge-mode">🔗 연결</button>
+      <button class="btn" id="focus-btn" title="선택 노드 하위만 보기">🔎 하위만</button>
+      <button class="btn" id="refresh-btn" title="다시 로딩">⟳ 새로고침</button>
+      <button class="btn" id="fit-btn" title="전체 보기">⊞</button>
+      <button class="btn" id="export-btn" title="트리구조 JSON 다운로드">⤓ JSON</button>
+      <button class="btn" id="theme-btn" title="테마">☀</button>
+      <button class="btn" id="new-canvas" title="새 캔버스">＋캔버스</button>
+    </div>
+    <span id="stats"></span>
+  </div>
+
+  <div id="panel">
+    <h3><span>노드 편집</span><span class="pid" id="p-id"></span></h3>
+    <div id="panel-err"></div>
+    <div class="fld"><label>title</label><input type="text" id="p-title" /></div>
+    <div class="fld"><label>type</label>
+      <select id="p-type">
+        <option value="base">base</option>
+        <option value="group">group</option>
+        <option value="node">node</option>
+      </select>
+    </div>
+    <div class="fld-row">
+      <div class="fld"><label>shape</label>
+        <select id="p-kind">
+          <option value="circle">circle</option>
+          <option value="square">square</option>
+          <option value="diamond">diamond</option>
+          <option value="cylinder">cylinder</option>
+        </select>
+      </div>
+      <div class="fld"><label>size</label><input type="number" id="p-size" min="3" max="60" /></div>
+    </div>
+    <div class="fld"><label>color</label><input type="color" id="p-color" /></div>
+    <div class="fld"><label>desc</label><textarea id="p-desc"></textarea></div>
+    <div class="fld"><label>_extra (JSON)</label><textarea id="p-extra"></textarea></div>
+    <div class="panel-actions">
+      <button class="btn" id="p-save">저장</button>
+      <button class="btn danger" id="p-delete">삭제</button>
+    </div>
+  </div>
+
+  <div id="hint">hover = 요약 툴팁 · 클릭 = 상세보기 · 드래그 = 이동<br>노드 우클릭 = 편집 / 노드 이동 / 서브리스트 삭제<br>⇄ 이동: 대상 노드 클릭 → 그 하위로 (서브트리 동반)<br>🔗 연결: 소스→타깃 클릭 (독립노드 재연결) · 링크 우클릭 = 삭제<br>● 점선 링 = 독립(orphan) · 🔎 하위만: 서브그래프 보기(URL 공유 가능)</div>
+  <div id="toast"></div>
+
+  <div id="ctx-menu"></div>
+  <div id="detail-backdrop"></div>
+  <div id="detail-modal">
+    <h3><span id="dm-title"></span><span id="dm-close" title="닫기">✕</span></h3>
+    <div class="dm-meta" id="dm-meta"></div>
+    <div class="dm-sec"><label>desc</label><div class="dm-val" id="dm-desc"></div></div>
+    <div class="dm-sec"><label>_extra</label><pre id="dm-extra"></pre></div>
+    <div class="dm-actions"><button class="btn" id="dm-edit">✎ 편집</button></div>
+  </div>
+
+  <div id="graph-container"></div>
+
+  <script src="https://unpkg.com/force-graph@1.47.1/dist/force-graph.min.js"></script>
+  <script>
+    (function () {
+      const ROOT_CTX  = '<%= rootContext %>';
+      const CANVAS_ID = '<%= canvasId %>';
+      const INITIAL_FOCUS = <%- JSON.stringify(focusId || null) %>;
+      const API = ROOT_CTX + '/dGraph/' + CANVAS_ID;
+      const DG_ROOT = ROOT_CTX + '/dGraph';
+      const CANVAS_URL = DG_ROOT + '/' + CANVAS_ID;
+
+      const isDark = () => document.documentElement.dataset.theme === 'dark';
+
+      /* ── DOM ── */
+      const overlay   = document.getElementById('overlay');
+      const statsEl   = document.getElementById('stats');
+      const titleEl   = document.getElementById('canvas-title');
+      const toastEl   = document.getElementById('toast');
+      const panel     = document.getElementById('panel');
+      const panelErr  = document.getElementById('panel-err');
+      const pId       = document.getElementById('p-id');
+      const pTitle    = document.getElementById('p-title');
+      const pType     = document.getElementById('p-type');
+      const pKind     = document.getElementById('p-kind');
+      const pSize     = document.getElementById('p-size');
+      const pColor    = document.getElementById('p-color');
+      const pDesc     = document.getElementById('p-desc');
+      const pExtra    = document.getElementById('p-extra');
+      const edgeBtn   = document.getElementById('edge-mode');
+
+      /* ── 상태 ── */
+      let graphInstance = null;
+      let data = { nodes: [], edges: [], canvas: {} };
+      let selectedId = null;
+      let edgeMode = false;
+      let edgeSource = null;
+      let moveSourceId = null;   // 노드 이동 모드: 이동할 노드 id (null = 비활성)
+      let searchQ = '';
+      let focusRootId = null;
+      const posMap = {};              // id → {x,y,fx,fy}
+
+      let toastTimer = null;
+      function toast(msg, ms = 2200) {
+        toastEl.textContent = msg; toastEl.style.display = 'block';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toastEl.style.display = 'none'; }, ms);
+      }
+
+      /* ── API 래퍼 ── */
+      async function api(method, suffix, body) {
+        const opt = { method, headers: {} };
+        if (body !== undefined) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+        const r = await fetch(API + suffix, opt);
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+        return j;
+      }
+
+      /* ── 도형 그리기 ── */
+      function roundRect(ctx, x, y, w, h, rx) {
+        ctx.beginPath();
+        ctx.moveTo(x + rx, y);
+        ctx.lineTo(x + w - rx, y); ctx.arcTo(x + w, y, x + w, y + rx, rx);
+        ctx.lineTo(x + w, y + h - rx); ctx.arcTo(x + w, y + h, x + w - rx, y + h, rx);
+        ctx.lineTo(x + rx, y + h); ctx.arcTo(x, y + h, x, y + h - rx, rx);
+        ctx.lineTo(x, y + rx); ctx.arcTo(x, y, x + rx, y, rx);
+        ctx.closePath();
+      }
+      function drawShape(ctx, kind, x, y, r, color) {
+        ctx.fillStyle = color;
+        ctx.shadowColor = isDark() ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.2)';
+        ctx.shadowBlur = 10;
+        if (kind === 'square') {
+          roundRect(ctx, x - r, y - r, r * 2, r * 2, Math.max(1, r * 0.18)); ctx.fill();
+        } else if (kind === 'diamond') {
+          ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r, y); ctx.lineTo(x, y + r); ctx.lineTo(x - r, y); ctx.closePath(); ctx.fill();
+        } else if (kind === 'cylinder') {
+          const w = r * 1.5, h = r * 1.9, ey = r * 0.32, top = y - h / 2, bot = y + h / 2;
+          ctx.beginPath();
+          ctx.moveTo(x - w / 2, top + ey); ctx.lineTo(x - w / 2, bot - ey);
+          ctx.ellipse(x, bot - ey, w / 2, ey, 0, Math.PI, 0, true);
+          ctx.lineTo(x + w / 2, top + ey);
+          ctx.ellipse(x, top + ey, w / 2, ey, 0, 0, Math.PI, true);
+          ctx.closePath(); ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.beginPath(); ctx.ellipse(x, top + ey, w / 2, ey, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fill();
+        } else {
+          ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+      }
+
+      function nodeMatches(node) { return !searchQ || (node.title || '').toLowerCase().includes(searchQ); }
+
+      function linkColorFn(l) {
+        const base = isDark() ? 'rgba(150,180,255,0.42)' : 'rgba(40,80,180,0.4)';
+        if (!searchQ) return base;
+        const s = (l.source && l.source.title || '').toLowerCase();
+        const t = (l.target && l.target.title || '').toLowerCase();
+        return (s.includes(searchQ) || t.includes(searchQ)) ? base : (isDark() ? 'rgba(120,130,160,0.07)' : 'rgba(120,130,160,0.1)');
+      }
+
+      function drawNode(node, ctx, globalScale) {
+        if (!isFinite(node.x) || !isFinite(node.y)) return;
+        const sh = node.shape || { kind: 'circle', size: 9, color: '#6c8ebf' };
+        const r = sh.size, x = node.x, y = node.y;
+        const match = nodeMatches(node);
+
+        ctx.save();
+        if (searchQ && !match) ctx.globalAlpha = 0.15;
+
+        drawShape(ctx, sh.kind, x, y, r, sh.color);
+
+        if (searchQ && match) {
+          ctx.save(); ctx.strokeStyle = '#ffdd44'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(x, y, r + 4, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        }
+        if (node.orphan) {
+          ctx.save(); ctx.strokeStyle = '#ff9f43'; ctx.setLineDash([4, 3]); ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(x, y, r + 5, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        }
+        if (moveSourceId && node.id === moveSourceId) {
+          ctx.save(); ctx.strokeStyle = '#c084fc'; ctx.setLineDash([6, 4]); ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(x, y, r + 7, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        } else if (edgeMode && node.id === edgeSource) {
+          ctx.save(); ctx.strokeStyle = '#4eb8d4'; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(x, y, r + 7, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        } else if (node.id === selectedId) {
+          ctx.save(); ctx.strokeStyle = isDark() ? '#ffffff' : '#222244'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(x, y, r + 3, 0, 2 * Math.PI); ctx.stroke(); ctx.restore();
+        }
+
+        if (node.title) {
+          const fs = 12 / globalScale;
+          ctx.font = fs + "px 'Segoe UI', sans-serif";
+          ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.fillStyle = isDark() ? 'rgba(224,224,240,0.92)' : 'rgba(20,20,40,0.92)';
+          ctx.fillText(node.title, x, y + r + 2);
+        }
+        ctx.restore();
+      }
+
+      /* ── 그래프 초기화 ── */
+      function toLinks(edges) { return edges.map(e => ({ id: e.id, source: e.source, target: e.target, type: e.type || 'link' })); }
+      function toNodes(nodes) {
+        return nodes.map(n => { const p = posMap[n.id] || {}; return { ...n, x: p.x, y: p.y, fx: p.fx, fy: p.fy }; });
+      }
+
+      function initGraph() {
+        graphInstance = ForceGraph()(document.getElementById('graph-container'))
+          .width(window.innerWidth).height(window.innerHeight)
+          .backgroundColor(isDark() ? '#0d0d1a' : '#f0f0f5')
+          .autoPauseRedraw(false)
+          .nodeLabel(tooltipHtml)
+          .nodeVal(n => (n.shape && n.shape.size) || 9)
+          .nodeCanvasObject(drawNode)
+          .nodeCanvasObjectMode(() => 'replace')
+          .nodePointerAreaPaint((node, color, ctx) => {
+            const r = ((node.shape && node.shape.size) || 9) + 4;
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(node.x, node.y, r, 0, 2 * Math.PI); ctx.fill();
+          })
+          .linkColor(linkColorFn)
+          .linkWidth(1.1)
+          .linkDirectionalArrowLength(3.5)
+          .linkDirectionalArrowRelPos(1)
+          .onNodeClick(onNodeClick)
+          .onNodeRightClick(onNodeRightClick)
+          .onBackgroundClick(onBackgroundClick)
+          .onNodeDragEnd(n => { n.fx = n.x; n.fy = n.y; posMap[n.id] = { x: n.x, y: n.y, fx: n.fx, fy: n.fy }; })
+          .onLinkRightClick(onLinkRightClick);
+
+        // 캔버스 위 브라우저 기본 컨텍스트 메뉴 억제 (노드/링크 우클릭 기능과 충돌 방지)
+        document.getElementById('graph-container').addEventListener('contextmenu', e => e.preventDefault());
+
+        graphInstance.d3Force('charge').strength(n => -((n.shape && n.shape.size) || 9) * 4);
+        graphInstance.d3Force('link').distance(l => {
+          const ss = (l.source && l.source.shape && l.source.shape.size) || 9;
+          const ts = (l.target && l.target.shape && l.target.shape.size) || 9;
+          return ss + ts + 32;
+        }).strength(0.6);
+
+        window.addEventListener('resize', () => graphInstance.width(window.innerWidth).height(window.innerHeight));
+      }
+
+      function capture() {
+        if (!graphInstance) return;
+        for (const n of graphInstance.graphData().nodes) {
+          if (isFinite(n.x)) posMap[n.id] = { x: n.x, y: n.y, fx: n.fx, fy: n.fy };
+        }
+      }
+
+      // 선택 노드부터 엣지(source→target) 방향으로 도달 가능한 하위 노드 id 집합
+      function subtreeIds(rootId) {
+        const childrenMap = new Map();
+        for (const e of data.edges) {
+          if (!childrenMap.has(e.source)) childrenMap.set(e.source, []);
+          childrenMap.get(e.source).push(e.target);
+        }
+        const seen = new Set([rootId]);
+        const q = [rootId];
+        while (q.length) {
+          const cur = q.shift();
+          for (const nx of (childrenMap.get(cur) || [])) if (!seen.has(nx)) { seen.add(nx); q.push(nx); }
+        }
+        return seen;
+      }
+
+      function render() {
+        let nodes = data.nodes, edges = data.edges;
+        if (focusRootId) {
+          const ids = subtreeIds(focusRootId);
+          nodes = data.nodes.filter(n => ids.has(n.id));
+          edges = data.edges.filter(e => ids.has(e.source) && ids.has(e.target));
+        }
+        graphInstance.graphData({ nodes: toNodes(nodes), links: toLinks(edges) });
+        updateStats(nodes.length, edges.length);
+      }
+
+      function updateStats(visNodeCount, visEdgeCount) {
+        const orphans = data.nodes.filter(n => n.orphan).length;
+        let statsTxt = visNodeCount + '노드 · ' + visEdgeCount + '링크';
+        if (focusRootId) statsTxt += ' (전체 ' + data.nodes.length + '노드)';
+        else if (orphans) statsTxt += ' · 독립 ' + orphans;
+        statsEl.textContent = statsTxt;
+
+        let titleHtml = '<b id="ct-name">' + escapeHtml(data.canvas.title || 'Untitled') + '</b>'
+          + ' <span id="ct-edit" title="이름 수정" style="cursor:pointer;opacity:.7">✎</span>'
+          + ' <span style="opacity:.6">#' + CANVAS_ID.slice(0, 8) + '</span>';
+        if (focusRootId) {
+          const rootNode = data.nodes.find(n => n.id === focusRootId);
+          titleHtml += ' <span style="opacity:.8">› 🔎 ' + escapeHtml(rootNode ? (rootNode.title || rootNode.id) : focusRootId) + '</span>'
+            + ' <span id="exit-focus" title="전체 보기로" style="cursor:pointer;opacity:.75">✕</span>';
+        }
+        titleEl.innerHTML = titleHtml;
+      }
+      function escapeHtml(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+      /* ── 캔버스 이름 인라인 수정 ── */
+      function startRename() {
+        const cur = data.canvas.title || 'Untitled';
+        titleEl.innerHTML = '';
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.value = cur; inp.maxLength = 120;
+        inp.style.cssText = 'font-size:13px;padding:3px 7px;border-radius:6px;border:1px solid var(--ctrl-focus);background:var(--ctrl-bg);color:var(--fg);width:190px;font-family:inherit;';
+        titleEl.appendChild(inp);
+        inp.focus(); inp.select();
+        let done = false;
+        const commit = async (save) => {
+          if (done) return; done = true;
+          if (save) {
+            const v = inp.value.trim();
+            if (v && v !== cur) {
+              try { await api('PATCH', '', { title: v }); data.canvas.title = v; toast('이름 변경됨'); }
+              catch (e) { toast('변경 실패: ' + e.message); }
+            }
+          }
+          updateStats();
+        };
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); commit(true); }
+          else if (e.key === 'Escape') { e.preventDefault(); commit(false); }
+        });
+        inp.addEventListener('blur', () => commit(true));
+      }
+      titleEl.addEventListener('click', e => {
+        if (e.target && e.target.id === 'ct-edit') startRename();
+        if (e.target && e.target.id === 'exit-focus') exitFocus();
+      });
+
+      function enterFocus(nodeId) {
+        focusRootId = nodeId;
+        history.pushState({}, '', CANVAS_URL + '/sublist?id=' + nodeId);
+        render();
+        setTimeout(() => graphInstance && graphInstance.zoomToFit(400, 80), 50);
+      }
+      function exitFocus() {
+        focusRootId = null;
+        history.pushState({}, '', CANVAS_URL);
+        render();
+        setTimeout(() => graphInstance && graphInstance.zoomToFit(400, 80), 50);
+        toast('전체 보기');
+      }
+      window.addEventListener('popstate', () => {
+        const idParam = new URLSearchParams(location.search).get('id');
+        focusRootId = (idParam && data.nodes.some(n => n.id === idParam)) ? idParam : null;
+        render();
+      });
+
+      async function loadData(first) {
+        capture();
+        try {
+          data = await api('GET', '/data');
+        } catch (e) {
+          overlay.textContent = '캔버스를 찾을 수 없습니다 (' + e.message + ')';
+          overlay.style.display = 'flex';
+          return;
+        }
+        if (first && INITIAL_FOCUS && data.nodes.some(n => n.id === INITIAL_FOCUS)) focusRootId = INITIAL_FOCUS;
+        // 포커스 노드가 삭제된 경우(서브트리 삭제 등) 전체 보기로 복귀
+        if (focusRootId && !data.nodes.some(n => n.id === focusRootId)) {
+          focusRootId = null; history.pushState({}, '', CANVAS_URL);
+        }
+        if (first) { overlay.style.display = 'none'; initGraph(); }
+        render();
+        if (first) setTimeout(() => graphInstance.zoomToFit(500, 80), 300);
+      }
+
+      /* ── hover 툴팁 (title · type · desc) ── */
+      function tooltipHtml(n) {
+        let h = '<b>' + escapeHtml(n.title || '(제목 없음)') + '</b>'
+          + ' <span style="opacity:.6">· ' + escapeHtml(n.type || 'node') + '</span>';
+        if (n.desc) h += '<br><span style="opacity:.85">' + escapeHtml(String(n.desc).slice(0, 200)) + '</span>';
+        return h;
+      }
+
+      /* ── 상호작용 ── */
+      function onNodeClick(node) {
+        hideCtxMenu();
+        if (moveSourceId) {
+          if (node.id === moveSourceId) { moveSourceId = null; toast('이동 취소'); return; }
+          const src = moveSourceId; moveSourceId = null;
+          api('POST', '/node/' + src + '/move', { parentId: node.id })
+            .then(() => { toast('이동 완료 — "' + (node.title || node.id) + '" 하위로'); return loadData(false); })
+            .catch(e => toast('이동 실패: ' + (e.message === 'cycle_detected' ? '자기 하위로는 이동할 수 없습니다' : e.message)));
+          return;
+        }
+        if (edgeMode) {
+          if (!edgeSource) { edgeSource = node.id; toast('연결 시작 → 대상 노드를 클릭'); return; }
+          if (node.id === edgeSource) { edgeSource = null; return; }
+          const src = edgeSource; edgeSource = null;
+          api('POST', '/edge', { source: src, target: node.id })
+            .then(() => { toast('엣지 연결됨'); return loadData(false); })
+            .catch(e => toast('연결 실패: ' + e.message));
+          return;
+        }
+        selectedId = node.id;
+        openDetail(node);
+      }
+
+      function onBackgroundClick() {
+        hideCtxMenu();
+        if (moveSourceId) { moveSourceId = null; toast('이동 취소'); return; }
+        if (edgeMode && edgeSource) { edgeSource = null; return; }
+        selectedId = null; closePanel(); closeDetail();
+      }
+
+      function onLinkRightClick(link) {
+        if (!link || !link.id) return;
+        api('DELETE', '/edge/' + link.id)
+          .then(() => { toast('엣지 삭제됨'); return loadData(false); })
+          .catch(e => toast('삭제 실패: ' + e.message));
+      }
+
+      /* ── 노드 디테일 모달 (좌클릭) ── */
+      const dmBackdrop = document.getElementById('detail-backdrop');
+      const dmModal    = document.getElementById('detail-modal');
+      // 표시 전용 pretty printer — 문자열 값 안의 \n 을 실제 줄바꿈 블록("""…""")으로 살린다
+      function prettyExtra(v, indent) {
+        const pad = ' '.repeat(indent);
+        if (v === null || typeof v === 'number' || typeof v === 'boolean' || v === undefined) return JSON.stringify(v);
+        if (typeof v === 'string') {
+          if (v.includes('\n')) {
+            return '"""\n' + v.split('\n').map(l => pad + '  ' + l).join('\n') + '\n' + pad + '"""';
+          }
+          return JSON.stringify(v);
+        }
+        if (Array.isArray(v)) {
+          if (!v.length) return '[]';
+          return '[\n' + v.map(x => pad + '  ' + prettyExtra(x, indent + 2)).join(',\n') + '\n' + pad + ']';
+        }
+        if (typeof v === 'object') {
+          const keys = Object.keys(v);
+          if (!keys.length) return '{}';
+          return '{\n' + keys.map(k => pad + '  ' + JSON.stringify(k) + ': ' + prettyExtra(v[k], indent + 2)).join(',\n') + '\n' + pad + '}';
+        }
+        return String(v);
+      }
+      function openDetail(node) {
+        closePanel();
+        document.getElementById('dm-title').textContent = node.title || '(제목 없음)';
+        document.getElementById('dm-meta').textContent =
+          'id ' + node.id + ' · type ' + (node.type || 'node') + (node.orphan ? ' · 독립(orphan)' : '');
+        document.getElementById('dm-desc').textContent = node.desc || '—';
+        document.getElementById('dm-extra').textContent = prettyExtra(node._extra || {}, 0);
+        dmBackdrop.style.display = 'block'; dmModal.style.display = 'block';
+      }
+      function closeDetail() { dmBackdrop.style.display = 'none'; dmModal.style.display = 'none'; }
+      document.getElementById('dm-close').addEventListener('click', closeDetail);
+      dmBackdrop.addEventListener('click', closeDetail);
+      document.getElementById('dm-edit').addEventListener('click', () => {
+        const n = data.nodes.find(x => x.id === selectedId);
+        closeDetail();
+        if (n) openPanel(n);
+      });
+
+      /* ── 노드 컨텍스트 메뉴 (우클릭: 편집 / 서브리스트 삭제) ── */
+      const ctxMenu = document.getElementById('ctx-menu');
+      let ctxNodeId = null;
+      function onNodeRightClick(node, ev) {
+        selectedId = node.id;
+        ctxNodeId = node.id;
+        const isBase = node.id === 'base';
+        ctxMenu.innerHTML =
+          '<div class="ctx-item" data-act="edit">✎ 편집</div>'
+          + '<div class="ctx-item' + (isBase ? ' disabled' : '') + '" data-act="move" title="'
+          + (isBase ? 'base 노드는 이동할 수 없습니다' : '하위 노드들과 함께 다른 노드 아래로 이동') + '">⇄ 노드 이동</div>'
+          + '<div class="ctx-item danger' + (isBase ? ' disabled' : '') + '" data-act="delsub" title="'
+          + (isBase ? 'base 노드는 삭제할 수 없습니다' : '이 노드부터 하위 단말까지 전부 삭제') + '">🗑 서브리스트 삭제</div>';
+        ctxMenu.style.left = Math.min(ev.clientX, window.innerWidth - 170) + 'px';
+        ctxMenu.style.top  = Math.min(ev.clientY, window.innerHeight - 90) + 'px';
+        ctxMenu.style.display = 'block';
+      }
+      function hideCtxMenu() { ctxMenu.style.display = 'none'; ctxNodeId = null; }
+      ctxMenu.addEventListener('click', e => {
+        const item = e.target.closest('.ctx-item');
+        if (!item || item.classList.contains('disabled')) return;
+        const act = item.dataset.act, id = ctxNodeId;
+        hideCtxMenu();
+        if (!id) return;
+        const node = data.nodes.find(n => n.id === id);
+        if (act === 'edit') {
+          if (node) { selectedId = id; closeDetail(); openPanel(node); }
+        } else if (act === 'move') {
+          moveSourceId = id;
+          closeDetail(); closePanel();
+          toast('이동 모드: "' + (node ? (node.title || id) : id) + '"을(를) 붙일 대상 노드를 클릭하세요 (Esc 취소)', 4000);
+        } else if (act === 'delsub') {
+          const label = node ? (node.title || id) : id;
+          if (!confirm('"' + label + '" 노드와 하위 전체를 삭제할까요?\n(되돌릴 수 없습니다)')) return;
+          api('DELETE', '/subtree/' + id)
+            .then(r => {
+              if (selectedId === id) { selectedId = null; closePanel(); closeDetail(); }
+              return loadData(false).then(() => toast('서브트리 삭제됨 — 노드 ' + r.deletedNodes + ' · 엣지 ' + r.deletedEdges));
+            })
+            .catch(e2 => toast('삭제 실패: ' + e2.message));
+        }
+      });
+      document.addEventListener('click', e => { if (!ctxMenu.contains(e.target)) hideCtxMenu(); });
+
+      /* ── 편집 패널 ── */
+      function openPanel(node) {
+        panelErr.textContent = '';
+        pId.textContent = node.id;
+        pTitle.value = node.title || '';
+        pType.value = node.type || 'node';
+        pKind.value = (node.shape && node.shape.kind) || 'circle';
+        pSize.value = (node.shape && node.shape.size) || 9;
+        pColor.value = normColor((node.shape && node.shape.color) || '#6c8ebf');
+        pDesc.value = node.desc || '';
+        pExtra.value = JSON.stringify(node._extra || {}, null, 2);
+        document.getElementById('p-delete').disabled = (node.id === 'base');
+        panel.classList.add('open');
+      }
+      function closePanel() { panel.classList.remove('open'); }
+      function normColor(c) { return /^#[0-9a-fA-F]{6}$/.test(c) ? c : '#6c8ebf'; }
+
+      document.getElementById('p-save').addEventListener('click', () => {
+        if (!selectedId) return;
+        let extra;
+        try { extra = pExtra.value.trim() ? JSON.parse(pExtra.value) : {}; }
+        catch (e) { panelErr.textContent = '_extra JSON 오류: ' + e.message; return; }
+        const body = {
+          title: pTitle.value, type: pType.value, desc: pDesc.value,
+          shape: { kind: pKind.value, size: Number(pSize.value), color: pColor.value },
+          _extra: extra,
+        };
+        api('PATCH', '/node/' + selectedId, body)
+          .then(() => loadData(false))
+          .then(() => { const n = data.nodes.find(x => x.id === selectedId); if (n) openPanel(n); toast('저장됨'); })
+          .catch(e => { panelErr.textContent = e.message; });
+      });
+
+      document.getElementById('p-delete').addEventListener('click', () => {
+        if (!selectedId || selectedId === 'base') return;
+        api('DELETE', '/node/' + selectedId)
+          .then(() => {
+            const id = selectedId; selectedId = null; delete posMap[id];
+            if (id === focusRootId) { focusRootId = null; history.pushState({}, '', CANVAS_URL); }
+            closePanel(); return loadData(false);
+          })
+          .then(() => toast('노드 삭제됨'))
+          .catch(e => toast('삭제 실패: ' + e.message));
+      });
+
+      /* ── 툴바 ── */
+      document.getElementById('add-node').addEventListener('click', () => {
+        api('POST', '/node', { title: 'Node', parentId: selectedId || 'base' })
+          .then(r => { selectedId = r.id; return loadData(false); })
+          .then(() => { const n = data.nodes.find(x => x.id === selectedId); if (n) openPanel(n); })
+          .catch(e => toast('추가 실패: ' + e.message));
+      });
+      document.getElementById('add-group').addEventListener('click', () => {
+        api('POST', '/group', { title: 'Group', parentId: selectedId || 'base' })
+          .then(r => { selectedId = r.id; return loadData(false); })
+          .then(() => { const n = data.nodes.find(x => x.id === selectedId); if (n) openPanel(n); })
+          .catch(e => toast('추가 실패: ' + e.message));
+      });
+      document.getElementById('add-orphan').addEventListener('click', () => {
+        api('POST', '/node', { title: 'Orphan' })
+          .then(r => { selectedId = r.id; return loadData(false); })
+          .then(() => { const n = data.nodes.find(x => x.id === selectedId); if (n) openPanel(n); toast('독립 노드 추가 — 🔗 연결로 이어붙이기'); })
+          .catch(e => toast('추가 실패: ' + e.message));
+      });
+      edgeBtn.addEventListener('click', () => {
+        edgeMode = !edgeMode; edgeSource = null;
+        edgeBtn.classList.toggle('active', edgeMode);
+        toast(edgeMode ? '연결 모드: 소스→타깃 클릭' : '연결 모드 종료');
+      });
+      document.getElementById('fit-btn').addEventListener('click', () => graphInstance && graphInstance.zoomToFit(400, 80));
+      document.getElementById('refresh-btn').addEventListener('click', () => loadData(false).then(() => toast('새로고침 완료')));
+      document.getElementById('focus-btn').addEventListener('click', () => {
+        if (!selectedId) { toast('먼저 노드를 선택하세요'); return; }
+        if (selectedId === focusRootId) { toast('이미 이 노드로 포커스됨'); return; }
+        enterFocus(selectedId);
+        toast('하위 그래프만 표시');
+      });
+
+      /* ── 트리구조 JSON 내보내기 ── */
+      function buildTree() {
+        const nodeById = new Map(data.nodes.map(n => [n.id, n]));
+        const childrenMap = new Map();
+        for (const e of data.edges) {
+          if (!childrenMap.has(e.source)) childrenMap.set(e.source, []);
+          childrenMap.get(e.source).push(e.target);
+        }
+        const visited = new Set();
+        const nodeObj = (n) => ({ id: n.id, title: n.title, type: n.type, shape: n.shape, desc: n.desc, _extra: n._extra });
+        function build(id) {
+          visited.add(id);
+          const obj = nodeObj(nodeById.get(id));
+          const children = [];
+          for (const t of (childrenMap.get(id) || [])) {
+            if (visited.has(t)) children.push({ ref: t }); // 사이클/공유 노드는 참조로 표기
+            else children.push(build(t));
+          }
+          if (children.length) obj.children = children;
+          return obj;
+        }
+        const tree = nodeById.has('base') ? build('base') : null;
+        const orphans = [];
+        for (const n of data.nodes) if (!visited.has(n.id)) orphans.push(build(n.id));
+        return {
+          canvas: { id: CANVAS_ID, title: data.canvas.title || 'Untitled', exportedAt: new Date().toISOString() },
+          counts: { nodes: data.nodes.length, edges: data.edges.length, orphans: data.nodes.filter(n => n.orphan).length },
+          tree,
+          orphans,
+        };
+      }
+      document.getElementById('export-btn').addEventListener('click', () => {
+        try {
+          const payload = buildTree();
+          const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const safe = (data.canvas.title || 'canvas').replace(/[^\w가-힣.-]+/g, '_').slice(0, 40);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'dgraph_' + safe + '_' + CANVAS_ID.slice(0, 8) + '.json';
+          document.body.appendChild(a); a.click(); a.remove();
+          URL.revokeObjectURL(url);
+          toast('트리 JSON 다운로드');
+        } catch (e) { toast('내보내기 실패: ' + e.message); }
+      });
+      document.getElementById('theme-btn').addEventListener('click', (e) => {
+        const next = isDark() ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        e.target.textContent = next === 'dark' ? '☀' : '🌙';
+        if (graphInstance) { graphInstance.backgroundColor(next === 'dark' ? '#0d0d1a' : '#f0f0f5'); }
+      });
+      document.getElementById('new-canvas').addEventListener('click', () => { window.location.href = DG_ROOT + '/new'; });
+
+      /* ── 도구 접기/펼치기 ── */
+      const toolsEl  = document.getElementById('tools');
+      const toolsBtn = document.getElementById('tools-toggle');
+      toolsBtn.addEventListener('click', () => {
+        const open = !toolsEl.classList.contains('open');
+        toolsEl.classList.toggle('open', open);
+        toolsBtn.classList.toggle('active', open);
+      });
+
+      /* ── 노드 검색 (현재 캔버스 내 title) ── */
+      const searchEl = document.getElementById('search');
+      searchEl.addEventListener('input', () => {
+        searchQ = searchEl.value.trim().toLowerCase();
+      });
+      searchEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && searchQ && graphInstance) {
+          graphInstance.zoomToFit(500, 80, n => (n.title || '').toLowerCase().includes(searchQ));
+        }
+      });
+
+      /* ── 사이드바 (캔버스 목록 + 캔버스 검색) ── */
+      const sidebar = document.getElementById('sidebar');
+      const listingEl = document.getElementById('canvas-listing');
+      const canvasSearchEl = document.getElementById('canvas-search');
+      let allCanvases = [];
+      function toggleSidebar(open) {
+        const willOpen = open === undefined ? !sidebar.classList.contains('open') : open;
+        sidebar.classList.toggle('open', willOpen);
+        if (willOpen) { loadCanvasList(); setTimeout(() => canvasSearchEl.focus(), 150); }
+      }
+      async function loadCanvasList() {
+        listingEl.innerHTML = '<div class="sb-empty">불러오는 중…</div>';
+        try {
+          const r = await fetch(DG_ROOT + '/list');
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const j = await r.json();
+          allCanvases = j.canvases || [];
+          renderCanvasList();
+        } catch (e) { listingEl.innerHTML = '<div class="sb-empty">목록 로드 실패</div>'; }
+      }
+      function renderCanvasList() {
+        const q = (canvasSearchEl.value || '').trim().toLowerCase();
+        const list = q ? allCanvases.filter(c => (c.title || '').toLowerCase().includes(q)) : allCanvases;
+        listingEl.innerHTML = '';
+        if (!list.length) { listingEl.innerHTML = '<div class="sb-empty">' + (q ? '검색 결과 없음' : '캔버스가 없습니다') + '</div>'; return; }
+        for (const c of list) {
+          const el = document.createElement('div');
+          el.className = 'cv-item' + (c.id === CANVAS_ID ? ' current' : '');
+          const when = c.updatedAt ? new Date(c.updatedAt).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+
+          const main = document.createElement('div');
+          main.className = 'cv-main';
+          main.innerHTML = '<div class="cv-title">' + (c.locked ? '🔒 ' : '') + escapeHtml(c.title || 'Untitled') + '</div>'
+            + '<div class="cv-meta">#' + c.id.slice(0, 8) + (when ? ' · ' + when : '') + '</div>';
+          main.addEventListener('click', () => { if (c.id !== CANVAS_ID) window.location.href = DG_ROOT + '/' + c.id; });
+          el.appendChild(main);
+
+          // lock 토글 (locked = 삭제 불가)
+          const lockBtn = document.createElement('span');
+          lockBtn.className = 'cv-act';
+          lockBtn.textContent = c.locked ? '🔒' : '🔓';
+          lockBtn.title = c.locked ? '잠금 해제' : '잠금 (삭제 방지)';
+          lockBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+              const r = await fetch(DG_ROOT + '/' + c.id + '/lock', {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ locked: !c.locked }),
+              });
+              if (!r.ok) throw new Error('HTTP ' + r.status);
+              loadCanvasList();
+            } catch (err) { toast('잠금 변경 실패: ' + err.message); }
+          });
+          el.appendChild(lockBtn);
+
+          // 삭제 (locked 캔버스는 버튼 자체를 숨김)
+          if (!c.locked) {
+            const delBtn = document.createElement('span');
+            delBtn.className = 'cv-act del';
+            delBtn.textContent = '🗑';
+            delBtn.title = '캔버스 삭제';
+            delBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              if (!confirm('캔버스 "' + (c.title || 'Untitled') + '"를 삭제할까요?\n노드·엣지 전체가 삭제되며 되돌릴 수 없습니다.')) return;
+              try {
+                const r = await fetch(DG_ROOT + '/' + c.id, { method: 'DELETE' });
+                const j = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+                if (c.id === CANVAS_ID) { window.location.href = DG_ROOT + '/new'; return; }
+                toast('캔버스 삭제됨');
+                loadCanvasList();
+              } catch (err) { toast('삭제 실패: ' + err.message); }
+            });
+            el.appendChild(delBtn);
+          }
+
+          listingEl.appendChild(el);
+        }
+      }
+      canvasSearchEl.addEventListener('input', renderCanvasList);
+      document.getElementById('sb-toggle').addEventListener('click', () => toggleSidebar());
+      document.getElementById('sb-close').addEventListener('click', () => toggleSidebar(false));
+      document.getElementById('sb-new').addEventListener('click', () => { window.location.href = DG_ROOT + '/new'; });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          if (ctxMenu.style.display === 'block') { hideCtxMenu(); return; }
+          if (dmModal.style.display === 'block') { closeDetail(); return; }
+          if (moveSourceId) { moveSourceId = null; toast('이동 취소'); return; }
+          if (sidebar.classList.contains('open')) { toggleSidebar(false); return; }
+          edgeMode = false; edgeSource = null; edgeBtn.classList.remove('active'); onBackgroundClick();
+        }
+      });
+
+      loadData(true);
+    })();
+  </script>
+</body>
+
+</html>
